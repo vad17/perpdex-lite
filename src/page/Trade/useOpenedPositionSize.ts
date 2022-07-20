@@ -1,4 +1,4 @@
-import { isAddress } from "@ethersproject/address"
+import { utils } from "ethers"
 import Big from "big.js"
 import { BIG_ZERO } from "constant"
 import { Connection } from "container/connection"
@@ -22,7 +22,7 @@ export function useOpenedPositionSize(address: string) {
             // addressMap !== null &&
             // isAddress(addressMap.ClearingHouseViewer) &&
             account !== null &&
-            isAddress(address)
+            utils.isAddress(address)
         ) {
             /* get { size, margin, unrealizedPnl } from clearingHouseViewerContract */
             // const clearingHouseViewerContract = new MulticallContract(
