@@ -6,7 +6,7 @@ import { Connection } from "../container/connection"
 import { Transaction, TransactionAction } from "../container/connection/transaction"
 import { big2BigNum, bigNum2Big } from "../util/format"
 import { useContractCall } from "./useContractCall"
-import { isAddress } from "@ethersproject/address"
+import { utils } from "ethers"
 import { useContractEvent } from "./useContractEvent"
 import { IERC20Metadata__factory } from "types/newContracts"
 
@@ -19,7 +19,7 @@ export function useToken(address: string, chainId: number) {
     const [totalSupply, setTotalSupply] = useState(BIG_NUMBER_ZERO)
 
     const contract = useMemo(() => {
-        return baseNetworkProvider && isAddress(address)
+        return baseNetworkProvider && utils.isAddress(address)
             ? IERC20Metadata__factory.connect(address, baseNetworkProvider)
             : void 0
     }, [address, baseNetworkProvider])
