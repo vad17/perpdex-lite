@@ -23,7 +23,7 @@ export function normalizeToUnixtime(time: number) {
 export function formatTime(unixtime: number, withoutTimezone: boolean = false) {
     unixtime = normalizeToUnixtime(unixtime)
     if (withoutTimezone) {
-        return moment.unix(unixtime).format("YYYY/MM/DD hh:mm:ss")
+        return moment.unix(unixtime).format("YYYY/MM/DD HH:mm:ss")
     } else {
         return moment.unix(unixtime).format()
     }
