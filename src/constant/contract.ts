@@ -41,6 +41,12 @@ export const contractConfigs: { [key: string]: ContractConfig } = {
         },
         exchanges: [],
     },
+    280: {
+        multicall: {
+            address: "0xf0D5F38f0112254e610bf473fa7D07D761a00e3d",
+        },
+        exchanges: [],
+    },
     592: {
         multicall: {
             // https://github.com/makerdao/multicall/pull/42/files

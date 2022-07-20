@@ -44,6 +44,13 @@ export const networkConfigs: { [key: string]: NetworkConfig } = IS_MAINNET
               etherscanUrl: "https://blockscout.com/shibuya/",
               thegraphEndpoint: "https://api.subquery.network/sq/perpdex/shibuya_test2",
           },
+          280: {
+              name: "zkSync 2 testnet",
+              nativeTokenSymbol: "ETH",
+              rpcUrl: "wss://zksync2-testnet.zksync.dev/ws",
+              etherscanUrl: "https://zksync2-testnet.zkscan.io/",
+              thegraphEndpoint: "",
+          },
           80001: {
               name: "Mumbai",
               nativeTokenSymbol: "MATIC",
