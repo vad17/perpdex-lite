@@ -50,8 +50,13 @@ export class AmmError extends Error {
 }
 
 export function getReason(exception: any) {
-    const message = exception?.error?.data?.message || exception?.data?.message || exception?.message || ""
-    return message.replace(/.*revert /, "")
+    const message =
+        exception?.error?.data?.data?.message ||
+        exception?.error?.data?.message ||
+        exception?.data?.message ||
+        exception?.message ||
+        ""
+    return message.replace(/.*revert /, "").replace(/.*revert:/, "")
 }
 
 export function getErrorMessageFromReason(reason: string) {
