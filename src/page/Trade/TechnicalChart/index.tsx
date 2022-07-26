@@ -9,7 +9,6 @@ import * as PerpdexTradingView from "perpdex-tradingview"
 let perpdexTradingViewModule: typeof PerpdexTradingView
 
 if (isTechnicalChart) {
-    // eslint-disable-next-line unused-imports/no-unused-vars
     perpdexTradingViewModule = require("perpdex-tradingview")
 }
 
@@ -55,7 +54,7 @@ function TechnicalChart() {
         isMarketReady,
     ])
 
-    if (perpdexTradingViewModule && currentMarketState && inputMarketState && getBars) {
+    if (perpdexTradingViewModule && inputMarketState && getBars) {
         const PerpdexTradingView = perpdexTradingViewModule.default
         return <PerpdexTradingView marketState={inputMarketState} getBars={getBars} />
     }

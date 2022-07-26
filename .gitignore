@@ -34,4 +34,4 @@ yarn-error.log*
 !.gitkeep
 
 # trading view charting_library
-public/static/charting_library.js
+public/static/charting_library/*
