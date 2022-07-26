@@ -1,5 +1,5 @@
 import React from "react"
-import { HStack, Link, Table, Tbody, Text, Thead, Tr } from "@chakra-ui/react"
+import { Center, CircularProgress, HStack, Link, Table, Tbody, Text, Thead, Tr } from "@chakra-ui/react"
 
 import { CurrencyIcon } from "component/Icon"
 import Button from "component/base/Button"
@@ -45,41 +45,58 @@ function TokenTable({ data }: TokenTableState) {
                 </Tr>
             </Thead>
             <Tbody>
-                {_.map(data, item => {
-                    const value = item.longTokenState
-                    const marketState = item.marketState
+                {data && !data.length ? (
+                    <Tr>
+                        <StyledTd></StyledTd>
+                        <StyledTd></StyledTd>
+                        <StyledTd></StyledTd>
+                        <StyledTd>
+                            <Center>
+                                <CircularProgress isIndeterminate size="30px" />
+                            </Center>
+                        </StyledTd>
+                        <StyledTd></StyledTd>
+                        <StyledTd></StyledTd>
+                    </Tr>
+                ) : (
+                    <>
+                        {_.map(data, item => {
+                            const value = item.longTokenState
+                            const marketState = item.marketState
 
-                    const price =
-                        value.totalAssets && value.totalSupply && !value.totalSupply.eq(0)
-                            ? value.totalAssets.div(value.totalSupply)
-                            : void 0
+                            const price =
+                                value.totalAssets && value.totalSupply && !value.totalSupply.eq(0)
+                                    ? value.totalAssets.div(value.totalSupply)
+                                    : void 0
 
-                    return (
-                        <Tr>
-                            <StyledTd>
-                                <HStack>
-                                    <CurrencyIcon symbol={marketState?.baseSymbol} boxSize={8} />
-                                    <Text>{value.symbol}</Text>
-                                </HStack>
-                            </StyledTd>
-                            <StyledTd>{value.name}</StyledTd>
-                            <StyledTd>
-                                {formattedNumberWithCommas(price)} {value.assetSymbol}
-                            </StyledTd>
-                            <StyledTd>
-                                {formattedNumberWithCommas(value.totalAssets)} {value.assetSymbol}
-                            </StyledTd>
-                            <StyledTd>
-                                {formattedNumberWithCommas(value.myAssets)} {value.assetSymbol}
-                            </StyledTd>
-                            <StyledTd>
-                                <Link as={ReactLink} to={`/tokens/${marketState?.address}`}>
-                                    <Button customType="base-blue" text="Details" />
-                                </Link>
-                            </StyledTd>
-                        </Tr>
-                    )
-                })}
+                            return (
+                                <Tr>
+                                    <StyledTd>
+                                        <HStack>
+                                            <CurrencyIcon symbol={marketState?.baseSymbol} boxSize={8} />
+                                            <Text>{value.symbol}</Text>
+                                        </HStack>
+                                    </StyledTd>
+                                    <StyledTd>{value.name}</StyledTd>
+                                    <StyledTd>
+                                        {formattedNumberWithCommas(price)} {value.assetSymbol}
+                                    </StyledTd>
+                                    <StyledTd>
+                                        {formattedNumberWithCommas(value.totalAssets)} {value.assetSymbol}
+                                    </StyledTd>
+                                    <StyledTd>
+                                        {formattedNumberWithCommas(value.myAssets)} {value.assetSymbol}
+                                    </StyledTd>
+                                    <StyledTd>
+                                        <Link as={ReactLink} to={`/tokens/${marketState?.address}`}>
+                                            <Button customType="base-blue" text="Details" />
+                                        </Link>
+                                    </StyledTd>
+                                </Tr>
+                            )
+                        })}
+                    </>
+                )}
             </Tbody>
         </Table>
     )
