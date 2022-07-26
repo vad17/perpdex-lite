@@ -1,4 +1,4 @@
-import { chakra, Table, Thead, Tr, Th, Tbody, Td } from "@chakra-ui/react"
+import { chakra, Table, Thead, Tr, Th, Tbody, Td, Center, CircularProgress } from "@chakra-ui/react"
 import { PerpdexMarketContainer } from "../../../container/connection/perpdexMarketContainer"
 import { useQuery } from "@apollo/client"
 import { getPositionChangedsByTraderQuery } from "../../../queries/trades"
@@ -60,27 +60,45 @@ function OrderHistoryTable() {
                 </Tr>
             </Thead>
             <Tbody>
-                {data &&
-                    data.length > 0 &&
-                    data.map((value: OrderHistoryUnit, index: number) => {
-                        const marketState = currentMarketState
-                        return (
-                            <Tr key={index}>
-                                <StyledTd>{formatTime(value.time, true)}</StyledTd>
-                                <StyledTd>{marketName}</StyledTd>
-                                <StyledTd>{value.isLongDisplay ? "Long" : "Short"}</StyledTd>
-                                <StyledTd>
-                                    {formattedNumberWithCommas(value.size)} {marketState.baseSymbol}
-                                </StyledTd>
-                                <StyledTd>
-                                    {formattedNumberWithCommas(value.priceDisplay)} {marketState.priceUnitDisplay}
-                                </StyledTd>
-                                <StyledTd>
-                                    {formattedNumberWithCommas(value.realizedPnl)} {marketState.baseSymbol}
-                                </StyledTd>
-                            </Tr>
-                        )
-                    })}
+                {data && !data.length ? (
+                    <Tr>
+                        <StyledTd></StyledTd>
+                        <StyledTd></StyledTd>
+                        <StyledTd>
+                            <Center>
+                                <CircularProgress isIndeterminate size="30px" />
+                            </Center>
+                        </StyledTd>
+                        <StyledTd></StyledTd>
+                        <StyledTd></StyledTd>
+                        <StyledTd></StyledTd>
+                    </Tr>
+                ) : (
+                    <>
+                        {data &&
+                            data.length > 0 &&
+                            data.map((value: OrderHistoryUnit, index: number) => {
+                                const marketState = currentMarketState
+                                return (
+                                    <Tr key={index}>
+                                        <StyledTd>{formatTime(value.time, true)}</StyledTd>
+                                        <StyledTd>{marketName}</StyledTd>
+                                        <StyledTd>{value.isLongDisplay ? "Long" : "Short"}</StyledTd>
+                                        <StyledTd>
+                                            {formattedNumberWithCommas(value.size)} {marketState.baseSymbol}
+                                        </StyledTd>
+                                        <StyledTd>
+                                            {formattedNumberWithCommas(value.priceDisplay)}{" "}
+                                            {marketState.priceUnitDisplay}
+                                        </StyledTd>
+                                        <StyledTd>
+                                            {formattedNumberWithCommas(value.realizedPnl)} {marketState.baseSymbol}
+                                        </StyledTd>
+                                    </Tr>
+                                )
+                            })}
+                    </>
+                )}
             </Tbody>
         </Table>
     )

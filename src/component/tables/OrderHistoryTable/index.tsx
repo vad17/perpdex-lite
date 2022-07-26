@@ -1,5 +1,5 @@
 import React from "react"
-import { Thead, Table, Tr, Th, Tbody, Td, chakra, Text } from "@chakra-ui/react"
+import { Thead, Table, Tr, Th, Tbody, Td, chakra, Text, CircularProgress, Center } from "@chakra-ui/react"
 import { OrderHistoryUnit } from "constant/types"
 import { formattedNumberWithCommas } from "util/format"
 import { formatTime, timezoneStr } from "util/time"
@@ -53,20 +53,37 @@ function OrderHistoryTable({
                     </Tr>
                 </Thead>
                 <Tbody>
-                    {data &&
-                        data.length > 0 &&
-                        data.map((value: OrderHistoryUnit, index: number) => (
-                            <Tr key={index} bg={applyStripe && index % 2 === 0 ? "rgba(98, 126, 234, 0.2)" : ""}>
-                                <StyledTd
-                                    color={value.isLongDisplay ? "green.300" : "red.300"}
-                                    px={applyPXZero ? 0 : "24px"}
-                                >
-                                    {formattedNumberWithCommas(value.size)}
-                                </StyledTd>
-                                <StyledTd>{formattedNumberWithCommas(value.priceDisplay)}</StyledTd>
-                                <StyledTd>{formatTime(value.time, true)}</StyledTd>
-                            </Tr>
-                        ))}
+                    {data && !data.length ? (
+                        <Tr>
+                            <StyledTd></StyledTd>
+                            <StyledTd>
+                                <Center>
+                                    <CircularProgress isIndeterminate size="30px" />
+                                </Center>
+                            </StyledTd>
+                            <StyledTd></StyledTd>
+                        </Tr>
+                    ) : (
+                        <>
+                            {data &&
+                                data.length > 0 &&
+                                data.map((value: OrderHistoryUnit, index: number) => (
+                                    <Tr
+                                        key={index}
+                                        bg={applyStripe && index % 2 === 0 ? "rgba(98, 126, 234, 0.2)" : ""}
+                                    >
+                                        <StyledTd
+                                            color={value.isLongDisplay ? "green.300" : "red.300"}
+                                            px={applyPXZero ? 0 : "24px"}
+                                        >
+                                            {formattedNumberWithCommas(value.size)}
+                                        </StyledTd>
+                                        <StyledTd>{formattedNumberWithCommas(value.priceDisplay)}</StyledTd>
+                                        <StyledTd>{formatTime(value.time, true)}</StyledTd>
+                                    </Tr>
+                                ))}
+                        </>
+                    )}
                 </Tbody>
             </Table>
         </>

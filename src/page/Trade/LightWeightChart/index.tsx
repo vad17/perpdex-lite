@@ -1,10 +1,11 @@
-import React, { useMemo } from "react"
+import React, { useMemo, useState } from "react"
 import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
 import { getCandlesQuery } from "queries/trades"
 import { cleanUpChartInputData } from "util/chart"
 import { useQuery } from "@apollo/client"
 import Chart from "@qognicafinance/react-lightweight-charts"
 import moment from "moment"
+import { Center, CircularProgress } from "@chakra-ui/react"
 
 const chartOptions = {
     layout: {
@@ -27,6 +28,7 @@ const chartOptions = {
 }
 
 function LightWeightChart() {
+    const [isLoading, setIsLoading] = useState<boolean>(true)
     const { currentMarket, currentMarketState } = PerpdexMarketContainer.useContainer()
 
     const candleResult = useQuery(getCandlesQuery, {
@@ -41,6 +43,7 @@ function LightWeightChart() {
         const candlesData = candleResult.data
         const chartInputData = cleanUpChartInputData(candlesData, currentMarketState.inverse)
 
+        setIsLoading(false)
         return [
             {
                 data: chartInputData || [],
@@ -48,7 +51,13 @@ function LightWeightChart() {
         ]
     }, [candleResult.data, candleResult.loading, candleResult.error])
 
-    return <Chart autoWidth={true} autoHeight={true} options={chartOptions} candlestickSeries={candlestickSeries} />
+    return isLoading ? (
+        <Center h="100%">
+            <CircularProgress isIndeterminate size="30px" />
+        </Center>
+    ) : (
+        <Chart autoWidth={true} autoHeight={true} options={chartOptions} candlestickSeries={candlestickSeries} />
+    )
 }
 
 export default LightWeightChart
