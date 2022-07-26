@@ -1,4 +1,4 @@
-import { Table, Thead, Tbody, Tr, Td, Text, HStack, VStack } from "@chakra-ui/react"
+import { Table, Thead, Tbody, Tr, Td, Text, HStack, VStack, Center, CircularProgress } from "@chakra-ui/react"
 import { MakerInfo, MarketState } from "../../constant/types"
 import { CurrencyIcon } from "../../component/Icon"
 import { createMakerPositionInfo, createPoolSummary } from "../../util/market"
@@ -23,50 +23,66 @@ function PoolsTable({ data, handleOnClick }: PoolsTableState) {
                 </Tr>
             </Thead>
             <Tbody>
-                {data.map(([row, makerInfo]) => {
-                    const poolSummary = createPoolSummary(row)
-                    const makerPositionInfo = createMakerPositionInfo(row, makerInfo)
+                {data && !data.length ? (
+                    <Tr>
+                        <Td borderBottom={0}></Td>
+                        <Td borderBottom={0}>
+                            <Center>
+                                <CircularProgress isIndeterminate size="30px" />
+                            </Center>
+                        </Td>
+                        <Td borderBottom={0}></Td>
+                        <Td borderBottom={0}></Td>
+                    </Tr>
+                ) : (
+                    <>
+                        {data.map(([row, makerInfo]) => {
+                            const poolSummary = createPoolSummary(row)
+                            const makerPositionInfo = createMakerPositionInfo(row, makerInfo)
 
-                    return (
-                        <Tr>
-                            <Td borderBottom={0}>
-                                <HStack>
-                                    <CurrencyIcon symbol={"TODO: poolSummary.baseSymbolDisplay"} boxSize={8} />
-                                    <Text>{row.name}</Text>
-                                </HStack>
-                            </Td>
-                            <Td borderBottom={0}>
-                                <HStack>
-                                    <VStack alignItems="start">
-                                        <Text>{poolSummary.tvl}</Text>
-                                        <StyledAnnotation fontSize="sm" color="gray.400">
-                                            {poolSummary.tvlUsd}
-                                        </StyledAnnotation>
-                                    </VStack>
-                                </HStack>
-                            </Td>
-                            <Td borderBottom={0}>
-                                <HStack>
-                                    <VStack alignItems="start">
-                                        <Text>
-                                            {numberWithCommas(makerPositionInfo?.liquidityValue)} {row.quoteSymbol}
-                                        </Text>
-                                        <StyledAnnotation fontSize="sm" color="gray.400">
-                                            ${numberWithCommas(makerPositionInfo?.liquidityValueUsd)}
-                                        </StyledAnnotation>
-                                    </VStack>
-                                </HStack>
-                            </Td>
-                            <Td borderBottom={0}>
-                                <Button
-                                    customType="base-blue"
-                                    text="Add Liquidity"
-                                    onClick={() => handleOnClick(row.address)}
-                                />
-                            </Td>
-                        </Tr>
-                    )
-                })}
+                            return (
+                                <Tr>
+                                    <Td borderBottom={0}>
+                                        <HStack>
+                                            <CurrencyIcon symbol={"TODO: poolSummary.baseSymbolDisplay"} boxSize={8} />
+                                            <Text>{row.name}</Text>
+                                        </HStack>
+                                    </Td>
+                                    <Td borderBottom={0}>
+                                        <HStack>
+                                            <VStack alignItems="start">
+                                                <Text>{poolSummary.tvl}</Text>
+                                                <StyledAnnotation fontSize="sm" color="gray.400">
+                                                    {poolSummary.tvlUsd}
+                                                </StyledAnnotation>
+                                            </VStack>
+                                        </HStack>
+                                    </Td>
+                                    <Td borderBottom={0}>
+                                        <HStack>
+                                            <VStack alignItems="start">
+                                                <Text>
+                                                    {numberWithCommas(makerPositionInfo?.liquidityValue)}{" "}
+                                                    {row.quoteSymbol}
+                                                </Text>
+                                                <StyledAnnotation fontSize="sm" color="gray.400">
+                                                    ${numberWithCommas(makerPositionInfo?.liquidityValueUsd)}
+                                                </StyledAnnotation>
+                                            </VStack>
+                                        </HStack>
+                                    </Td>
+                                    <Td borderBottom={0}>
+                                        <Button
+                                            customType="base-blue"
+                                            text="Add Liquidity"
+                                            onClick={() => handleOnClick(row.address)}
+                                        />
+                                    </Td>
+                                </Tr>
+                            )
+                        })}
+                    </>
+                )}
             </Tbody>
         </Table>
     )
