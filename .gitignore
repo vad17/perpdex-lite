@@ -32,3 +32,6 @@ yarn-error.log*
 /.vscode
 
 !.gitkeep
+
+# trading view charting_library
+public/static/charting_library.js

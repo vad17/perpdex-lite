@@ -1,9 +1,11 @@
-import { OrderHistoryUnit } from "constant/types"
+import { ChartBar, MarketState, OrderHistoryUnit } from "constant/types"
 import { BigNumber } from "ethers"
 import { bigNum2Big, x96ToBig } from "./format"
 import { normalizeToUnixtime } from "./time"
 import _ from "lodash"
+import axios from "axios"
 import Big from "big.js"
+import { candlesQueryString } from "queries/trades"
 
 export function cleanUpChartInputData(candlesData: any, inverse: boolean) {
     if (!candlesData) return
@@ -67,4 +69,52 @@ export function cleanUpOrderHistories(queryResponse: any, inverse: boolean) {
     })
 
     return _.sortBy(histories, (data: any) => -data.time)
+}
+
+export const callSubquery = async (uri: string, query: string, variables?: any) => {
+    const headers = {
+        "content-type": "application/json",
+    }
+
+    const graphqlQuery = {
+        query,
+        variables,
+    }
+
+    const response = await axios.post(uri, graphqlQuery, {
+        headers,
+    })
+
+    return response.data.data
+}
+
+export const createGetBars = (uri: string, currentMarketState: MarketState) => {
+    const getBars = (
+        symbolInfo: any,
+        resolution: string,
+        periodParams: any,
+        onHistoryCallback: (bars: ChartBar[], meta: any) => void,
+        onErrorCallback: (err: any) => void,
+    ) => {
+        return callSubquery(uri, candlesQueryString, {
+            markets: [currentMarketState.address],
+            timeFormats: [60 * 60],
+        })
+            .then(data => {
+                if (data) {
+                    const bars = cleanUpChartInputData(data, currentMarketState.inverse)
+
+                    if (bars && bars.length > 0) {
+                        onHistoryCallback(bars, { noData: false })
+                    } else {
+                        onHistoryCallback([], { noData: true })
+                    }
+                }
+            })
+            .catch(err => {
+                console.log({ err })
+                onErrorCallback(err)
+            })
+    }
+    return getBars
 }
