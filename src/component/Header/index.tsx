@@ -18,7 +18,7 @@ function Header() {
                 </Link>
             </Center>
             <Spacer />
-            <Center>
+            <Center marginRight="18px">
                 <HStack spacing={["24px", "30px", "42px", "80px"]}>
                     <Link to="/">
                         <Button variant="link">Home</Button>
