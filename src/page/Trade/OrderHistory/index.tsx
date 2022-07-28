@@ -6,8 +6,12 @@ import { getPositionChangedsQuery } from "queries/trades"
 import { cleanUpOrderHistories } from "util/chart"
 import { useQuery } from "@apollo/client"
 import _ from "lodash"
+import { User } from "container/connection/user"
 
 function OrderHistory() {
+    const {
+        state: { address },
+    } = User.useContainer()
     const { currentMarket, currentMarketState } = PerpdexMarketContainer.useContainer()
 
     const positionChangedsResult = useQuery(getPositionChangedsQuery, {
@@ -45,6 +49,7 @@ function OrderHistory() {
                 data={orderHistories}
                 applyStripe={true}
                 applyPXZero={true}
+                accountAvailable={!!address}
             />
         </Box>
     )

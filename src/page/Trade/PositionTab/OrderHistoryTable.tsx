@@ -8,9 +8,13 @@ import { Connection } from "../../../container/connection"
 import { OrderHistoryUnit } from "../../../constant/types"
 import { formattedNumberWithCommas } from "../../../util/format"
 import { formatTime, timezoneStr } from "../../../util/time"
+import { User } from "container/connection/user"
 
 function OrderHistoryTable() {
     const { account } = Connection.useContainer()
+    const {
+        state: { address },
+    } = User.useContainer()
     const { currentMarket, currentMarketState } = PerpdexMarketContainer.useContainer()
     const marketName = currentMarketState.name
 
@@ -60,7 +64,7 @@ function OrderHistoryTable() {
                 </Tr>
             </Thead>
             <Tbody>
-                {data && !data.length ? (
+                {address && data && !data.length ? (
                     <Tr>
                         <StyledTd></StyledTd>
                         <StyledTd></StyledTd>

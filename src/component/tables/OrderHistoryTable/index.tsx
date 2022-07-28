@@ -11,6 +11,7 @@ interface OrderHistoryTableState {
     data: OrderHistoryUnit[] | undefined
     applyStripe?: boolean
     applyPXZero?: boolean
+    accountAvailable: boolean
 }
 
 function OrderHistoryTable({
@@ -20,6 +21,7 @@ function OrderHistoryTable({
     data,
     applyStripe = false,
     applyPXZero = false,
+    accountAvailable,
 }: OrderHistoryTableState) {
     const StyledTh = chakra(Th, {
         baseStyle: {
@@ -53,7 +55,7 @@ function OrderHistoryTable({
                     </Tr>
                 </Thead>
                 <Tbody>
-                    {data && !data.length ? (
+                    {accountAvailable && data && !data.length ? (
                         <Tr>
                             <StyledTd></StyledTd>
                             <StyledTd>

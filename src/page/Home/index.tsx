@@ -21,7 +21,7 @@ function Home() {
 
     return (
         <FrameContainer>
-            {!currentMyAccountInfo || !currentMarketState ? (
+            {address && (!currentMyAccountInfo || !currentMarketState) ? (
                 <Center>
                     <CircularProgress isIndeterminate size="30px" />
                 </Center>

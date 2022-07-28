@@ -8,6 +8,7 @@ import { Link as ReactLink } from "react-router-dom"
 import { formattedNumberWithCommas } from "util/format"
 import { LongTokenState, MarketState } from "constant/types"
 import { StyledTd, StyledTh } from "component/tables"
+import { User } from "container/connection/user"
 
 interface TableItem {
     longTokenState: LongTokenState
@@ -19,6 +20,10 @@ interface TokenTableState {
 }
 
 function TokenTable({ data }: TokenTableState) {
+    const {
+        state: { address },
+    } = User.useContainer()
+
     // 24H VOL is not required because:
     // - User is not interested in token volume
     // - It is unclear whether it is the volume of tokens or the volume of the market
@@ -45,7 +50,7 @@ function TokenTable({ data }: TokenTableState) {
                 </Tr>
             </Thead>
             <Tbody>
-                {data && !data.length ? (
+                {address && data && !data.length ? (
                     <Tr>
                         <StyledTd></StyledTd>
                         <StyledTd></StyledTd>

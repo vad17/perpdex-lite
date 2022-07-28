@@ -5,6 +5,7 @@ import { createMakerPositionInfo, createPoolSummary } from "../../util/market"
 import Button from "component/base/Button"
 import { StyledAnnotation, StyledTh } from "component/tables"
 import { numberWithCommas } from "../../util/format"
+import { User } from "container/connection/user"
 
 export interface PoolsTableState {
     data: [MarketState, MakerInfo][]
@@ -12,6 +13,10 @@ export interface PoolsTableState {
 }
 
 function PoolsTable({ data, handleOnClick }: PoolsTableState) {
+    const {
+        state: { address },
+    } = User.useContainer()
+
     return (
         <Table variant="simple">
             <Thead height={68}>
@@ -23,7 +28,7 @@ function PoolsTable({ data, handleOnClick }: PoolsTableState) {
                 </Tr>
             </Thead>
             <Tbody>
-                {data && !data.length ? (
+                {address && data && !data.length ? (
                     <Tr>
                         <Td borderBottom={0}></Td>
                         <Td borderBottom={0}>
