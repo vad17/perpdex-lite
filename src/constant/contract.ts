@@ -35,6 +35,12 @@ export const contractConfigs: { [key: string]: ContractConfig } = {
         },
         exchanges: [],
     },
+    69: {
+        multicall: {
+            address: "0x4afaA782D74825a267e40aE2a231C271D1c392C3",
+        },
+        exchanges: [],
+    },
     81: {
         multicall: {
             address: "0xF339Dd2b88e66901Cfa1d1232357eB1D491DdA32",
@@ -57,6 +63,12 @@ export const contractConfigs: { [key: string]: ContractConfig } = {
     80001: {
         multicall: {
             address: "0x08411ADd0b5AA8ee47563b146743C13b3556c9Cc",
+        },
+        exchanges: [],
+    },
+    421611: {
+        multicall: {
+            address: "0x7216Ea6021eFbba221bBE6971636A1b163F26579",
         },
         exchanges: [],
     },
