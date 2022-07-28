@@ -37,6 +37,13 @@ export const networkConfigs: { [key: string]: NetworkConfig } = IS_MAINNET
               etherscanUrl: "https://rinkeby.etherscan.io/",
               thegraphEndpoint: "",
           },
+          69: {
+              name: "Optimism Kovan",
+              nativeTokenSymbol: "ETH",
+              rpcUrl: "https://kovan.optimism.io",
+              etherscanUrl: "https://kovan-optimistic.etherscan.io/",
+              thegraphEndpoint: "",
+          },
           81: {
               name: "Shibuya",
               nativeTokenSymbol: "SBY",
@@ -56,6 +63,13 @@ export const networkConfigs: { [key: string]: NetworkConfig } = IS_MAINNET
               nativeTokenSymbol: "MATIC",
               rpcUrl: "https://rpc-mumbai.maticvigil.com",
               etherscanUrl: "https://mumbai.polygonscan.com/",
+              thegraphEndpoint: "",
+          },
+          421611: {
+              name: "Arbitrum Rinkeby",
+              nativeTokenSymbol: "ETH",
+              rpcUrl: "https://rinkeby.arbitrum.io/rpc",
+              etherscanUrl: "https://testnet.arbiscan.io/",
               thegraphEndpoint: "",
           },
       }
