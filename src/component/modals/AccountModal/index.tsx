@@ -64,7 +64,8 @@ function AccountModal() {
 
     const handleSubmit = useCallback(() => {
         isDeposit ? deposit(Big(amount)) : withdraw(Big(amount))
-    }, [amount, isDeposit, deposit, withdraw])
+        closeAccountModal()
+    }, [isDeposit, deposit, amount, withdraw, closeAccountModal])
 
     const handleMax = useCallback(() => {
         const value = currentMyAccountInfo?.collateralBalance

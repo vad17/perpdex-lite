@@ -36,7 +36,8 @@ function LiquidityProviderModal() {
 
         addLiquidity(base, quote, slippage)
         console.log("slippage", slippage)
-    }, [collateralValues.base, collateralValues.quote, addLiquidity, slippage])
+        toggleLpModal()
+    }, [collateralValues.base, collateralValues.quote, addLiquidity, slippage, toggleLpModal])
 
     // Reset values when market is updated
     useEffect(() => {

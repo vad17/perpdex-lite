@@ -51,8 +51,9 @@ function ClosePositionModal() {
             const slippage = 40 // Future fix
 
             trade(isLong, baseAmount, slippage)
+            togglePositionCloseModal()
         }
-    }, [closeValue, currentMyTakerPositions, trade])
+    }, [closeValue, currentMyTakerPositions, togglePositionCloseModal, trade])
 
     const handleCloseModal = useCallback(() => {
         setCloseValue(BIG_ZERO)
