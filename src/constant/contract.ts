@@ -54,6 +54,12 @@ export const contractConfigs: { [key: string]: ContractConfig } = {
         },
         exchanges: [],
     },
+    80001: {
+        multicall: {
+            address: "0x08411ADd0b5AA8ee47563b146743C13b3556c9Cc",
+        },
+        exchanges: [],
+    },
 }
 
 const isMarketEnabled = (market: string) => {

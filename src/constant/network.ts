@@ -54,7 +54,7 @@ export const networkConfigs: { [key: string]: NetworkConfig } = IS_MAINNET
           80001: {
               name: "Mumbai",
               nativeTokenSymbol: "MATIC",
-              rpcUrl: "https://rpc-mumbai.matic.today",
+              rpcUrl: "https://rpc-mumbai.maticvigil.com",
               etherscanUrl: "https://mumbai.polygonscan.com/",
               thegraphEndpoint: "",
           },
