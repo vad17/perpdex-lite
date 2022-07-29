@@ -1,27 +1,52 @@
 import { gql } from "@apollo/client"
 
-export const getCandlesQuery = gql`
-    query($markets: [String!], $timeFormats: [Int!]) {
-        candles(
-            first: 100
-            filter: { market: { in: $markets }, timeFormat: { in: $timeFormats } }
-            orderBy: [MARKET_ASC, TIMESTAMP_DESC]
-        ) {
-            nodes {
-                id
-                market
-                timeFormat
-                timestamp
-                openX96
-                highX96
-                lowX96
-                closeX96
-                baseAmount
-                quoteAmount
+export const getCandlesQuery = (schemaType: "thegraph" | "subquery") => {
+    return {
+        thegraph: gql`
+            query($markets: [String!], $timeFormats: [Int!]) {
+                candles(
+                    first: 100
+                    where: { market_in: $markets, timeFormat_in: $timeFormats }
+                    orderBy: timestamp
+                    orderDirection: desc
+                ) {
+                    id
+                    market
+                    timeFormat
+                    timestamp
+                    openX96
+                    highX96
+                    lowX96
+                    closeX96
+                    baseAmount
+                    quoteAmount
+                }
             }
-        }
-    }
-`
+        `,
+        subquery: gql`
+            query($markets: [String!], $timeFormats: [Int!]) {
+                candles(
+                    first: 100
+                    filter: { market: { in: $markets }, timeFormat: { in: $timeFormats } }
+                    orderBy: [TIMESTAMP_DESC]
+                ) {
+                    nodes {
+                        id
+                        market
+                        timeFormat
+                        timestamp
+                        openX96
+                        highX96
+                        lowX96
+                        closeX96
+                        baseAmount
+                        quoteAmount
+                    }
+                }
+            }
+        `,
+    }[schemaType]
+}
 
 export const candles = `
   query {
@@ -58,55 +83,107 @@ export const daySummaries = `
   }
 `
 
-export const getPositionChangedsQuery = gql`
-    query($market: String!) {
-        positionChangeds(first: 100, filter: { market: { equalTo: $market } }) {
-            nodes {
-                id
-                exchange
-                trader
-                market
-                base
-                quote
-                realizedPnl
-                protocolFee
-                baseBalancePerShareX96
-                sharePriceAfterX96
-                liquidator
-                liquidationPenalty
-                liquidationReward
-                insuranceFundReward
-                blockNumberLogIndex
-                timestamp
+export const getPositionChangedsQuery = (schemaType: "thegraph" | "subquery") => {
+    return {
+        thegraph: gql`
+            query($markets: [String!]) {
+                positionChangeds(first: 100, where: { market_in: $markets }) {
+                    id
+                    exchange
+                    trader
+                    market
+                    base
+                    quote
+                    realizedPnl
+                    protocolFee
+                    baseBalancePerShareX96
+                    sharePriceAfterX96
+                    liquidator
+                    liquidationPenalty
+                    liquidationReward
+                    insuranceFundReward
+                    blockNumberLogIndex
+                    timestamp
+                }
             }
-        }
-    }
-`
+        `,
+        subquery: gql`
+            query($markets: [String!]) {
+                positionChangeds(first: 100, filter: { market: { in: $markets } }) {
+                    nodes {
+                        id
+                        exchange
+                        trader
+                        market
+                        base
+                        quote
+                        realizedPnl
+                        protocolFee
+                        baseBalancePerShareX96
+                        sharePriceAfterX96
+                        liquidator
+                        liquidationPenalty
+                        liquidationReward
+                        insuranceFundReward
+                        blockNumberLogIndex
+                        timestamp
+                    }
+                }
+            }
+        `,
+    }[schemaType]
+}
 
-export const getPositionChangedsByTraderQuery = gql`
-    query($market: String!, $trader: String!) {
-        positionChangeds(first: 100, filter: { market: { equalTo: $market }, trader: { equalTo: $trader } }) {
-            nodes {
-                id
-                exchange
-                trader
-                market
-                base
-                quote
-                realizedPnl
-                protocolFee
-                baseBalancePerShareX96
-                sharePriceAfterX96
-                liquidator
-                liquidationPenalty
-                liquidationReward
-                insuranceFundReward
-                blockNumberLogIndex
-                timestamp
+export const getPositionChangedsByTraderQuery = (schemaType: "thegraph" | "subquery") => {
+    return {
+        thegraph: gql`
+            query($markets: [String!], $traders: [String!]) {
+                positionChangeds(first: 100, where: { market_in: $markets, trader_in: $traders }) {
+                    id
+                    exchange
+                    trader
+                    market
+                    base
+                    quote
+                    realizedPnl
+                    protocolFee
+                    baseBalancePerShareX96
+                    sharePriceAfterX96
+                    liquidator
+                    liquidationPenalty
+                    liquidationReward
+                    insuranceFundReward
+                    blockNumberLogIndex
+                    timestamp
+                }
             }
-        }
-    }
-`
+        `,
+        subquery: gql`
+            query($markets: [String!], $traders: [String!]) {
+                positionChangeds(first: 100, filter: { market: { in: $markets }, trader: { in: $traders } }) {
+                    nodes {
+                        id
+                        exchange
+                        trader
+                        market
+                        base
+                        quote
+                        realizedPnl
+                        protocolFee
+                        baseBalancePerShareX96
+                        sharePriceAfterX96
+                        liquidator
+                        liquidationPenalty
+                        liquidationReward
+                        insuranceFundReward
+                        blockNumberLogIndex
+                        timestamp
+                    }
+                }
+            }
+        `,
+    }[schemaType]
+}
 
 export const positionChangeds = `
   query {

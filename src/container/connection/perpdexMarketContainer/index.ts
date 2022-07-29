@@ -17,8 +17,8 @@ import {
 } from "../contractFactory"
 import { useInterval } from "../../../hook/useInterval"
 import produce from "immer"
-import { useQuery } from "@apollo/client"
 import { getCandlesQuery } from "../../../queries/trades"
+import { useThegraphQuery } from "../../../hook/useThegraphQuery"
 
 const nullMarketState: MarketState = {
     address: constants.AddressZero,
@@ -63,9 +63,9 @@ function usePerpdexMarketContainer() {
         return marketStates[currentMarket] || nullMarketState
     }, [marketStates, currentMarket])
 
-    const candleResult = useQuery(getCandlesQuery, {
+    const candleResult = useThegraphQuery(chainId, getCandlesQuery, {
         variables: {
-            markets: _.keys(marketStates),
+            markets: _.flatten([_.keys(marketStates), _.map(_.keys(marketStates), key => key.toLowerCase())]),
             timeFormats: [24 * 60 * 60],
         },
     })
@@ -266,10 +266,13 @@ function usePerpdexMarketContainer() {
                         draft[marketAddress].indexPriceBase = indexPriceBase
 
                         // TODO: refactor (It is not good to update irrelevant data at the polling timing of contract)
-                        const nodes = candleResult?.data?.candles?.nodes
+                        const nodes = candleResult?.data?.candles
                         if (nodes) {
                             // last of complete candle
-                            const node = _.filter(nodes, node => node.market === marketAddress)[1]
+                            const node = _.filter(
+                                nodes,
+                                node => node.market.toLowerCase() === marketAddress.toLowerCase(),
+                            )[1]
                             if (node) {
                                 const volume24h = bigNum2Big(BigNumber.from(node.quoteAmount))
                                 draft[marketAddress].volume24h = volume24h
