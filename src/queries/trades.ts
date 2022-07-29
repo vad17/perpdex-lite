@@ -5,7 +5,7 @@ export const getCandlesQuery = gql`
         candles(
             first: 100
             filter: { market: { in: $markets }, timeFormat: { in: $timeFormats } }
-            orderBy: [MARKET_ASC, TIMESTAMP_ASC]
+            orderBy: [MARKET_ASC, TIMESTAMP_DESC]
         ) {
             nodes {
                 id
