@@ -16,7 +16,7 @@ export function useContractEvent(contract: any, eventName: string, callback: Cal
                 savedCallback.current(...args)
             }
         }
-        if (contract && eventName) {
+        if (contract && contract.signer && eventName) {
             contract.on(eventName, listener)
 
             return () => {
