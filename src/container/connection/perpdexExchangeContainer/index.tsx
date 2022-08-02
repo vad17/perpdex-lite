@@ -105,9 +105,6 @@ function usePerpdexExchangeContainer() {
     const currentMyTakerInfo: TakerInfo | undefined = useMemo(() => {
         return exchangeStates[currentExchange]?.myAccountInfo.takerInfos[currentMarket]
     }, [exchangeStates, currentExchange, currentMarket])
-    const exchangeContract = useMemo(() => {
-        return createExchangeContract(currentMarketState?.exchangeAddress, signer)
-    }, [currentMarketState?.exchangeAddress, signer])
 
     const currentMyTakerPositions: PositionState | undefined = useMemo(() => {
         if (currentMarketState && currentMyTakerInfo) {
@@ -439,7 +436,6 @@ function usePerpdexExchangeContainer() {
 
     return {
         // core functions
-        exchangeContract,
         exchangeStates,
         // utils (my account of current market)
         currentExchangeState,

@@ -1,4 +1,4 @@
-import React, { useMemo } from "react"
+import React, { useEffect, useMemo } from "react"
 import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
 import { getCandlesQuery } from "queries/trades"
 import { cleanUpChartInputData } from "util/chart"
@@ -49,6 +49,14 @@ function LightWeightChart() {
             },
         ]
     }, [candleResult.data, candleResult.loading, candleResult.error])
+
+    useEffect(() => {
+        const iid = setInterval(() => {
+            candleResult.refetch({ markets: [currentMarket, currentMarket.toLowerCase()], timeFormats: [60 * 60] })
+        }, 5000)
+
+        return () => clearInterval(iid)
+    }, [currentMarket])
 
     return <Chart autoWidth={true} autoHeight={true} options={chartOptions} candlestickSeries={candlestickSeries} />
 }
