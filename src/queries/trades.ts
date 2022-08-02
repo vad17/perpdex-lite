@@ -5,7 +5,7 @@ export const getCandlesQuery = (schemaType: "thegraph" | "subquery") => {
         thegraph: gql`
             query($markets: [String!], $timeFormats: [Int!]) {
                 candles(
-                    first: 100
+                    first: 1000
                     where: { market_in: $markets, timeFormat_in: $timeFormats }
                     orderBy: timestamp
                     orderDirection: desc
@@ -26,7 +26,7 @@ export const getCandlesQuery = (schemaType: "thegraph" | "subquery") => {
         subquery: gql`
             query($markets: [String!], $timeFormats: [Int!]) {
                 candles(
-                    first: 100
+                    first: 1000
                     filter: { market: { in: $markets }, timeFormat: { in: $timeFormats } }
                     orderBy: [TIMESTAMP_DESC]
                 ) {
@@ -87,7 +87,7 @@ export const getPositionChangedsQuery = (schemaType: "thegraph" | "subquery") =>
     return {
         thegraph: gql`
             query($markets: [String!]) {
-                positionChangeds(first: 100, where: { market_in: $markets }) {
+                positionChangeds(first: 10, where: { market_in: $markets }, orderBy: timestamp, orderDirection: desc) {
                     id
                     exchange
                     trader
@@ -109,7 +109,7 @@ export const getPositionChangedsQuery = (schemaType: "thegraph" | "subquery") =>
         `,
         subquery: gql`
             query($markets: [String!]) {
-                positionChangeds(first: 100, filter: { market: { in: $markets } }) {
+                positionChangeds(first: 10, filter: { market: { in: $markets } }, orderBy: [TIMESTAMP_DESC]) {
                     nodes {
                         id
                         exchange
@@ -138,7 +138,12 @@ export const getPositionChangedsByTraderQuery = (schemaType: "thegraph" | "subqu
     return {
         thegraph: gql`
             query($markets: [String!], $traders: [String!]) {
-                positionChangeds(first: 100, where: { market_in: $markets, trader_in: $traders }) {
+                positionChangeds(
+                    first: 100
+                    where: { market_in: $markets, trader_in: $traders }
+                    orderBy: timestamp
+                    orderDirection: desc
+                ) {
                     id
                     exchange
                     trader
@@ -160,7 +165,11 @@ export const getPositionChangedsByTraderQuery = (schemaType: "thegraph" | "subqu
         `,
         subquery: gql`
             query($markets: [String!], $traders: [String!]) {
-                positionChangeds(first: 100, filter: { market: { in: $markets }, trader: { in: $traders } }) {
+                positionChangeds(
+                    first: 50
+                    filter: { market: { in: $markets }, trader: { in: $traders } }
+                    orderBy: [TIMESTAMP_DESC]
+                ) {
                     nodes {
                         id
                         exchange
