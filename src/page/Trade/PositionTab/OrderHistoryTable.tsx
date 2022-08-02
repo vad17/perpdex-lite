@@ -1,7 +1,7 @@
 import { chakra, Table, Thead, Tr, Th, Tbody, Td } from "@chakra-ui/react"
 import { PerpdexMarketContainer } from "../../../container/connection/perpdexMarketContainer"
 import { getPositionChangedsByTraderQuery } from "../../../queries/trades"
-import React, { useMemo } from "react"
+import React, { useEffect, useMemo } from "react"
 import { cleanUpOrderHistories } from "../../../util/chart"
 import { Connection } from "../../../container/connection"
 import { OrderHistoryUnit } from "../../../constant/types"
@@ -20,6 +20,17 @@ function OrderHistoryTable() {
             traders: [account, account?.toLowerCase()],
         },
     })
+
+    useEffect(() => {
+        const iid = setInterval(() => {
+            positionChangedsResult.refetch({
+                markets: [currentMarket, currentMarket.toLowerCase()],
+                traders: [account, account?.toLowerCase()],
+            })
+        }, 5000)
+
+        return () => clearInterval(iid)
+    }, [account, currentMarket])
 
     const data = useMemo(() => {
         if (positionChangedsResult.loading || positionChangedsResult.error) return []

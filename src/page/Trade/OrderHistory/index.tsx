@@ -1,4 +1,4 @@
-import React, { useMemo } from "react"
+import React, { useEffect, useMemo } from "react"
 import { Box } from "@chakra-ui/react"
 import OrderHistoryTable from "../../../component/tables/OrderHistoryTable"
 import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
@@ -7,20 +7,10 @@ import { cleanUpOrderHistories } from "util/chart"
 import _ from "lodash"
 import { useThegraphQuery } from "../../../hook/useThegraphQuery"
 import { Connection } from "../../../container/connection"
-import { useContractEvent } from "hook/useContractEvent"
-import { PerpdexExchangeContainer } from "container/connection/perpdexExchangeContainer"
 
 function OrderHistory() {
     const { chainId } = Connection.useContainer()
     const { currentMarket, currentMarketState } = PerpdexMarketContainer.useContainer()
-    const { exchangeContract } = PerpdexExchangeContainer.useContainer()
-
-    useContractEvent(exchangeContract, "PositionChanged", () => {
-        setTimeout(() => {
-            console.log("Received PositionChanged event and refetching")
-            positionChangedsResult.refetch({ markets: [currentMarket, currentMarket.toLowerCase()] })
-        }, 5000) // this value shoudl be optimized
-    })
 
     const positionChangedsResult = useThegraphQuery(chainId, getPositionChangedsQuery, {
         variables: { markets: [currentMarket, currentMarket.toLowerCase()] },
@@ -35,6 +25,14 @@ function OrderHistory() {
         positionChangedsResult.error,
         currentMarketState.inverse,
     ])
+
+    useEffect(() => {
+        const iid = setInterval(() => {
+            positionChangedsResult.refetch({ markets: [currentMarket, currentMarket.toLowerCase()] })
+        }, 5000)
+
+        return () => clearInterval(iid)
+    }, [currentMarket])
 
     return (
         <Box
