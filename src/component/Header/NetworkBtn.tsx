@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useCallback } from "react"
 import {
     Box,
     Center,
@@ -12,21 +12,57 @@ import {
 import { TriangleDownIcon } from "@chakra-ui/icons"
 import Button from "component/base/Button"
 import { CurrencyIcon } from "component/Icon"
-import { networkConfigs } from "constant/network"
+import { networkConfigs, networks } from "constant/network"
 import { Connection } from "container/connection"
+import { useWeb3React } from "@web3-react/core"
+import _ from "lodash"
 
 function NetworkBtn() {
-    const { chainId } = Connection.useContainer()
+    const { chainId, active } = Connection.useContainer()
+
+    const { library } = useWeb3React()
+
+    const handleOnClick = useCallback(
+        async (chainId: string) => {
+            try {
+                if (!library.provider) console.error("error")
+                await library.provider.request({
+                    method: "wallet_switchEthereumChain",
+                    params: [{ chainId: networks[chainId].chainId }],
+                })
+            } catch (err: any) {
+                // 4902 error code indicates the chain is missing on the wallet
+                if (err.code === 4902) {
+                    try {
+                        await library.provider.request({
+                            method: "wallet_addEthereumChain",
+                            params: [{ ...networks[chainId] }],
+                        })
+                    } catch (error) {
+                        console.error(error)
+                    }
+                }
+            }
+        },
+        [library],
+    )
+
     return (
         <Popover trigger="hover" isLazy>
             <PopoverTrigger>
                 <Center pl="4" _hover={{ opacity: "0.9", cursor: "pointer" }}>
                     <Button
-                        text={chainId ? networkConfigs[chainId].name : "TEST"}
+                        text={
+                            !active
+                                ? "Not connected"
+                                : chainId && _.keys(networkConfigs).includes(String(chainId))
+                                ? networkConfigs[chainId].name
+                                : "Unsupported Chain"
+                        }
                         customType="base-dark"
                         size="sm"
                         leftIcon={
-                            chainId ? (
+                            chainId && _.keys(networkConfigs).includes(String(chainId)) ? (
                                 <CurrencyIcon symbol={networkConfigs[chainId].nativeTokenSymbol} boxSize={6} />
                             ) : undefined
                         }
@@ -39,13 +75,16 @@ function NetworkBtn() {
                 <PopoverHeader borderBottom="0px none">Select a network</PopoverHeader>
                 <PopoverBody>
                     <Box>
-                        {Object.keys(networkConfigs).map(key => (
+                        {_.keys(networkConfigs).map(key => (
                             <HStack
                                 p={2}
                                 mb={2}
                                 borderRadius="10px"
                                 _hover={{ cursor: "pointer" }}
                                 backgroundColor={chainId && chainId === Number(key) ? "#050217" : "#181B41"}
+                                onClick={() => {
+                                    handleOnClick(key)
+                                }}
                             >
                                 <CurrencyIcon symbol={networkConfigs[key].nativeTokenSymbol} boxSize={6} />
                                 <Box>{networkConfigs[key].name}</Box>
