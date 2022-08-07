@@ -146,4 +146,11 @@ export const networks: { [key: string]: AddEthereumChainParameter } = IS_MAINNET
               nativeCurrency: { name: "MATIC", symbol: "MATIC", decimals: 18 },
               blockExplorerUrls: ["https://mumbai.polygonscan.com"],
           },
+          421611: {
+              chainId: `0x${Number(421611).toString(16)}`,
+              chainName: "Arbitrum Rinkeby",
+              nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
+              rpcUrls: ["https://rinkeby.arbitrum.io/rpc"],
+              blockExplorerUrls: ["https://testnet.arbiscan.io/"],
+          },
       }
