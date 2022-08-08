@@ -49,7 +49,7 @@ function NetworkBtn() {
     )
 
     return (
-        <Popover trigger="hover" isLazy>
+        <Popover trigger="hover">
             <PopoverTrigger>
                 <Center pl="4" _hover={{ opacity: "0.9", cursor: "pointer" }}>
                     <Button
