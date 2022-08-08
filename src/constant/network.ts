@@ -1,4 +1,7 @@
 import { IS_MAINNET } from "./stage"
+import arbitrumLogoUrl from "asset/arbitrum_logo.svg"
+import optimismLogoUrl from "asset/optimism_logo.svg"
+import polygonLogoUrl from "asset/polygon_logo.svg"
 
 const { REACT_APP_INFURA_PROJECT_ID } = process.env
 
@@ -9,6 +12,7 @@ interface NetworkConfig {
     etherscanUrl: string
     thegraphEndpoint: string
     thegraphSchemaType: "" | "thegraph" | "subquery"
+    iconUrl?: string
 }
 
 // TODO: set thegraphEndpoint
@@ -48,6 +52,7 @@ export const networkConfigs: { [key: string]: NetworkConfig } = IS_MAINNET
               etherscanUrl: "https://kovan-optimistic.etherscan.io/",
               thegraphEndpoint: "",
               thegraphSchemaType: "",
+              iconUrl: optimismLogoUrl,
           },
           81: {
               name: "Shibuya",
@@ -72,6 +77,7 @@ export const networkConfigs: { [key: string]: NetworkConfig } = IS_MAINNET
               etherscanUrl: "https://mumbai.polygonscan.com/",
               thegraphEndpoint: "",
               thegraphSchemaType: "",
+              iconUrl: polygonLogoUrl,
           },
           421611: {
               name: "Arbitrum Rinkeby",
@@ -80,6 +86,7 @@ export const networkConfigs: { [key: string]: NetworkConfig } = IS_MAINNET
               etherscanUrl: "https://testnet.arbiscan.io/",
               thegraphEndpoint: "",
               thegraphSchemaType: "",
+              iconUrl: arbitrumLogoUrl,
           },
       }
 
@@ -121,6 +128,13 @@ export const networks: { [key: string]: AddEthereumChainParameter } = IS_MAINNET
               nativeCurrency: { name: "Rinkeby Ether", symbol: "ETH", decimals: 18 },
               blockExplorerUrls: ["https://rinkeby.etherscan.io"],
           },
+          69: {
+              chainId: `0x${Number(69).toString(16)}`,
+              chainName: "Optimism Kovan",
+              rpcUrls: ["https://kovan.optimism.io/"],
+              nativeCurrency: { name: "Kovan Ether", symbol: "ETH", decimals: 18 },
+              blockExplorerUrls: ["https://kovan-optimistic.etherscan.io"],
+          },
           81: {
               chainId: `0x${Number(81).toString(16)}`,
               chainName: "Shibuya",
@@ -149,7 +163,7 @@ export const networks: { [key: string]: AddEthereumChainParameter } = IS_MAINNET
           421611: {
               chainId: `0x${Number(421611).toString(16)}`,
               chainName: "Arbitrum Rinkeby",
-              nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
+              nativeCurrency: { name: "Arbitrum Rinkeby Ether", symbol: "ETH", decimals: 18 },
               rpcUrls: ["https://rinkeby.arbitrum.io/rpc"],
               blockExplorerUrls: ["https://testnet.arbiscan.io/"],
           },
