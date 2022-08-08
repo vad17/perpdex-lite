@@ -3,6 +3,7 @@ import {
     Box,
     Center,
     HStack,
+    Image,
     Popover,
     PopoverBody,
     PopoverContent,
@@ -63,7 +64,11 @@ function NetworkBtn() {
                         size="sm"
                         leftIcon={
                             chainId && _.keys(networkConfigs).includes(String(chainId)) ? (
-                                <CurrencyIcon symbol={networkConfigs[chainId].nativeTokenSymbol} boxSize={6} />
+                                networkConfigs[chainId].iconUrl ? (
+                                    <Image src={networkConfigs[chainId].iconUrl} boxSize={5} />
+                                ) : (
+                                    <CurrencyIcon symbol={networkConfigs[chainId].nativeTokenSymbol} boxSize={5} />
+                                )
                             ) : undefined
                         }
                         rightIcon={<TriangleDownIcon boxSize={4} />}
@@ -86,7 +91,11 @@ function NetworkBtn() {
                                     handleOnClick(key)
                                 }}
                             >
-                                <CurrencyIcon symbol={networkConfigs[key].nativeTokenSymbol} boxSize={6} />
+                                {networkConfigs[key].iconUrl ? (
+                                    <Image src={networkConfigs[key].iconUrl} boxSize={5} />
+                                ) : (
+                                    <CurrencyIcon symbol={networkConfigs[key].nativeTokenSymbol} boxSize={5} />
+                                )}
                                 <Box>{networkConfigs[key].name}</Box>
                             </HStack>
                         ))}
