@@ -113,7 +113,7 @@ export const createGetBars = (apolloClient: any, marketAddress: string, inverse:
                     }
                 }
             })
-            .catch(err => {
+            .catch((err: any) => {
                 console.log("@@@@ callSubquery errors")
                 console.log({ err })
                 onErrorCallback(err)

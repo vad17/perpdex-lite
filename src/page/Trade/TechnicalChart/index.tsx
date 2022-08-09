@@ -1,4 +1,4 @@
-import React, { useMemo } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import { ApolloClient, InMemoryCache } from "@apollo/client"
 import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
 import { createGetBars } from "util/chart"
@@ -6,14 +6,9 @@ import { Connection } from "container/connection"
 import { networkConfigs } from "constant/network"
 import { isTechnicalChart } from "constant/config"
 
-let perpdexTradingViewModule: any
-
-if (isTechnicalChart) {
-    perpdexTradingViewModule = require("perpdex-tradingview")
-}
-
 function TechnicalChart() {
     const { currentMarketState, marketStates } = PerpdexMarketContainer.useContainer()
+    const [perpdexTradingViewModule, setPerpdexTradingViewModule] = useState<any>(undefined)
 
     const { chainId } = Connection.useContainer()
     const apolloClient = useMemo(
@@ -62,6 +57,16 @@ function TechnicalChart() {
         currentMarketState.quoteSymbol,
         isMarketReady,
     ])
+
+    useEffect(() => {
+        ;(async () => {
+            if (isTechnicalChart) {
+                const moduleName = "perpdex-tradingview"
+                const module = await import(moduleName)
+                setPerpdexTradingViewModule(module)
+            }
+        })()
+    }, [])
 
     if (perpdexTradingViewModule && inputMarketState && getBars) {
         const PerpdexTradingView = perpdexTradingViewModule.default
