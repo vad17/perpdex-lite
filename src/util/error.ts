@@ -50,13 +50,20 @@ export class AmmError extends Error {
 }
 
 export function getReason(exception: any) {
-    const message = exception?.error?.data?.message || exception?.data?.message || exception?.message || ""
-    return message.replace(/.*revert /, "")
+    const message =
+        exception?.error?.data?.data?.message ||
+        exception?.error?.data?.message ||
+        exception?.data?.message ||
+        exception?.reason ||
+        exception?.message ||
+        ""
+    return message.replace(/.*revert(ed)?:?\s*/, "")
 }
 
 export function getErrorMessageFromReason(reason: string) {
     return (
         {
+            "PL_SD: output is zero": "Output is zero",
             "PM_S: too large amount": "Too large amount",
             "TL_VS: too large opposite amount": "Too large slippage",
             "TL_VS: too small opposite amount": "Too large slippage",

@@ -14,13 +14,16 @@ export function cleanUpChartInputData(candlesData: any, inverse: boolean) {
         return x96ToBig(BigNumber.from(x96), inverse).toNumber()
     }
 
-    const inputData = candlesData.candles.nodes.map((d: any) => ({
-        time: normalizeToUnixtime(Number(d.timestamp)),
-        open: x96ToNumber(d.openX96),
-        high: x96ToNumber(d.highX96),
-        low: x96ToNumber(d.lowX96),
-        close: x96ToNumber(d.closeX96),
-    }))
+    const inputData = _.sortBy(
+        candlesData.candles.map((d: any) => ({
+            time: normalizeToUnixtime(Number(d.timestamp)),
+            open: x96ToNumber(d.openX96),
+            high: x96ToNumber(d.highX96),
+            low: x96ToNumber(d.lowX96),
+            close: x96ToNumber(d.closeX96),
+        })),
+        (data: any) => data.time,
+    )
 
     // Make it easy to understand
     for (let i = 1; i < inputData.length; i++) {
@@ -36,9 +39,9 @@ export function cleanUpChartInputData(candlesData: any, inverse: boolean) {
 }
 
 export function cleanUpOrderHistories(queryResponse: any, inverse: boolean) {
-    if (!queryResponse || !queryResponse.positionChangeds.nodes) return
+    if (!queryResponse || !queryResponse.positionChangeds) return
 
-    const positionHistories = queryResponse.positionChangeds.nodes
+    const positionHistories = queryResponse.positionChangeds
 
     const histories: OrderHistoryUnit[] = positionHistories.map((history: any) => {
         console.log("each history", history)
