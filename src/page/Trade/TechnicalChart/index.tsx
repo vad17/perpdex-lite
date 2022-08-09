@@ -1,4 +1,5 @@
 import React, { useMemo } from "react"
+import { ApolloClient, InMemoryCache } from "@apollo/client"
 import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
 import { createGetBars } from "util/chart"
 import { Connection } from "container/connection"
@@ -16,18 +17,27 @@ function TechnicalChart() {
     const { currentMarketState, marketStates } = PerpdexMarketContainer.useContainer()
 
     const { chainId } = Connection.useContainer()
-    const graphUri = networkConfigs[chainId || 81].thegraphEndpoint
-
-    const isMarketReady = useMemo(
-        () => graphUri && graphUri !== "" && currentMarketState && marketStates && Object.keys(marketStates).length > 0,
-        [currentMarketState, graphUri, marketStates],
+    const apolloClient = useMemo(
+        () =>
+            new ApolloClient({
+                uri: networkConfigs[chainId || 81].thegraphEndpoint,
+                cache: new InMemoryCache(),
+            }),
+        [chainId],
     )
 
-    const getBars = useMemo(() => (isMarketReady ? createGetBars(graphUri, currentMarketState) : undefined), [
-        graphUri,
-        isMarketReady,
-        currentMarketState,
-    ])
+    const isMarketReady = useMemo(
+        () => chainId && apolloClient && currentMarketState && marketStates && Object.keys(marketStates).length > 0,
+        [apolloClient, chainId, currentMarketState, marketStates],
+    )
+
+    const getBars = useMemo(
+        () =>
+            isMarketReady
+                ? createGetBars(apolloClient, currentMarketState.address, currentMarketState.inverse)
+                : undefined,
+        [isMarketReady, apolloClient, currentMarketState.address, currentMarketState.inverse],
+    )
 
     const inputMarketState = useMemo(() => {
         if (isMarketReady) {
@@ -59,7 +69,7 @@ function TechnicalChart() {
         return <PerpdexTradingView marketState={inputMarketState} getBars={getBars} />
     }
 
-    return <div className="TVChartContainer">Loading...</div>
+    return <div className="tv_chart_loading">Loading...</div>
 }
 
 export default TechnicalChart

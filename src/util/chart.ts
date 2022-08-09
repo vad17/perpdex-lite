@@ -1,11 +1,11 @@
-import { ChartBar, MarketState, OrderHistoryUnit } from "constant/types"
+import { ChartBar, OrderHistoryUnit } from "constant/types"
 import { BigNumber } from "ethers"
 import { bigNum2Big, x96ToBig } from "./format"
 import { normalizeToUnixtime } from "./time"
 import _ from "lodash"
-import axios from "axios"
 import Big from "big.js"
-import { candlesQueryString } from "queries/trades"
+import { getCandlesQuery } from "queries/trades"
+import moment from "moment"
 
 export function cleanUpChartInputData(candlesData: any, inverse: boolean) {
     if (!candlesData) return
@@ -15,12 +15,13 @@ export function cleanUpChartInputData(candlesData: any, inverse: boolean) {
     }
 
     const inputData = _.sortBy(
-        candlesData.candles.map((d: any) => ({
+        candlesData.map((d: any) => ({
             time: normalizeToUnixtime(Number(d.timestamp)),
             open: x96ToNumber(d.openX96),
             high: x96ToNumber(d.highX96),
             low: x96ToNumber(d.lowX96),
             close: x96ToNumber(d.closeX96),
+            volume: 0,
         })),
         (data: any) => data.time,
     )
@@ -44,8 +45,6 @@ export function cleanUpOrderHistories(queryResponse: any, inverse: boolean) {
     const positionHistories = queryResponse.positionChangeds
 
     const histories: OrderHistoryUnit[] = positionHistories.map((history: any) => {
-        console.log("each history", history)
-
         const base = BigNumber.from(history.base)
         // const quote = BigNumber.from(history.quote)
 
@@ -74,24 +73,7 @@ export function cleanUpOrderHistories(queryResponse: any, inverse: boolean) {
     return _.sortBy(histories, (data: any) => -data.time)
 }
 
-export const callSubquery = async (uri: string, query: string, variables?: any) => {
-    const headers = {
-        "content-type": "application/json",
-    }
-
-    const graphqlQuery = {
-        query,
-        variables,
-    }
-
-    const response = await axios.post(uri, graphqlQuery, {
-        headers,
-    })
-
-    return response.data.data
-}
-
-export const createGetBars = (uri: string, currentMarketState: MarketState) => {
+export const createGetBars = (apolloClient: any, marketAddress: string, inverse: boolean) => {
     const getBars = (
         symbolInfo: any,
         resolution: string,
@@ -99,22 +81,40 @@ export const createGetBars = (uri: string, currentMarketState: MarketState) => {
         onHistoryCallback: (bars: ChartBar[], meta: any) => void,
         onErrorCallback: (err: any) => void,
     ) => {
-        return callSubquery(uri, candlesQueryString, {
-            markets: [currentMarketState.address],
-            timeFormats: [60 * 60],
-        })
-            .then(data => {
-                if (data) {
-                    const bars = cleanUpChartInputData(data, currentMarketState.inverse)
+        /**
+         * FIX: the number of periodParams.countBack is required to feed bars via onHistoryCallback()
+         * getBars will be called until the data feeded
+         *
+         * https://github.com/tradingview/charting_library/wiki/JS-Api#getbarssymbolinfo-resolution-periodparams-onhistorycallback-onerrorcallback
+         * It is recommended to consider the priority of countBack higher than the priority of from, i.e. you must return data in the range [from, to), but the number of bars should not be less than countBack. If the number of bars is less than countBack, the chart will call getBars again.
+         */
+        console.log("@@@@ calling periodParams!", periodParams)
+
+        return apolloClient
+            .query({
+                query: getCandlesQuery("subquery"),
+                variables: {
+                    markets: [marketAddress, marketAddress.toLowerCase()],
+                    timeFormats: [60 * 60],
+                },
+            })
+            .then((data: any) => {
+                if (data && data.data?.candles?.nodes) {
+                    const candles = data.data.candles.nodes
+                    console.log("candles", candles)
+                    const bars = cleanUpChartInputData(candles, inverse)
 
                     if (bars && bars.length > 0) {
-                        onHistoryCallback(bars, { noData: false })
+                        console.log("getBars calling ", bars)
+                        // onHistoryCallback(bars, { noData: false })
                     } else {
-                        onHistoryCallback([], { noData: true })
+                        const nextTime = moment().add(1, "minutes").unix()
+                        onHistoryCallback([], { noData: true, nextTime })
                     }
                 }
             })
             .catch(err => {
+                console.log("@@@@ callSubquery errors")
                 console.log({ err })
                 onErrorCallback(err)
             })

@@ -48,29 +48,6 @@ export const getCandlesQuery = (schemaType: "thegraph" | "subquery") => {
     }[schemaType]
 }
 
-export const candlesQueryString = `
-    query($markets: [String!], $timeFormats: [Int!]) {
-        candles(
-            first: 100
-            filter: { market: { in: $markets }, timeFormat: { in: $timeFormats } }
-            orderBy: [MARKET_ASC, TIMESTAMP_ASC]
-        ) {
-            nodes {
-                id
-                market
-                timeFormat
-                timestamp
-                openX96
-                highX96
-                lowX96
-                closeX96
-                baseAmount
-                quoteAmount
-            }
-        }
-    }
-`
-
 export const candles = `
   query {
     candles(first: 100) {
