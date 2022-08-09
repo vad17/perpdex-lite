@@ -5,9 +5,8 @@ import { createGetBars } from "util/chart"
 import { Connection } from "container/connection"
 import { networkConfigs } from "constant/network"
 import { isTechnicalChart } from "constant/config"
-import * as PerpdexTradingView from "perpdex-tradingview"
 
-let perpdexTradingViewModule: typeof PerpdexTradingView
+let perpdexTradingViewModule: any
 
 if (isTechnicalChart) {
     perpdexTradingViewModule = require("perpdex-tradingview")
