@@ -3,6 +3,7 @@ import { Link } from "react-router-dom"
 import { Flex, Spacer, Button, HStack, Center, Heading } from "@chakra-ui/react"
 import { Logo } from "../Icon"
 import ConnectBtn from "./ConnectBtn"
+import NetworkBtn from "./NetworkBtn"
 
 function Header() {
     return (
@@ -39,6 +40,7 @@ function Header() {
                 </HStack>
             </Center>
             <Spacer />
+            <NetworkBtn />
             <ConnectBtn />
         </Flex>
     )
