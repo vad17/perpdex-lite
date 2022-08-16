@@ -5,7 +5,7 @@ import { bigNum2Big, x96ToBig } from "util/format"
 import { contractConfigs } from "constant/contract"
 import { networkConfigs } from "constant/network"
 import _ from "lodash"
-import { constants } from "ethers"
+import { BigNumber, constants } from "ethers"
 import { MarketState } from "constant/types"
 import Big from "big.js"
 import { usePageVisibility } from "react-page-visibility"
@@ -17,8 +17,8 @@ import {
 } from "../contractFactory"
 import { useInterval } from "../../../hook/useInterval"
 import produce from "immer"
-import { useQuery } from "@apollo/client"
 import { getCandlesQuery } from "../../../queries/trades"
+import { useThegraphQuery } from "../../../hook/useThegraphQuery"
 
 const nullMarketState: MarketState = {
     address: constants.AddressZero,
@@ -63,9 +63,9 @@ function usePerpdexMarketContainer() {
         return marketStates[currentMarket] || nullMarketState
     }, [marketStates, currentMarket])
 
-    const candleResult = useQuery(getCandlesQuery, {
+    const candleResult = useThegraphQuery(chainId, getCandlesQuery, {
         variables: {
-            markets: _.keys(marketStates),
+            markets: _.flatten([_.keys(marketStates), _.map(_.keys(marketStates), key => key.toLowerCase())]),
             timeFormats: [24 * 60 * 60],
         },
     })
@@ -266,18 +266,17 @@ function usePerpdexMarketContainer() {
                         draft[marketAddress].indexPriceBase = indexPriceBase
 
                         // TODO: refactor (It is not good to update irrelevant data at the polling timing of contract)
-                        const nodes = candleResult?.data?.nodes
+                        const nodes = candleResult?.data?.candles
                         if (nodes) {
                             // last of complete candle
-                            const node = _.takeRight(
-                                _.filter(nodes, node => node.market === marketAddress),
-                                2,
-                            )[0]
+                            const node = _.filter(
+                                nodes,
+                                node => node.market.toLowerCase() === marketAddress.toLowerCase(),
+                            )[1]
                             if (node) {
-                                draft[marketAddress].volume24h = Big(node.quoteAmount)
-                                draft[marketAddress].fee24 = draft[marketAddress].volume24h.mul(
-                                    draft[marketAddress].poolFeeRatio,
-                                )
+                                const volume24h = bigNum2Big(BigNumber.from(node.quoteAmount))
+                                draft[marketAddress].volume24h = volume24h
+                                draft[marketAddress].fee24 = volume24h.mul(draft[marketAddress].poolFeeRatio)
                             }
                         }
                     }

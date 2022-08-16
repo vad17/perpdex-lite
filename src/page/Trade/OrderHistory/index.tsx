@@ -4,18 +4,20 @@ import OrderHistoryTable from "../../../component/tables/OrderHistoryTable"
 import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
 import { getPositionChangedsQuery } from "queries/trades"
 import { cleanUpOrderHistories } from "util/chart"
-import { useQuery } from "@apollo/client"
 import _ from "lodash"
+import { useThegraphQuery } from "../../../hook/useThegraphQuery"
+import { Connection } from "../../../container/connection"
 import { User } from "container/connection/user"
 
 function OrderHistory() {
+    const { chainId } = Connection.useContainer()
     const {
         state: { address },
     } = User.useContainer()
     const { currentMarket, currentMarketState } = PerpdexMarketContainer.useContainer()
 
-    const positionChangedsResult = useQuery(getPositionChangedsQuery, {
-        variables: { market: currentMarket },
+    const positionChangedsResult = useThegraphQuery(chainId, getPositionChangedsQuery, {
+        variables: { markets: [currentMarket, currentMarket.toLowerCase()] },
     })
 
     const orderHistories = useMemo(() => {

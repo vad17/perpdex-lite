@@ -1,6 +1,5 @@
 import { chakra, Table, Thead, Tr, Th, Tbody, Td, Center, CircularProgress } from "@chakra-ui/react"
 import { PerpdexMarketContainer } from "../../../container/connection/perpdexMarketContainer"
-import { useQuery } from "@apollo/client"
 import { getPositionChangedsByTraderQuery } from "../../../queries/trades"
 import React, { useMemo } from "react"
 import { cleanUpOrderHistories } from "../../../util/chart"
@@ -8,20 +7,21 @@ import { Connection } from "../../../container/connection"
 import { OrderHistoryUnit } from "../../../constant/types"
 import { formattedNumberWithCommas } from "../../../util/format"
 import { formatTime, timezoneStr } from "../../../util/time"
+import { useThegraphQuery } from "../../../hook/useThegraphQuery"
 import { User } from "container/connection/user"
 
 function OrderHistoryTable() {
-    const { account } = Connection.useContainer()
+    const { account, chainId } = Connection.useContainer()
     const {
         state: { address },
     } = User.useContainer()
     const { currentMarket, currentMarketState } = PerpdexMarketContainer.useContainer()
     const marketName = currentMarketState.name
 
-    const positionChangedsResult = useQuery(getPositionChangedsByTraderQuery, {
+    const positionChangedsResult = useThegraphQuery(chainId, getPositionChangedsByTraderQuery, {
         variables: {
-            market: currentMarket,
-            trader: account,
+            markets: [currentMarket, currentMarket.toLowerCase()],
+            traders: [account, account?.toLowerCase()],
         },
     })
 
