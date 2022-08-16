@@ -39,8 +39,7 @@ function AccountPanel(props: Props) {
                                 <Text fontSize="xs">Total Account Value</Text>
                                 <HStack w="100%" justifyContent="start">
                                     <Text as="span" fontSize="xl" fontWeight="bold">
-                                        {formattedNumberWithCommas(totalAccountValue)}
-                                        {quoteSymbol}
+                                        {formattedNumberWithCommas(totalAccountValue)} {quoteSymbol}
                                     </Text>
                                     <Text as="span" fontSize="xl" marginLeft={2}>
                                         (${formattedNumberWithCommas(totalAccountValueUsd)})
@@ -54,8 +53,7 @@ function AccountPanel(props: Props) {
                                     <Text fontSize="xs">Collateral</Text>
                                     <HStack w="100%" justifyContent="start">
                                         <Text as="span" fontSize="xl" fontWeight="bold">
-                                            {formattedNumberWithCommas(collateralBalance)}
-                                            {quoteSymbol}
+                                            {formattedNumberWithCommas(collateralBalance)} {quoteSymbol}
                                         </Text>
                                         <Text as="span" fontSize="xl" marginLeft={2}>
                                             (${formattedNumberWithCommas(collateralBalanceUsd)})
