@@ -17,6 +17,7 @@ interface PositionTokenHandlerState {
     currentMaxValue?: Big
     doSwitchToMint: (val: boolean) => void
     handleProceed: (val: Big) => void
+    isLoading: boolean
 }
 
 function PositionTokenHandler({
@@ -26,6 +27,7 @@ function PositionTokenHandler({
     currentMaxValue,
     doSwitchToMint,
     handleProceed,
+    isLoading,
 }: PositionTokenHandlerState) {
     const [inputVal, setInputVal] = useState<Big | undefined>(undefined)
 
@@ -37,6 +39,12 @@ function PositionTokenHandler({
     const assetSymbol = useMemo(() => {
         return quoteSymbol && tokenSymbol ? (isMint ? quoteSymbol : tokenSymbol) : ""
     }, [isMint, quoteSymbol, tokenSymbol])
+
+    const isEnabled = useMemo<boolean>(() => {
+        if (!inputVal || inputVal.eq(0)) return false
+        if (currentMaxValue && inputVal.gt(currentMaxValue)) return false
+        return true
+    }, [currentMaxValue, inputVal])
 
     return (
         <>
@@ -70,9 +78,10 @@ function PositionTokenHandler({
                 size="lg"
                 text="Proceed"
                 w="60%"
-                isDisabled={!inputVal || inputVal.eq(0) || (currentMaxValue && inputVal.gt(currentMaxValue))}
+                isDisabled={!isEnabled}
                 onClick={() => inputVal && handleProceed(inputVal)}
                 mb="30px"
+                isLoading={isLoading}
             />
         </>
     )

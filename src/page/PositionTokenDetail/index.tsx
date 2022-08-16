@@ -19,7 +19,7 @@ function PositionTokenDetail() {
     const history = useHistory()
     const [isMint, setIsMint] = useState<boolean>(true)
 
-    const { longTokenStates, deposit, redeem } = PerpdexLongTokenContainer.useContainer()
+    const { longTokenStates, deposit, redeem, isLoading } = PerpdexLongTokenContainer.useContainer()
     const longTokenState = longTokenStates[marketAddress]
     const { marketStates } = PerpdexMarketContainer.useContainer()
     const marketState = marketStates[marketAddress]
@@ -70,6 +70,7 @@ function PositionTokenDetail() {
                         quoteSymbol={longTokenInfo?.assetSymbol}
                         currentMaxValue={isMint ? longTokenInfo?.maxMintRegardingBalance : longTokenInfo?.maxRedeem}
                         handleProceed={handleProceed}
+                        isLoading={isLoading}
                     />
                 </VStack>
                 <VStack flex="50" spacing={10}>

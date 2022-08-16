@@ -51,6 +51,8 @@ function usePerpdexLongTokenContainer() {
         return longTokenStates[currentMarket] || nullLongTokenState
     }, [longTokenStates, currentMarket])
 
+    const [isLoading, setIsLoading] = useState(false)
+
     const fetchData = useCallback(async () => {
         if (!chainId) return
         if (!account) return
@@ -161,13 +163,23 @@ function usePerpdexLongTokenContainer() {
             const contract = createLongTokenContract(state.address, signer)
             const amountBigNum = big2BigNum(amount, state.assetDecimals)
 
+            setIsLoading(true)
             if (state.assetIsWeth) {
-                await contract.depositETH(account, {
-                    value: amountBigNum,
-                })
+                try {
+                    await contract.depositETH(account, {
+                        value: amountBigNum,
+                    })
+                } catch (error) {
+                    console.log(error)
+                }
             } else {
-                await contract.deposit(amountBigNum, account)
+                try {
+                    await contract.deposit(amountBigNum, account)
+                } catch (error) {
+                    console.log(error)
+                }
             }
+            setIsLoading(false)
         },
         [longTokenStates, account, signer],
     )
@@ -182,11 +194,21 @@ function usePerpdexLongTokenContainer() {
                 const contract = createLongTokenContract(state.address, signer)
                 const amountBigNum = big2BigNum(amount)
 
+                setIsLoading(true)
                 if (state.assetIsWeth) {
-                    await contract.redeemETH(amountBigNum, account, account)
+                    try {
+                        await contract.redeemETH(amountBigNum, account, account)
+                    } catch (error) {
+                        console.log(error)
+                    }
                 } else {
-                    await contract.redeem(amountBigNum, account, account)
+                    try {
+                        await contract.redeem(amountBigNum, account, account)
+                    } catch (error) {
+                        console.log(error)
+                    }
                 }
+                setIsLoading(false)
             })()
         },
         [longTokenStates, account, signer],
@@ -200,5 +222,6 @@ function usePerpdexLongTokenContainer() {
         redeem,
         // utils
         currentLongTokenState,
+        isLoading,
     }
 }
