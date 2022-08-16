@@ -89,8 +89,9 @@ function DiscreteInputModifier({
 
                 <Box py={2}>
                     <Stack backgroundColor="whiteAlpha.200" direction="row" spacing={1} align="center">
-                        {discreteValues.map(val => (
+                        {discreteValues.map((val, index) => (
                             <Button
+                                key={index}
                                 customType="rectangle-teal"
                                 text={val.toString() + "%"}
                                 width={76}
@@ -122,8 +123,9 @@ function DiscreteInputModifier({
                 </InputRightElement>
             </NumberInput>
             <ButtonGroup>
-                {discreteValues.map(val => (
+                {discreteValues.map((val, index) => (
                     <Button
+                        key={index}
                         text={val === 100 ? "MAX" : val.toString() + "%"}
                         customType="outline-white"
                         onClick={() => handleDiscreteUpdate(val)}

@@ -82,6 +82,7 @@ function NetworkBtn() {
                     <Box>
                         {_.keys(networkConfigs).map(key => (
                             <HStack
+                                key={key}
                                 p={2}
                                 mb={2}
                                 borderRadius="10px"

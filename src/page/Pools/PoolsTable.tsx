@@ -23,12 +23,12 @@ function PoolsTable({ data, handleOnClick }: PoolsTableState) {
                 </Tr>
             </Thead>
             <Tbody>
-                {data.map(([row, makerInfo]) => {
+                {data.map(([row, makerInfo], index) => {
                     const poolSummary = createPoolSummary(row)
                     const makerPositionInfo = createMakerPositionInfo(row, makerInfo)
 
                     return (
-                        <Tr>
+                        <Tr key={index}>
                             <Td borderBottom={0}>
                                 <HStack>
                                     <CurrencyIcon symbol={"TODO: poolSummary.baseSymbolDisplay"} boxSize={8} />
