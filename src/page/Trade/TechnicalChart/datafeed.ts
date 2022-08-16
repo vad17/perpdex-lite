@@ -1,23 +1,27 @@
 /* eslint-disable unused-imports/no-unused-vars */
-// import { supportedCurrencyForChart } from "constant/market"
-import { IBasicDataFeed, ResolutionString } from "../../../../public/charting_library"
-import { DatafeedConfiguration, IDatafeedChartApi } from "../../../../public/charting_library/datafeed-api"
+// import { IBasicDataFeed, ResolutionString } from "../../../../public/charting_library"
+// import { DatafeedConfiguration, IDatafeedChartApi } from "../../../../public/charting_library/datafeed-api"
 
 const supportedResolutions = ["60", "120", "240", "D", "W"] // "1", "5", "15", "30",
 
-const config: DatafeedConfiguration = {
-    supported_resolutions: supportedResolutions as ResolutionString[],
-    // currency_codes: ["ASTR", "USD", "BTC", "ETH"]
+// const config: DatafeedConfiguration = {
+//     supported_resolutions: supportedResolutions as ResolutionString[],
+//     // currency_codes: ["ASTR", "USD", "BTC", "ETH"]
+// }
+
+const config = {
+    supported_resolutions: supportedResolutions,
 }
 
-export const getDatafeed = (getBars: IDatafeedChartApi["getBars"]): IBasicDataFeed => {
+// export const getDatafeed = (getBars: IDatafeedChartApi["getBars"]): IBasicDataFeed => {
+export const getDatafeed = (getBars: any) => {
     return {
-        onReady: cb => {
+        onReady: (cb: any) => {
             console.log("=====onReady running")
             setTimeout(() => cb(config), 0)
         },
 
-        searchSymbols: (userInput, exchange, symbolType, onResultReadyCallback) => {
+        searchSymbols: (userInput: any, exchange: any, symbolType: any, onResultReadyCallback: any) => {
             console.log("====Search Symbols running")
         },
 
@@ -52,11 +56,17 @@ export const getDatafeed = (getBars: IDatafeedChartApi["getBars"]): IBasicDataFe
 
         getBars,
 
-        subscribeBars: (symbolInfo, resolution, onRealtimeCallback, subscribeUID, onResetCacheNeededCallback) => {
+        subscribeBars: (
+            symbolInfo: any,
+            resolution: any,
+            onRealtimeCallback: any,
+            subscribeUID: any,
+            onResetCacheNeededCallback: any,
+        ) => {
             console.log("=====subscribeBars runnning")
         },
 
-        unsubscribeBars: subscriberUID => {
+        unsubscribeBars: (subscriberUID: any) => {
             console.log("=====unsubscribeBars running")
         },
 

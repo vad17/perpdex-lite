@@ -1,10 +1,10 @@
-import { ResolutionString } from "../../../../public/charting_library/datafeed-api"
+// import { ResolutionString } from "../../../../public/charting_library/datafeed-api"
 
 export const widgetOptions = {
     debug: true,
     symbol: "Perpdex:BTC/USD", // FIX
     datafeed: undefined, // Datafeed
-    interval: "60" as ResolutionString, // FIX
+    interval: "60" as any, // ResolutionString,
     container: "tv_chart_container",
     library_path: "/charting_library/",
     locale: "en",

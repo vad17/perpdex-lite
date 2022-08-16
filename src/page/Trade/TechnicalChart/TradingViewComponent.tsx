@@ -1,6 +1,6 @@
 import React from "react"
 import { widgetOptions } from "./widgetOptions"
-import { ChartingLibraryWidgetOptions } from "../../../../public/charting_library/charting_library"
+// import { ChartingLibraryWidgetOptions } from "../../../../public/charting_library/charting_library"
 import { getDatafeed } from "./datafeed"
 import "./styles.css"
 import { MarketState } from "constant/types"
@@ -31,7 +31,7 @@ const TradingViewComponent = ({ marketState, getBars }: TradingViewComponentProp
                 container: document.getElementById(widgetOptions.container),
                 symbol: marketState.priceUnitDisplay,
                 datafeed: getDatafeed(getBars),
-            } as ChartingLibraryWidgetOptions)
+            } as any)
 
             _widget.onChartReady(() => {
                 _widget.activeChart().setSymbol(`Perpdex:${marketState.priceUnitDisplay}`)
