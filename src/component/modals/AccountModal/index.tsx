@@ -19,6 +19,7 @@ import { PerpdexMarketContainer } from "container/connection/perpdexMarketContai
 import { PerpdexExchangeContainer } from "container/connection/perpdexExchangeContainer"
 import Big from "big.js"
 import Modal from "component/base/Modal"
+import { Transaction } from "container/connection/transaction"
 
 function AccountModal() {
     const {
@@ -30,6 +31,7 @@ function AccountModal() {
 
     const { currentMarketState } = PerpdexMarketContainer.useContainer()
     const { deposit, withdraw, currentMyAccountInfo } = PerpdexExchangeContainer.useContainer()
+    const { isLoading } = Transaction.useContainer()
     const collateralBalance = currentMyAccountInfo?.collateralBalance
     const settlementTokenBalance = currentMyAccountInfo?.settlementTokenBalance
 
@@ -139,6 +141,7 @@ function AccountModal() {
                     customType="base-blue"
                     onClick={handleSubmit}
                     isDisabled={!isEnabled}
+                    isLoading={isLoading}
                     borderRadius="0px"
                 />
             }
