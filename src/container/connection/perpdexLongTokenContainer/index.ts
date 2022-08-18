@@ -56,89 +56,93 @@ function usePerpdexLongTokenContainer() {
         if (!account) return
         if (!multicallNetworkProvider) return
 
-        const markets = _.flatten(_.map(contractConfigs[chainId].exchanges, "markets"))
-        console.log("markets", markets)
+        try {
+            const markets = _.flatten(_.map(contractConfigs[chainId].exchanges, "markets"))
+            console.log("markets", markets)
 
-        const assetRetrieved = _.map(markets, market => {
-            return !!longTokenStates[market.address]?.assetAddress
-        })
+            const assetRetrieved = _.map(markets, market => {
+                return !!longTokenStates[market.address]?.assetAddress
+            })
 
-        const multicallRequest = _.flattenDeep(
-            _.map(markets, market => {
-                const contract = createLongTokenContractMulticall(market.longToken.address)
-                const assetContract = longTokenStates[market.address]?.assetAddress
-                    ? createERC20ContractMulticall(longTokenStates[market.address].assetAddress)
-                    : void 0
+            const multicallRequest = _.flattenDeep(
+                _.map(markets, market => {
+                    const contract = createLongTokenContractMulticall(market.longToken.address)
+                    const assetContract = longTokenStates[market.address]?.assetAddress
+                        ? createERC20ContractMulticall(longTokenStates[market.address].assetAddress)
+                        : void 0
 
-                return [
-                    contract.asset(),
-                    contract.weth(),
-                    contract.symbol(),
-                    contract.name(),
-                    contract.totalSupply(),
-                    contract.totalAssets(),
-                    contract.balanceOf(account),
-                    contract.maxDeposit(account),
-                    contract.maxMint(account),
-                    contract.maxWithdraw(account),
-                    contract.maxRedeem(account),
-                    assetContract ? [assetContract.symbol(), assetContract.decimals()] : [],
-                ]
-            }),
-        )
-        const multicallResult = await multicallNetworkProvider.all(multicallRequest)
+                    return [
+                        contract.asset(),
+                        contract.weth(),
+                        contract.symbol(),
+                        contract.name(),
+                        contract.totalSupply(),
+                        contract.totalAssets(),
+                        contract.balanceOf(account),
+                        contract.maxDeposit(account),
+                        contract.maxMint(account),
+                        contract.maxWithdraw(account),
+                        contract.maxRedeem(account),
+                        assetContract ? [assetContract.symbol(), assetContract.decimals()] : [],
+                    ]
+                }),
+            )
+            const multicallResult = await multicallNetworkProvider.all(multicallRequest)
 
-        setLongTokenStates(
-            produce(draft => {
-                let resultIdx = 0
-                for (let i = 0; i < markets.length; i++) {
-                    const marketAddress = markets[i].address
-                    const [
-                        assetAddress,
-                        wethAddress,
-                        symbol,
-                        name,
-                        totalSupply,
-                        totalAssets,
-                        balanceOf,
-                        maxDeposit,
-                        maxMint,
-                        maxWithdraw,
-                        maxRedeem,
-                    ] = multicallResult.slice(resultIdx, resultIdx + 11)
-                    resultIdx += 11
+            setLongTokenStates(
+                produce(draft => {
+                    let resultIdx = 0
+                    for (let i = 0; i < markets.length; i++) {
+                        const marketAddress = markets[i].address
+                        const [
+                            assetAddress,
+                            wethAddress,
+                            symbol,
+                            name,
+                            totalSupply,
+                            totalAssets,
+                            balanceOf,
+                            maxDeposit,
+                            maxMint,
+                            maxWithdraw,
+                            maxRedeem,
+                        ] = multicallResult.slice(resultIdx, resultIdx + 11)
+                        resultIdx += 11
 
-                    if (!_.has(draft, marketAddress)) {
-                        draft[marketAddress] = {
-                            ...nullLongTokenState,
-                            symbol: symbol,
-                            name: name,
-                            assetAddress: assetAddress,
-                            assetIsWeth: wethAddress !== constants.AddressZero,
-                            address: markets[i].longToken.address,
+                        if (!_.has(draft, marketAddress)) {
+                            draft[marketAddress] = {
+                                ...nullLongTokenState,
+                                symbol: symbol,
+                                name: name,
+                                assetAddress: assetAddress,
+                                assetIsWeth: wethAddress !== constants.AddressZero,
+                                address: markets[i].longToken.address,
+                            }
+                        }
+
+                        const d = draft[marketAddress]
+                        d.totalSupply = bigNum2Big(totalSupply)
+                        d.myShares = bigNum2Big(balanceOf)
+                        d.maxMint = bigNum2Big(maxMint)
+                        d.maxRedeem = bigNum2Big(maxRedeem)
+
+                        if (assetRetrieved[i]) {
+                            const [assetSymbol, assetDecimals] = multicallResult.slice(resultIdx, resultIdx + 2)
+                            resultIdx += 2
+
+                            d.assetSymbol = d.assetIsWeth ? networkConfigs[chainId].nativeTokenSymbol : assetSymbol
+                            d.assetDecimals = assetDecimals
+                            d.totalAssets = bigNum2Big(totalAssets, assetDecimals)
+                            d.myAssets = d.myShares.eq(0) ? Big(0) : d.myShares.mul(d.totalAssets).div(d.totalSupply)
+                            d.maxDeposit = bigNum2Big(maxDeposit, assetDecimals)
+                            d.maxWithdraw = bigNum2Big(maxWithdraw, assetDecimals)
                         }
                     }
-
-                    const d = draft[marketAddress]
-                    d.totalSupply = bigNum2Big(totalSupply)
-                    d.myShares = bigNum2Big(balanceOf)
-                    d.maxMint = bigNum2Big(maxMint)
-                    d.maxRedeem = bigNum2Big(maxRedeem)
-
-                    if (assetRetrieved[i]) {
-                        const [assetSymbol, assetDecimals] = multicallResult.slice(resultIdx, resultIdx + 2)
-                        resultIdx += 2
-
-                        d.assetSymbol = d.assetIsWeth ? networkConfigs[chainId].nativeTokenSymbol : assetSymbol
-                        d.assetDecimals = assetDecimals
-                        d.totalAssets = bigNum2Big(totalAssets, assetDecimals)
-                        d.myAssets = d.myShares.eq(0) ? Big(0) : d.myShares.mul(d.totalAssets).div(d.totalSupply)
-                        d.maxDeposit = bigNum2Big(maxDeposit, assetDecimals)
-                        d.maxWithdraw = bigNum2Big(maxWithdraw, assetDecimals)
-                    }
-                }
-            }),
-        )
+                }),
+            )
+        } catch (err) {
+            console.log(err)
+        }
     }, [account, chainId, longTokenStates, multicallNetworkProvider])
 
     useEffect(() => {

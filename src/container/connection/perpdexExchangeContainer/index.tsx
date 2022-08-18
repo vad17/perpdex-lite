@@ -176,7 +176,7 @@ function usePerpdexExchangeContainer() {
                     settlementTokenMetadataLocal[idx].address === constants.AddressZero
                         ? multicallNetworkProvider.getEthBalance(account)
                         : createERC20ContractMulticall(settlementTokenMetadataLocal[idx].address).balanceOf(account),
-                    contract.accountInfos(account),
+                    contract.getCollateralBalance(account),
                     contract.getTotalAccountValue(account),
                     contract.getTotalPositionNotional(account),
                     _.map(exchange.markets, market => {
@@ -198,7 +198,7 @@ function usePerpdexExchangeContainer() {
                 imRatio,
                 mmRatio,
                 settlementTokenBalance,
-                accountInfo,
+                collateralBalance,
                 totalAccountValueBigNum,
                 totalPositionNotionalBigNum,
             ] = multicallResult.slice(resultIdx, resultIdx + 6)
@@ -235,7 +235,7 @@ function usePerpdexExchangeContainer() {
                         settlementTokenBalance,
                         settlementTokenMetadataLocal[idx].decimals,
                     ),
-                    collateralBalance: bigNum2Big(accountInfo.collateralBalance),
+                    collateralBalance: bigNum2Big(collateralBalance),
                     totalAccountValue: totalAccountValue,
                     leverage: totalAccountValue.eq(0) ? Big(0) : totalPositionNotional.div(totalAccountValue),
                     marginRatio: totalPositionNotional.eq(0) ? Big(0) : totalAccountValue.div(totalPositionNotional),
@@ -247,7 +247,12 @@ function usePerpdexExchangeContainer() {
 
     useEffect(() => {
         ;(async () => {
-            const newExchangeStates = await fetchAll()
+            let newExchangeStates
+            try {
+                newExchangeStates = await fetchAll()
+            } catch (err) {
+                console.log(err)
+            }
             if (!newExchangeStates) return
 
             console.log("newExchangeStates", newExchangeStates)
@@ -427,7 +432,13 @@ function usePerpdexExchangeContainer() {
         if (!isVisible) return
 
         console.log("perpdexExchangeContainer polling")
-        const newExchangeStates = await fetchAll()
+
+        let newExchangeStates
+        try {
+            newExchangeStates = await fetchAll()
+        } catch (err) {
+            console.log(err)
+        }
         if (!newExchangeStates) return
 
         console.log("newExchangeStates", newExchangeStates)
