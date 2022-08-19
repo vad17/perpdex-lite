@@ -2,6 +2,7 @@ import { Web3Provider } from "@ethersproject/providers"
 import { InjectedConnector } from "@web3-react/injected-connector"
 import { NetworkConnector } from "@web3-react/network-connector"
 import { providers } from "ethers"
+import Web3WsProvider from "web3-providers-ws"
 import { isWebsocket } from "util/is"
 import { WalletConnectConnector } from "@web3-react/walletconnect-connector"
 import { networkConfigs } from "../constant/network"
@@ -37,7 +38,21 @@ export function getBaseNetworkLibrary(chainId: number): Web3Provider | undefined
     if (validateSupportedChainId(chainId)) {
         const rpcUrl = RPC_URLS[chainId]
         if (isWebsocket(rpcUrl)) {
-            return (new providers.WebSocketProvider(rpcUrl, chainId) as unknown) as Web3Provider
+            return new providers.Web3Provider(
+                new (Web3WsProvider as any)(rpcUrl, {
+                    clientConfig: {
+                        keepalive: true,
+                        keepaliveInterval: 60000,
+                    },
+                    reconnect: {
+                        auto: true,
+                        delay: 1000,
+                        maxAttempts: 5,
+                        onTimeout: false,
+                    },
+                }),
+                chainId,
+            )
         } else {
             return (new providers.JsonRpcProvider(rpcUrl, chainId) as unknown) as Web3Provider
         }
