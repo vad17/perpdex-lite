@@ -1,7 +1,7 @@
 import { Divider, VStack, Text } from "@chakra-ui/react"
 import Collateral from "./Collateral"
 import Slippage from "./Slippage"
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { Modal as ModalContainer } from "container/modal"
 import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
 import { AddIcon } from "@chakra-ui/icons"
@@ -12,6 +12,8 @@ import { numberWithCommas } from "../../../util/format"
 import { Trade } from "../../../container/perpetual/trade"
 import Modal from "component/base/Modal"
 import Button from "component/base/Button"
+import Big from "big.js"
+import { Transaction } from "container/connection/transaction"
 
 const initialLpCollateral = {
     base: BIG_ZERO,
@@ -24,11 +26,23 @@ function LiquidityProviderModal() {
         actions: { toggleLpModal },
     } = ModalContainer.useContainer()
 
-    const { addLiquidity } = PerpdexExchangeContainer.useContainer()
+    const { addLiquidity, currentMyAccountInfo } = PerpdexExchangeContainer.useContainer()
     const { currentMarketState } = PerpdexMarketContainer.useContainer()
+    const { isLoading } = Transaction.useContainer()
 
     const { slippage } = Trade.useContainer()
     const [collateralValues, setCollateralValues] = useState<LpCollateralState>(initialLpCollateral)
+
+    const quoteSymbol = currentMarketState.quoteSymbol
+    const collateralBalance = currentMyAccountInfo?.collateralBalance || Big(0)
+
+    const isEnabled = useMemo<boolean>(() => {
+        if (!currentMarketState) return false
+        if (!currentMyAccountInfo) return false
+        if (collateralValues.quote.gt(collateralBalance)) return false
+        if (collateralValues.base.eq(0) || collateralValues.quote.eq(0)) return false
+        return true
+    }, [collateralBalance, collateralValues, currentMarketState, currentMyAccountInfo])
 
     const handleAddLiquidity = useCallback(() => {
         const base = collateralValues.base
@@ -62,6 +76,9 @@ function LiquidityProviderModal() {
                         collateralValues={collateralValues}
                         setCollateralValues={setCollateralValues}
                     />
+                    <Text w="100%" align="right" fontSize="sm" color="gray.500">
+                        Balance: {numberWithCommas(collateralBalance)} {quoteSymbol}
+                    </Text>
                     <Divider />
                     <Slippage />
                     <Divider />
@@ -73,6 +90,8 @@ function LiquidityProviderModal() {
                     customType="base-blue"
                     onClick={handleAddLiquidity}
                     leftIcon={<AddIcon />}
+                    isDisabled={!isEnabled}
+                    isLoading={isLoading}
                 />
             }
         />

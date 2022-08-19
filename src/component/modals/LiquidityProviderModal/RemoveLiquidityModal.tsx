@@ -12,6 +12,7 @@ import { INPUT_PRECISION } from "../../../constant"
 import SmallFormLabel from "../../base/SmallFormLabel"
 import Modal from "component/base/Modal"
 import Button from "component/base/Button"
+import { Transaction } from "container/connection/transaction"
 
 function RemoveLiquidityModal() {
     const {
@@ -21,6 +22,7 @@ function RemoveLiquidityModal() {
 
     const { currentMyMakerInfo, removeLiquidity } = PerpdexExchangeContainer.useContainer()
     const { currentMarketState } = PerpdexMarketContainer.useContainer()
+    const { isLoading } = Transaction.useContainer()
 
     const { slippage } = Trade.useContainer()
     const [liquidity, setLiquidity] = useState<string>("0")
@@ -35,6 +37,7 @@ function RemoveLiquidityModal() {
             return false
         }
         if (liq.gt(currentMyMakerInfo.liquidity)) return false
+        if (liq.eq(0)) return false
         return true
     }, [currentMyMakerInfo, liquidity])
 
@@ -94,6 +97,7 @@ function RemoveLiquidityModal() {
                     onClick={handleRemoveLiquidity}
                     leftIcon={<MinusIcon />}
                     isDisabled={!isEnabled}
+                    isLoading={isLoading}
                 />
             }
         />
