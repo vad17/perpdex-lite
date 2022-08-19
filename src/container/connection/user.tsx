@@ -75,9 +75,13 @@ function useUser() {
                     setConnectorId("")
                     dispatch({ type: ACTIONS.LOGIN_FAIL })
                     logger.error(err)
+                    notifyError({
+                        title: "Switch a supported network in Metamask to connect",
+                        position: "top-right",
+                    })
                 })
         },
-        [dispatch, setConnectorId, activate],
+        [dispatch, setConnectorId, activate, notifyError],
     )
 
     const logout = useCallback(() => {
