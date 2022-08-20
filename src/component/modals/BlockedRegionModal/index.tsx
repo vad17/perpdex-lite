@@ -24,7 +24,7 @@ function BlockedRegionModal() {
                 </ModalBody>
                 <ModalFooter justifyContent="flex-start">
                     For details, please see our&nbsp;
-                    <ExternalLink color="blue.500" href="https://docs.perp.fi/library/terms-of-service" isExternal>
+                    <ExternalLink color="blue.500" href="https://perpdex.exchange" isExternal>
                         Terms of Service.
                     </ExternalLink>
                 </ModalFooter>
