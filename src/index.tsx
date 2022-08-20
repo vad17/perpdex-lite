@@ -25,6 +25,7 @@ import { setupSegment } from "./lib/segment"
 import theme from "./theme"
 import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client"
 import { networkConfigs } from "./constant/network"
+import _ from "lodash"
 
 declare global {
     interface Window {
@@ -40,7 +41,7 @@ const ErrorBoundary = createErrorBoundary()
 const MyApolloProvider = (props: any) => {
     const { chainId } = Connection.useContainer()
     const apolloClient = new ApolloClient({
-        uri: networkConfigs[chainId || 81].thegraphEndpoint,
+        uri: networkConfigs[chainId || _.keys(networkConfigs)[0]].thegraphEndpoint,
         cache: new InMemoryCache(),
     })
     return <ApolloProvider client={apolloClient}>{props.children}</ApolloProvider>

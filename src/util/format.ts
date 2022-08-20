@@ -24,6 +24,11 @@ export function x96ToBig(val: BigNumber, isInverse: boolean = false) {
     return bigNum2Big(valBN, outputDecimals)
 }
 
+export function bigToX96(val: Big, isInverse: boolean = false) {
+    const X96 = new Big(2).pow(96)
+    return BigNumber.from(isInverse ? X96.div(val) : val.mul(X96).toFixed(0))
+}
+
 // Big Number to...
 export function bigNum2FixedStr(
     val: BigNumber,

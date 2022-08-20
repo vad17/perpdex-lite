@@ -15,6 +15,7 @@ import UserAgreementModal from "component/modals/UserAgreementModal"
 import AccountPerpdexModal from "component/modals/AccountModal"
 import LiquidityProviderModal from "component/modals/LiquidityProviderModal"
 import RemoveLiquidityModal from "component/modals/LiquidityProviderModal/RemoveLiquidityModal"
+import CancelOrderModal from "./component/modals/CancelOrderModal"
 
 export const App = () => {
     return (
@@ -42,6 +43,7 @@ export const App = () => {
             <RemoveLiquidityModal />
             <WalletListModal />
             <ClosePositionModal />
+            <CancelOrderModal />
             <UserAgreementModal />
             <AccountPerpdexModal />
             {/* NOTE: BlockedRegionModal should be in the last one */}

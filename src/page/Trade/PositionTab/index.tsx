@@ -5,12 +5,15 @@ import { useMemo } from "react"
 import PositionTable, { PositionTableState } from "./PositionTable"
 import { PerpdexMarketContainer } from "../../../container/connection/perpdexMarketContainer"
 import OrderHistoryTable from "./OrderHistoryTable"
+import OrderTable, { OrderTableItem } from "./OrderTable"
+import _ from "lodash"
+import { LimitOrderInfo } from "../../../constant/types"
 
 function PositionTab() {
-    const { currentMyTakerPositions } = PerpdexExchangeContainer.useContainer()
+    const { currentMyTakerPositions, currentMyAskInfos, currentMyBidInfos } = PerpdexExchangeContainer.useContainer()
     const { currentMarketState } = PerpdexMarketContainer.useContainer()
     const {
-        actions: { togglePositionCloseModal },
+        actions: { togglePositionCloseModal, toggleCancelOrderModal },
     } = Modal.useContainer()
 
     const positionTableData: Omit<PositionTableState, "handleOnClick"> | undefined = useMemo(() => {
@@ -29,6 +32,24 @@ function PositionTab() {
         return undefined
     }, [currentMyTakerPositions, currentMarketState])
 
+    const orderItems: OrderTableItem[] = useMemo(() => {
+        const infoToItem = (isBid: boolean, info: LimitOrderInfo, orderId: string): OrderTableItem => {
+            const quantity = info.base
+            return {
+                isBid: currentMarketState.inverse ? !isBid : isBid,
+                quantity: quantity,
+                price: info.price,
+                handleOnClick: () => {
+                    toggleCancelOrderModal(isBid, +orderId)
+                },
+            }
+        }
+        return _.flatten([
+            _.map(currentMyAskInfos, _.partial(infoToItem, false)),
+            _.map(currentMyBidInfos, _.partial(infoToItem, true)),
+        ])
+    }, [currentMarketState.inverse, currentMyAskInfos, currentMyBidInfos])
+
     const StyledTab = chakra(Tab, {
         baseStyle: {
             color: "gray.200",
@@ -40,6 +61,7 @@ function PositionTab() {
         <Tabs variant="unstyled" mb="30px">
             <TabList my={2}>
                 <StyledTab>Positions</StyledTab>
+                <StyledTab>Orders</StyledTab>
                 <StyledTab>Trade History</StyledTab>
             </TabList>
             <Divider borderColor="#627EEA" />
@@ -59,6 +81,9 @@ function PositionTab() {
                             handleOnClick={togglePositionCloseModal}
                         />
                     )}
+                </TabPanel>
+                <TabPanel>
+                    <OrderTable marketState={currentMarketState} items={orderItems} />
                 </TabPanel>
                 <TabPanel>
                     <OrderHistoryTable />

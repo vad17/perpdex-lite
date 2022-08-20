@@ -1,5 +1,5 @@
 import { BIG_NUMBER_ZERO, BIG_BASE_SHARE_DUST, BIG_LIQUIDITY_DUST } from "../../../constant"
-import { big2BigNum, bigNum2Big, bigNum2FixedStr, x96ToBig } from "util/format"
+import { big2BigNum, bigNum2Big, bigNum2FixedStr, bigToX96, x96ToBig } from "util/format"
 import { useCallback, useEffect, useMemo, useState } from "react"
 
 import { Big } from "big.js"
@@ -11,7 +11,15 @@ import { PerpdexMarketContainer } from "../perpdexMarketContainer"
 import { BigNumber, constants } from "ethers"
 import _ from "lodash"
 import { contractConfigs } from "../../../constant/contract"
-import { ExchangeState, MakerInfo, TakerInfo, AccountInfo, PositionState, MarketState } from "../../../constant/types"
+import {
+    ExchangeState,
+    MakerInfo,
+    TakerInfo,
+    AccountInfo,
+    PositionState,
+    MarketState,
+    LimitOrderInfo,
+} from "../../../constant/types"
 import { useInterval } from "../../../hook/useInterval"
 import { usePageVisibility } from "react-page-visibility"
 import {
@@ -105,6 +113,12 @@ function usePerpdexExchangeContainer() {
     const currentMyTakerInfo: TakerInfo | undefined = useMemo(() => {
         return exchangeStates[currentExchange]?.myAccountInfo.takerInfos[currentMarket]
     }, [exchangeStates, currentExchange, currentMarket])
+    const currentMyAskInfos: { [key: string]: LimitOrderInfo } = useMemo(() => {
+        return exchangeStates[currentExchange]?.myAccountInfo.askInfos[currentMarket] || {}
+    }, [exchangeStates, currentExchange, currentMarket])
+    const currentMyBidInfos: { [key: string]: LimitOrderInfo } = useMemo(() => {
+        return exchangeStates[currentExchange]?.myAccountInfo.bidInfos[currentMarket] || {}
+    }, [exchangeStates, currentExchange, currentMarket])
 
     const currentMyTakerPositions: PositionState | undefined = useMemo(() => {
         if (currentMarketState && currentMyTakerInfo) {
@@ -181,8 +195,10 @@ function usePerpdexExchangeContainer() {
                     contract.getTotalPositionNotional(account),
                     _.map(exchange.markets, market => {
                         return [
-                            contract.getTakerInfo(account, market.address),
+                            contract.getTakerInfoLazy(account, market.address),
                             contract.getMakerInfo(account, market.address),
+                            contract.getLimitOrderSummaries(account, market.address, false),
+                            contract.getLimitOrderSummaries(account, market.address, true),
                         ]
                     }),
                 ]
@@ -204,12 +220,17 @@ function usePerpdexExchangeContainer() {
             ] = multicallResult.slice(resultIdx, resultIdx + 6)
             resultIdx += 6
 
-            const takerInfos: { [key: string]: any } = {}
-            const makerInfos: { [key: string]: any } = {}
+            const takerInfos: { [key: string]: TakerInfo } = {}
+            const makerInfos: { [key: string]: MakerInfo } = {}
+            const askInfos: { [key: string]: { [key: string]: LimitOrderInfo } } = {}
+            const bidInfos: { [key: string]: { [key: string]: LimitOrderInfo } } = {}
 
             _.each(exchange.markets, market => {
-                const [takerInfo, makerInfo] = multicallResult.slice(resultIdx, resultIdx + 2)
-                resultIdx += 2
+                const [takerInfo, makerInfo, askSummaries, bidSummaries] = multicallResult.slice(
+                    resultIdx,
+                    resultIdx + 4,
+                )
+                resultIdx += 4
 
                 takerInfos[market.address] = {
                     baseBalanceShare: bigNum2Big(takerInfo.baseBalanceShare),
@@ -220,6 +241,20 @@ function usePerpdexExchangeContainer() {
                     cumBaseSharePerLiquidity: x96ToBig(makerInfo.cumBaseSharePerLiquidityX96),
                     cumQuotePerLiquidity: x96ToBig(makerInfo.cumQuotePerLiquidityX96),
                 }
+
+                const makeLimitOrderInfo = (summaries: any) => {
+                    const result: { [key: string]: LimitOrderInfo } = {}
+                    _.each(summaries, summary => {
+                        const orderId = summary.orderId
+                        result[orderId] = {
+                            base: bigNum2Big(summary.base),
+                            price: x96ToBig(summary.priceX96),
+                        }
+                    })
+                    return result
+                }
+                askInfos[market.address] = makeLimitOrderInfo(askSummaries)
+                bidInfos[market.address] = makeLimitOrderInfo(bidSummaries)
             })
 
             const totalAccountValue = bigNum2Big(totalAccountValueBigNum)
@@ -231,6 +266,8 @@ function usePerpdexExchangeContainer() {
                 myAccountInfo: {
                     takerInfos: takerInfos,
                     makerInfos: makerInfos,
+                    askInfos: askInfos,
+                    bidInfos: bidInfos,
                     settlementTokenBalance: bigNum2Big(
                         settlementTokenBalance,
                         settlementTokenMetadataLocal[idx].decimals,
@@ -363,6 +400,30 @@ function usePerpdexExchangeContainer() {
         [account, currentMarket, perpdexExchange.callStatic],
     )
 
+    const previewCreateLimitOrder = useCallback(
+        async (isBid: boolean, baseAmount: Big, price: Big) => {
+            if (!perpdexExchange || !account || !currentMarketState?.markPrice || currentMarketState?.markPrice.eq(0))
+                return "not prepared"
+
+            const baseShare = baseAmount.div(currentMarketState.baseBalancePerShare)
+
+            try {
+                const results = await perpdexExchange.callStatic.createLimitOrder({
+                    market: currentMarket,
+                    isBid: isBid,
+                    base: big2BigNum(baseShare),
+                    priceX96: bigToX96(price),
+                    deadline: BigNumber.from(2).pow(96),
+                })
+                return results
+            } catch (err) {
+                console.error("Error previewCreateLimitOrder", err)
+                return getErrorMessageFromReason(getReason(err))
+            }
+        },
+        [account, perpdexExchange, currentMarket, currentMarketState?.markPrice, currentMyTakerInfo?.baseBalanceShare],
+    )
+
     useEffect(() => {
         ;(async () => {
             const results = await maxTrade(false)
@@ -418,6 +479,26 @@ function usePerpdexExchangeContainer() {
         [account, contractExecuter, execute, currentMarket, currentMarketState.poolInfo],
     )
 
+    const createLimitOrder = useCallback(
+        (isBid: boolean, baseAmount: Big, price: Big) => {
+            if (contractExecuter && account && currentMarketState && !currentMarketState.baseBalancePerShare.eq(0)) {
+                const baseShare = baseAmount.div(currentMarketState.baseBalancePerShare)
+
+                execute(contractExecuter.createLimitOrder(currentMarket, isBid, big2BigNum(baseShare), bigToX96(price)))
+            }
+        },
+        [account, contractExecuter, execute, currentMarketState, currentMarketState.baseBalancePerShare],
+    )
+
+    const cancelLimitOrder = useCallback(
+        (isBid: boolean, orderId: number) => {
+            if (contractExecuter && account && currentMarket) {
+                execute(contractExecuter.cancelLimitOrder(currentMarket, isBid, orderId))
+            }
+        },
+        [account, contractExecuter, execute, currentMarket],
+    )
+
     const setCollateralBalance = useCallback(
         async (collateralBalance: Big) => {
             if (account && signer && currentExchange) {
@@ -453,15 +534,20 @@ function usePerpdexExchangeContainer() {
         currentMyAccountInfo,
         currentMyMakerInfo,
         currentMyTakerInfo,
+        currentMyAskInfos,
+        currentMyBidInfos,
         currentMyTakerPositions,
         deposit,
         withdraw,
         trade,
         addLiquidity,
         removeLiquidity,
+        createLimitOrder,
+        cancelLimitOrder,
         preview: {
             trade: previewTrade,
             maxTrade: maxTrade,
+            createLimitOrder: previewCreateLimitOrder,
         },
         setCollateralBalance,
     }
