@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from "react"
 import { createContainer } from "unstated-next"
 import { Connection } from "container/connection"
-import { bigNum2Big, x96ToBig } from "util/format"
+import { bigNum2Big, bigToX96, x96ToBig } from "util/format"
 import { contractConfigs } from "constant/contract"
 import { networkConfigs } from "constant/network"
 import _ from "lodash"
@@ -46,6 +46,8 @@ const nullMarketState: MarketState = {
     // thegraph
     volume24h: Big(0),
     fee24h: Big(0),
+    asks: [],
+    bids: [],
 }
 
 export const PerpdexMarketContainer = createContainer(usePerpdexMarketContainer)
@@ -169,6 +171,8 @@ function usePerpdexMarketContainer() {
                         volume24h: Big(0),
                         fee24h: Big(0),
                         poolFeeRatio: bigNum2Big(poolFeeRatio, 6),
+                        asks: [],
+                        bids: [],
                     }
                 }
                 setMarketStates(newMarketStates)
@@ -186,8 +190,15 @@ function usePerpdexMarketContainer() {
         console.log("perpdexMarketContainer polling")
 
         const marketAddresses = _.keys(marketStates)
+        const orderBookCount = 20
+        const priceStepPrec = 3
+        const getPriceStep = (price: Big) => {
+            return Big(10).pow(price.e - priceStepPrec)
+        }
 
         try {
+            const askPrices: { [key: string]: any[] } = {}
+            const bidPrices: { [key: string]: any[] } = {}
             const multicallRequest = _.flattenDeep(
                 _.map(marketAddresses, address => {
                     const contract = createMarketContractMulticall(address)
@@ -199,7 +210,21 @@ function usePerpdexMarketContainer() {
                         marketStates[address].priceFeedBase === constants.AddressZero
                             ? void 0
                             : createPriceFeedContractMulticall(marketStates[address].priceFeedBase)
-                    return [
+
+                    const inverse = marketStates[address].inverse
+                    const baseBalancePerShare = marketStates[address].baseBalancePerShare
+                    const markPriceDisplay = marketStates[address].markPriceDisplay
+                    const priceStep = getPriceStep(markPriceDisplay)
+
+                    const centerPrice = markPriceDisplay.prec(priceStepPrec + 1, Big.roundHalfUp)
+                    askPrices[address] = _.map(_.range(orderBookCount), i => {
+                        return centerPrice.add(priceStep.mul(1 + i))
+                    })
+                    bidPrices[address] = _.map(_.range(orderBookCount), i => {
+                        return centerPrice.sub(priceStep.mul(1 + i))
+                    })
+
+                    return _.flatten([
                         contract.poolInfo(),
                         contract.getMarkPriceX96(),
                         contract.baseBalancePerShareX96(),
@@ -216,13 +241,22 @@ function usePerpdexMarketContainer() {
                         priceFeedBase
                             ? priceFeedBase.getPrice()
                             : multicallNetworkProvider.getEthBalance(constants.AddressZero), // dummy
-                    ]
+                        _.map(askPrices[address], priceDisplay => {
+                            const price = inverse ? Big(1).div(priceDisplay) : priceDisplay
+                            return contract.maxSwapByPrice(inverse, inverse, bigToX96(price.mul(baseBalancePerShare)))
+                        }),
+                        _.map(bidPrices[address], priceDisplay => {
+                            const price = inverse ? Big(1).div(priceDisplay) : priceDisplay
+                            return contract.maxSwapByPrice(!inverse, !inverse, bigToX96(price.mul(baseBalancePerShare)))
+                        }),
+                    ])
                 }),
             )
             const multicallResult = await multicallNetworkProvider.all(multicallRequest)
 
             setMarketStates(
                 produce(draft => {
+                    let idx = 0
                     for (let i = 0; i < marketAddresses.length; i++) {
                         const marketAddress = marketAddresses[i]
                         const [
@@ -234,7 +268,13 @@ function usePerpdexMarketContainer() {
                             priceFeedQuotePrice,
                             priceFeedBaseDecimals,
                             priceFeedBasePrice,
-                        ] = multicallResult.slice(8 * i, 8 * (i + 1))
+                        ] = multicallResult.slice(idx, idx + 8)
+                        idx += 8
+
+                        const asks = multicallResult.slice(idx, idx + orderBookCount)
+                        idx += orderBookCount
+                        const bids = multicallResult.slice(idx, idx + orderBookCount)
+                        idx += orderBookCount
 
                         if (_.has(draft, marketAddress)) {
                             const inverse = draft[marketAddress].inverse
@@ -269,6 +309,37 @@ function usePerpdexMarketContainer() {
                             draft[marketAddress].cumQuotePerLiquidity = x96ToBig(cumDeleveragedPerLiquidityX96[1])
                             draft[marketAddress].indexPriceQuote = indexPriceQuote
                             draft[marketAddress].indexPriceBase = indexPriceBase
+
+                            draft[marketAddress].asks = _.filter(
+                                _.map(asks, (ask, i) => {
+                                    const price = askPrices[marketAddress][i]
+                                    const baseDiff = bigNum2Big(ask.sub(i > 0 ? asks[i - 1] : BigNumber.from(0))).mul(
+                                        x96ToBig(baseBalancePerShareX96),
+                                    )
+
+                                    return {
+                                        base: baseDiff,
+                                        quote: inverse ? baseDiff.div(price) : baseDiff.mul(price),
+                                        priceDisplay: price,
+                                    }
+                                }),
+                                ask => !ask.base.eq(0),
+                            )
+                            draft[marketAddress].bids = _.filter(
+                                _.map(bids, (bid, i) => {
+                                    const price = bidPrices[marketAddress][i]
+                                    const baseDiff = bigNum2Big(bid.sub(i > 0 ? bids[i - 1] : BigNumber.from(0))).mul(
+                                        x96ToBig(baseBalancePerShareX96),
+                                    )
+
+                                    return {
+                                        base: baseDiff,
+                                        quote: inverse ? baseDiff.div(price) : baseDiff.mul(price),
+                                        priceDisplay: price,
+                                    }
+                                }),
+                                bid => !bid.base.eq(0),
+                            )
 
                             // TODO: refactor (It is not good to update irrelevant data at the polling timing of contract)
                             const nodes = candleResult?.data?.candles

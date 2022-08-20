@@ -21,6 +21,12 @@ export interface MarketSummary {
     markPrice: string
 }
 
+export interface OrderBookItem {
+    base: Big
+    quote: Big
+    priceDisplay: Big
+}
+
 export interface MarketState {
     address: string
     exchangeAddress: string
@@ -43,6 +49,8 @@ export interface MarketState {
     // thegraph
     volume24h: Big
     fee24h: Big
+    asks: OrderBookItem[]
+    bids: OrderBookItem[]
 }
 
 export interface MakerInfo {

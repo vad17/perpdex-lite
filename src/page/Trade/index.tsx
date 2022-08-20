@@ -8,6 +8,7 @@ import PositionTab from "./PositionTab"
 import LightWeightChart from "./LightWeightChart"
 import OrderHistory from "./OrderHistory"
 import AccountSummary from "./AccountSummary"
+import OrderBook from "./OrderBook"
 
 function Trade() {
     const [height, setHeight] = useState<number | undefined>(0)
@@ -31,6 +32,7 @@ function Trade() {
                             </Box>
                         </VStack>
                         <OrderHistory />
+                        <OrderBook />
                     </Flex>
                     <Divider
                         borderColor="#627EEA"
