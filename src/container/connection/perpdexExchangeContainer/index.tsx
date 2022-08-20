@@ -181,7 +181,7 @@ function usePerpdexExchangeContainer() {
                     contract.getTotalPositionNotional(account),
                     _.map(exchange.markets, market => {
                         return [
-                            contract.getTakerInfo(account, market.address),
+                            contract.getTakerInfoLazy(account, market.address),
                             contract.getMakerInfo(account, market.address),
                         ]
                     }),
