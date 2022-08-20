@@ -106,9 +106,10 @@ function useTransaction() {
                 resetTxStatus()
                 logger.error(err)
             }
+
+            setIsInitialized(true)
         }
         if (!isInitialized) {
-            setIsInitialized(true)
             if (latestTxData) {
                 setIsLoading(true)
                 checkReceipt(0)
