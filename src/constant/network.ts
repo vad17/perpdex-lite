@@ -84,8 +84,8 @@ export const networkConfigs: { [key: string]: NetworkConfig } = IS_MAINNET
               nativeTokenSymbol: "ETH",
               rpcUrl: "https://rinkeby.arbitrum.io/rpc",
               etherscanUrl: "https://testnet.arbiscan.io/",
-              thegraphEndpoint: "",
-              thegraphSchemaType: "",
+              thegraphEndpoint: "https://api.thegraph.com/subgraphs/name/perpdex/perpdex-v1-arbitrum-rinkeby",
+              thegraphSchemaType: "thegraph",
               iconUrl: arbitrumLogoUrl,
           },
       }
