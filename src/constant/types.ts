@@ -56,17 +56,16 @@ export interface TakerInfo {
     quoteBalance: Big
 }
 
-export interface TakerPositionsInfo {
-    notional: Big
-    size: Big
-    margin: Big
-    unrealizedPnl: Big
-    fee: Big
+export interface LimitOrderInfo {
+    base: Big
+    price: Big
 }
 
 export interface AccountInfo {
     takerInfos: { [key: string]: TakerInfo }
     makerInfos: { [key: string]: MakerInfo }
+    askInfos: { [key: string]: { [key: string]: LimitOrderInfo } }
+    bidInfos: { [key: string]: { [key: string]: LimitOrderInfo } }
     settlementTokenBalance: Big
     collateralBalance: Big
     totalAccountValue: Big

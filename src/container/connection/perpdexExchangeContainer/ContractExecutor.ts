@@ -82,6 +82,34 @@ export class ContractExecutor implements PerpdexExchangeActions {
         ])
     }
 
+    createLimitOrder(
+        market: string,
+        isBid: boolean,
+        base: BigNumber,
+        priceX96: BigNumber,
+    ): Promise<ContractTransaction> {
+        return this.execute("createLimitOrder", [
+            {
+                market: market,
+                isBid: isBid,
+                base: base,
+                priceX96: priceX96,
+                deadline: getDeadline(),
+            },
+        ])
+    }
+
+    cancelLimitOrder(market: string, isBid: boolean, orderId: number): Promise<ContractTransaction> {
+        return this.execute("cancelLimitOrder", [
+            {
+                market: market,
+                isBid: isBid,
+                orderId: orderId,
+                deadline: getDeadline(),
+            },
+        ])
+    }
+
     async execute(funcName: string, args: any[], etherValue?: BigNumber) {
         const overrides = { from: this.contract.signer.getAddress() }
 

@@ -4,13 +4,14 @@ import { PerpdexMarketContainer } from "container/connection/perpdexMarketContai
 import Big from "big.js"
 
 interface Props {
+    isMarket: boolean
     error: string
     baseAmount: Big
     quoteAmount: Big
 }
 
 function Summary(props: Props) {
-    const { error, baseAmount, quoteAmount } = props
+    const { isMarket, error, baseAmount, quoteAmount } = props
     const {
         currentMarketState: { markPrice, inverse },
     } = PerpdexMarketContainer.useContainer()
@@ -24,7 +25,12 @@ function Summary(props: Props) {
             <Heading w="full" size="md">
                 Transaction estimation
             </Heading>
-            <TxInfoTable execPriceDisplay={execPriceDisplay} priceImpact={priceImpact} error={error} />
+            <TxInfoTable
+                isMarket={isMarket}
+                execPriceDisplay={execPriceDisplay}
+                priceImpact={priceImpact}
+                error={error}
+            />
         </>
     )
 }
