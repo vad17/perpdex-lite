@@ -1,4 +1,4 @@
-import { Table, Thead, Tbody, Tr, Th, Td, Text } from "@chakra-ui/react"
+import { Table, Thead, Tbody, Tr, Th, Td, Text, chakra } from "@chakra-ui/react"
 import { MarketState } from "../../../constant/types"
 import Big from "big.js"
 import Button from "component/base/Button"
@@ -16,15 +16,23 @@ export interface Props {
 }
 
 function OrderTable({ marketState, items }: Props) {
+    const StyledTh = chakra(Th, {
+        baseStyle: {
+            fontSize: "sm",
+            textTransform: "none",
+        },
+    })
+
     return (
         <Table variant="simple">
             <Thead>
                 <Tr>
-                    <Th>Market</Th>
-                    <Th>Qty ({marketState.baseSymbol})</Th>
-                    <Th>Value ({marketState.quoteSymbol})</Th>
-                    <Th>Price ({marketState.priceUnitDisplay})</Th>
-                    <Th>Cancel Order</Th>
+                    <StyledTh>Pair</StyledTh>
+                    <StyledTh>Side</StyledTh>
+                    <StyledTh>Qty ({marketState.baseSymbol})</StyledTh>
+                    <StyledTh>Value ({marketState.quoteSymbol})</StyledTh>
+                    <StyledTh>Price ({marketState.priceUnitDisplay})</StyledTh>
+                    <StyledTh></StyledTh>
                 </Tr>
             </Thead>
             <Tbody>
@@ -40,8 +48,9 @@ function OrderTable({ marketState, items }: Props) {
                         <Tr>
                             <Td>{marketState.name}</Td>
                             <Td>
-                                <Text color={item.isBid ? "green.300" : "red.300"}>{item.quantity.toFixed(7)}</Text>
+                                <Text color={item.isBid ? "green.300" : "red.300"}>{item.isBid ? "Buy" : "Sell"}</Text>
                             </Td>
+                            <Td>{item.quantity.toFixed(7)}</Td>
                             <Td>{value.toFixed(7)}</Td>
                             <Td>{priceDisplay.toFixed(7)}</Td>
                             <Td>

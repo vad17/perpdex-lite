@@ -1,4 +1,4 @@
-import { chakra, Table, Thead, Tr, Th, Tbody, Td } from "@chakra-ui/react"
+import { chakra, Table, Thead, Tr, Th, Tbody, Td, Text } from "@chakra-ui/react"
 import { PerpdexMarketContainer } from "../../../container/connection/perpdexMarketContainer"
 import { getPositionChangedsByTraderQuery } from "../../../queries/trades"
 import React, { useEffect, useMemo } from "react"
@@ -44,16 +44,8 @@ function OrderHistoryTable() {
 
     const StyledTh = chakra(Th, {
         baseStyle: {
-            color: "white",
-            borderBottom: "0px none",
-            fontWeight: "bold",
+            fontSize: "sm",
             textTransform: "none",
-        },
-    })
-
-    const StyledTd = chakra(Td, {
-        baseStyle: {
-            borderBottom: "0px none",
         },
     })
 
@@ -61,8 +53,8 @@ function OrderHistoryTable() {
         <Table variant="simple">
             <Thead>
                 <Tr>
-                    <StyledTh>Time({timezoneStr()})</StyledTh>
-                    <StyledTh>Market</StyledTh>
+                    <StyledTh>Date({timezoneStr()})</StyledTh>
+                    <StyledTh>Pair</StyledTh>
                     <StyledTh>Side</StyledTh>
                     <StyledTh>Position Size</StyledTh>
                     <StyledTh>Price</StyledTh>
@@ -77,18 +69,22 @@ function OrderHistoryTable() {
                         const marketState = currentMarketState
                         return (
                             <Tr key={index}>
-                                <StyledTd>{formatTime(value.time, true)}</StyledTd>
-                                <StyledTd>{marketName}</StyledTd>
-                                <StyledTd>{value.isLongDisplay ? "Long" : "Short"}</StyledTd>
-                                <StyledTd>
+                                <Td>{formatTime(value.time, true)}</Td>
+                                <Td>{marketName}</Td>
+                                <Td>
+                                    <Text color={value.isLongDisplay ? "green.300" : "red.300"}>
+                                        {value.isLongDisplay ? "Buy" : "Sell"}
+                                    </Text>
+                                </Td>
+                                <Td>
                                     {formattedNumberWithCommas(value.size)} {marketState.baseSymbol}
-                                </StyledTd>
-                                <StyledTd>
+                                </Td>
+                                <Td>
                                     {formattedNumberWithCommas(value.priceDisplay)} {marketState.priceUnitDisplay}
-                                </StyledTd>
-                                <StyledTd>
+                                </Td>
+                                <Td>
                                     {formattedNumberWithCommas(value.realizedPnl)} {marketState.baseSymbol}
-                                </StyledTd>
+                                </Td>
                             </Tr>
                         )
                     })}
