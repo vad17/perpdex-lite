@@ -54,11 +54,11 @@ function CancelOrderModal() {
                 size="md"
                 body={
                     <div>
-                        side: {isBid !== currentMarketState.inverse ? "Long" : "Short"}
+                        Side: {isBid !== currentMarketState.inverse ? "Buy" : "Sell"}
                         <br />
-                        size: {orderInfo?.base?.toFixed(7)} {currentMarketState.baseSymbol}
+                        Size: {orderInfo?.base?.toFixed(7)} {currentMarketState.baseSymbol}
                         <br />
-                        price: {priceDisplay?.toFixed(7)}
+                        Price: {priceDisplay?.toFixed(7)}
                     </div>
                 }
                 footer={
