@@ -19,3 +19,14 @@ export const StyledAnnotation = chakra(Text, {
         marginTop: "0px !important",
     },
 })
+
+// https://github.com/TanStack/table/blob/v7.0.0-beta.24/TYPESCRIPT.md
+declare module "react-table" {
+    export interface TableOptions<D extends object> extends UseSortByOptions<D> {}
+
+    export interface TableInstance<D extends object = {}> extends UseSortByInstanceProps<D> {}
+
+    export interface TableState<D extends object = {}> extends UseSortByState<D> {}
+
+    export interface ColumnInstance<D extends object = {}> extends UseSortByColumnProps<D> {}
+}
