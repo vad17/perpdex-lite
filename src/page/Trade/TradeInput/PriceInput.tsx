@@ -43,7 +43,7 @@ function PriceInput({ priceUnit, handlePriceInput }: PriceInputState) {
 
     return useMemo(
         () => (
-            <FormControl id="margin">
+            <FormControl id="margin" w="100%">
                 <FormLabel>
                     <Text fontSize="md" color="white">
                         Limit Price
@@ -52,7 +52,7 @@ function PriceInput({ priceUnit, handlePriceInput }: PriceInputState) {
                 <HStack>
                     <NumberInput value={priceString} onInput={e => handleOnInput(e)}>
                         <NumberInputField />
-                        <InputRightElement w="54px">
+                        <InputRightElement w="54px" mr={3}>
                             <Text
                                 w="100%"
                                 textAlign="center"
