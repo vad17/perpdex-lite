@@ -6,7 +6,7 @@ import PositionInput from "./PositionInput"
 import { BIG_ZERO } from "constant"
 import { PerpdexExchangeContainer } from "container/connection/perpdexExchangeContainer"
 import { Transaction } from "container/connection/transaction"
-import { Box, FormControl, VStack, Wrap, WrapItem } from "@chakra-ui/react"
+import { Box, chakra, Tab, TabList, TabPanel, TabPanels, Tabs, VStack } from "@chakra-ui/react"
 import SideSwitcher from "component/base/SideSwitcher"
 import Button from "component/base/Button"
 import Summary from "./Summary"
@@ -125,65 +125,72 @@ function TradeInput() {
         }
     }, [baseOrderValue, isMarket, isBuy, preview, slippage, trade])
 
+    const StyledTab = chakra(Tab, {
+        baseStyle: {
+            color: "gray.200",
+            _selected: { color: "white" },
+        },
+    })
+
     return (
         <>
             <Box background="#181B41" borderRadius="10px" p={6}>
-                <VStack spacing={6}>
-                    <FormControl id="margin">
-                        <Wrap justify="space-between">
-                            <WrapItem w="45%">
-                                <Button
-                                    customType={isMarket ? "base-green" : "outline-green"}
-                                    onClick={() => {
-                                        setIsMarket(true)
-                                    }}
-                                    width="100%"
-                                    text="Market"
-                                    isFullWidth
-                                />
-                            </WrapItem>
-                            <WrapItem w="45%">
-                                <Button
-                                    customType={isMarket ? "outline-green" : "base-green"}
-                                    onClick={() => {
-                                        setIsMarket(false)
-                                    }}
-                                    width="100%"
-                                    text="Limit"
-                                    isFullWidth
-                                />
-                            </WrapItem>
-                        </Wrap>
-                    </FormControl>
-                    <SideSwitcher
-                        isBuy={isBuyDisplay}
-                        longText="Buy/Long"
-                        shortText="Sell/Short"
-                        doSwitchToBuy={setIsBuyDisplay}
-                    />
-                    <PositionInput
-                        baseSymbol={currentMarketState.baseSymbol}
-                        quoteSymbol={currentMarketState.quoteSymbol}
-                        baseOrderValue={baseOrderValue}
-                        markPrice={isMarket ? currentMarketState.markPrice : limitPrice}
-                        maxCollateral={maxCollateral}
-                        handleBasePositionInput={handleBasePositionInput}
-                    />
+                <SideSwitcher
+                    isBuy={isBuyDisplay}
+                    longText="Buy/Long"
+                    shortText="Sell/Short"
+                    doSwitchToBuy={setIsBuyDisplay}
+                />
+                <Tabs variant="unstyled" mb="30px">
+                    <TabList my={2}>
+                        <StyledTab pl="0px">Market</StyledTab>
+                        <StyledTab>Limit</StyledTab>
+                    </TabList>
 
-                    {isMarket && <Slippage slippage={slippage} setSlippage={setSlippage} />}
-                    {!isMarket && (
-                        <PriceInput
-                            priceUnit={currentMarketState.priceUnitDisplay}
-                            handlePriceInput={handlePriceInput}
-                        ></PriceInput>
-                    )}
-                    <Summary
-                        isMarket={isMarket}
-                        error={previewResult.error}
-                        baseAmount={baseOrderValue}
-                        quoteAmount={previewResult.oppositeAmount}
-                    />
-                </VStack>
+                    <TabPanels>
+                        <TabPanel p={0}>
+                            <VStack spacing={6}>
+                                <PositionInput
+                                    baseSymbol={currentMarketState.baseSymbol}
+                                    quoteSymbol={currentMarketState.quoteSymbol}
+                                    baseOrderValue={baseOrderValue}
+                                    markPrice={isMarket ? currentMarketState.markPrice : limitPrice}
+                                    maxCollateral={maxCollateral}
+                                    handleBasePositionInput={handleBasePositionInput}
+                                />
+                                <Slippage slippage={slippage} setSlippage={setSlippage} />
+                                <Summary
+                                    isMarket={isMarket}
+                                    error={previewResult.error}
+                                    baseAmount={baseOrderValue}
+                                    quoteAmount={previewResult.oppositeAmount}
+                                />
+                            </VStack>
+                        </TabPanel>
+                        <TabPanel p={0}>
+                            <VStack spacing={6}>
+                                <PositionInput
+                                    baseSymbol={currentMarketState.baseSymbol}
+                                    quoteSymbol={currentMarketState.quoteSymbol}
+                                    baseOrderValue={baseOrderValue}
+                                    markPrice={isMarket ? currentMarketState.markPrice : limitPrice}
+                                    maxCollateral={maxCollateral}
+                                    handleBasePositionInput={handleBasePositionInput}
+                                />
+                                <PriceInput
+                                    priceUnit={currentMarketState.priceUnitDisplay}
+                                    handlePriceInput={handlePriceInput}
+                                ></PriceInput>
+                                <Summary
+                                    isMarket={isMarket}
+                                    error={previewResult.error}
+                                    baseAmount={baseOrderValue}
+                                    quoteAmount={previewResult.oppositeAmount}
+                                />
+                            </VStack>
+                        </TabPanel>
+                    </TabPanels>
+                </Tabs>
             </Box>
             <Button
                 text="Confirm Transaction"
