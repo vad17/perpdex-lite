@@ -109,21 +109,23 @@ function TradeInput() {
                 })
             }
         }
-    }, [setPreviewResult, preview?.trade, isMarket, isBuy, baseOrderValue, slippage, limitPrice])
+    }, [isMarket, preview, isBuy, baseOrderValue, slippage, limitPrice])
 
     useEffect(() => {
         updatePreview()
     }, [updatePreview])
 
-    const handleSubmit = useCallback(async () => {
+    const handleTradeSubmit = useCallback(async () => {
         if (baseOrderValue) {
-            if (isMarket) {
-                await trade(isBuy, baseOrderValue, slippage)
-            } else {
-                await createLimitOrder(isBuy, baseOrderValue, limitPrice)
-            }
+            await trade(isBuy, baseOrderValue, slippage)
         }
-    }, [baseOrderValue, isMarket, isBuy, preview, slippage, trade])
+    }, [baseOrderValue, trade, isBuy, slippage])
+
+    const handleLimitOrderSubmit = useCallback(async () => {
+        if (baseOrderValue) {
+            await createLimitOrder(isBuy, baseOrderValue, limitPrice)
+        }
+    }, [baseOrderValue, isBuy, createLimitOrder, limitPrice])
 
     const StyledTab = chakra(Tab, {
         baseStyle: {
@@ -141,7 +143,7 @@ function TradeInput() {
                     shortText="Sell/Short"
                     doSwitchToBuy={setIsBuyDisplay}
                 />
-                <Tabs variant="unstyled" mb="30px">
+                <Tabs variant="unstyled" isLazy>
                     <TabList my={2}>
                         <StyledTab pl="0px">Market</StyledTab>
                         <StyledTab>Limit</StyledTab>
@@ -154,7 +156,7 @@ function TradeInput() {
                                     baseSymbol={currentMarketState.baseSymbol}
                                     quoteSymbol={currentMarketState.quoteSymbol}
                                     baseOrderValue={baseOrderValue}
-                                    markPrice={isMarket ? currentMarketState.markPrice : limitPrice}
+                                    markPrice={currentMarketState.markPrice}
                                     maxCollateral={maxCollateral}
                                     handleBasePositionInput={handleBasePositionInput}
                                 />
@@ -165,6 +167,14 @@ function TradeInput() {
                                     baseAmount={baseOrderValue}
                                     quoteAmount={previewResult.oppositeAmount}
                                 />
+                                <Button
+                                    text="Confirm Transaction"
+                                    onClick={handleTradeSubmit}
+                                    isLoading={isLoading}
+                                    isDisabled={isSubmitDisabled}
+                                    customType="base-dark"
+                                    alignSelf="center"
+                                />
                             </VStack>
                         </TabPanel>
                         <TabPanel p={0}>
@@ -173,7 +183,7 @@ function TradeInput() {
                                     baseSymbol={currentMarketState.baseSymbol}
                                     quoteSymbol={currentMarketState.quoteSymbol}
                                     baseOrderValue={baseOrderValue}
-                                    markPrice={isMarket ? currentMarketState.markPrice : limitPrice}
+                                    markPrice={limitPrice}
                                     maxCollateral={maxCollateral}
                                     handleBasePositionInput={handleBasePositionInput}
                                 />
@@ -187,19 +197,19 @@ function TradeInput() {
                                     baseAmount={baseOrderValue}
                                     quoteAmount={previewResult.oppositeAmount}
                                 />
+                                <Button
+                                    text="Confirm Transaction"
+                                    onClick={handleLimitOrderSubmit}
+                                    isLoading={isLoading}
+                                    isDisabled={isSubmitDisabled}
+                                    customType="base-dark"
+                                    alignSelf="center"
+                                />
                             </VStack>
                         </TabPanel>
                     </TabPanels>
                 </Tabs>
             </Box>
-            <Button
-                text="Confirm Transaction"
-                onClick={handleSubmit}
-                isLoading={isLoading}
-                isDisabled={isSubmitDisabled}
-                customType="base-blue"
-                alignSelf="center"
-            />
         </>
     )
 }
