@@ -1,4 +1,4 @@
-import { chakra, Table, Thead, Tr, Th, Tbody, Td, Text } from "@chakra-ui/react"
+import { chakra, Table, Thead, Tr, Th, Tbody, Td, Text, Box } from "@chakra-ui/react"
 import { PerpdexMarketContainer } from "../../../container/connection/perpdexMarketContainer"
 import { getPositionChangedsByTraderQuery } from "../../../queries/trades"
 import React, { useEffect, useMemo } from "react"
@@ -50,46 +50,48 @@ function OrderHistoryTable() {
     })
 
     return (
-        <Table variant="simple">
-            <Thead>
-                <Tr>
-                    <StyledTh>Date({timezoneStr()})</StyledTh>
-                    <StyledTh>Pair</StyledTh>
-                    <StyledTh>Side</StyledTh>
-                    <StyledTh>Position Size</StyledTh>
-                    <StyledTh>Price</StyledTh>
-                    <StyledTh>Realized PnL</StyledTh>
-                    {/*<StyledTh>Trading Fee</StyledTh>*/}
-                </Tr>
-            </Thead>
-            <Tbody>
-                {data &&
-                    data.length > 0 &&
-                    data.map((value: OrderHistoryUnit, index: number) => {
-                        const marketState = currentMarketState
-                        return (
-                            <Tr key={index}>
-                                <Td>{formatTime(value.time, true)}</Td>
-                                <Td>{marketName}</Td>
-                                <Td>
-                                    <Text color={value.isLongDisplay ? "green.300" : "red.300"}>
-                                        {value.isLongDisplay ? "Buy" : "Sell"}
-                                    </Text>
-                                </Td>
-                                <Td>
-                                    {formattedNumberWithCommas(value.size)} {marketState.baseSymbol}
-                                </Td>
-                                <Td>
-                                    {formattedNumberWithCommas(value.priceDisplay)} {marketState.priceUnitDisplay}
-                                </Td>
-                                <Td>
-                                    {formattedNumberWithCommas(value.realizedPnl)} {marketState.baseSymbol}
-                                </Td>
-                            </Tr>
-                        )
-                    })}
-            </Tbody>
-        </Table>
+        <Box overflowY="auto" maxHeight="500px">
+            <Table variant="simple">
+                <Thead position="sticky" top={0} bg="#050217">
+                    <Tr>
+                        <StyledTh>Date({timezoneStr()})</StyledTh>
+                        <StyledTh>Pair</StyledTh>
+                        <StyledTh>Side</StyledTh>
+                        <StyledTh>Position Size</StyledTh>
+                        <StyledTh>Price</StyledTh>
+                        <StyledTh>Realized PnL</StyledTh>
+                        {/*<StyledTh>Trading Fee</StyledTh>*/}
+                    </Tr>
+                </Thead>
+                <Tbody>
+                    {data &&
+                        data.length > 0 &&
+                        data.map((value: OrderHistoryUnit, index: number) => {
+                            const marketState = currentMarketState
+                            return (
+                                <Tr key={index}>
+                                    <Td>{formatTime(value.time, true)}</Td>
+                                    <Td>{marketName}</Td>
+                                    <Td>
+                                        <Text color={value.isLongDisplay ? "green.300" : "red.300"}>
+                                            {value.isLongDisplay ? "Buy" : "Sell"}
+                                        </Text>
+                                    </Td>
+                                    <Td>
+                                        {formattedNumberWithCommas(value.size)} {marketState.baseSymbol}
+                                    </Td>
+                                    <Td>
+                                        {formattedNumberWithCommas(value.priceDisplay)} {marketState.priceUnitDisplay}
+                                    </Td>
+                                    <Td>
+                                        {formattedNumberWithCommas(value.realizedPnl)} {marketState.baseSymbol}
+                                    </Td>
+                                </Tr>
+                            )
+                        })}
+                </Tbody>
+            </Table>
+        </Box>
     )
 }
 

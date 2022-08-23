@@ -1,4 +1,4 @@
-import { Table, Thead, Tbody, Tr, Th, Td, Text, chakra } from "@chakra-ui/react"
+import { Table, Thead, Tbody, Tr, Th, Td, Text, chakra, Box } from "@chakra-ui/react"
 import { MarketState } from "../../../constant/types"
 import Big from "big.js"
 import Button from "component/base/Button"
@@ -34,39 +34,41 @@ function PositionTable({
     })
 
     return (
-        <Table variant="simple">
-            <Thead>
-                <Tr>
-                    <StyledTh>Pair</StyledTh>
-                    <StyledTh>Qty ({marketState.baseSymbol})</StyledTh>
-                    <StyledTh>Value ({marketState.quoteSymbol})</StyledTh>
-                    <StyledTh>Entry Price ({marketState.priceUnitDisplay})</StyledTh>
-                    <StyledTh>Mark Price ({marketState.priceUnitDisplay})</StyledTh>
-                    {/*TODO: implement*/}
-                    {/*<StyledTh>*/}
-                    {/*    Liq. price ({marketState.baseSymbolDisplay}/{marketState.quoteSymbolDisplay})*/}
-                    {/*</StyledTh>*/}
-                    <StyledTh>Unrealzied PNL ({marketState.quoteSymbol})</StyledTh>
-                    <StyledTh></StyledTh>
-                </Tr>
-            </Thead>
-            <Tbody>
-                <Tr>
-                    <Td>{marketState.name}</Td>
-                    <Td>
-                        <Text color={isLongDisplay ? "green.300" : "red.300"}>{positionQuantity}</Text>
-                    </Td>
-                    <Td>{positionValue}</Td>
-                    <Td>{entryPriceDisplay.toFixed(7)}</Td>
-                    <Td>{markPriceDisplay.toFixed(7)}</Td>
-                    {/*<Td>{liqPriceDisplay.toFixed(7)}</Td>*/}
-                    <Td>{unrealizedPnl}</Td>
-                    <Td>
-                        <Button customType="base-dark" text="Close Position" onClick={handleOnClick} />
-                    </Td>
-                </Tr>
-            </Tbody>
-        </Table>
+        <Box overflowY="auto" maxHeight="500px">
+            <Table variant="simple">
+                <Thead position="sticky" top={0} bg="#050217">
+                    <Tr>
+                        <StyledTh>Pair</StyledTh>
+                        <StyledTh>Qty ({marketState.baseSymbol})</StyledTh>
+                        <StyledTh>Value ({marketState.quoteSymbol})</StyledTh>
+                        <StyledTh>Entry Price ({marketState.priceUnitDisplay})</StyledTh>
+                        <StyledTh>Mark Price ({marketState.priceUnitDisplay})</StyledTh>
+                        {/*TODO: implement*/}
+                        {/*<StyledTh>*/}
+                        {/*    Liq. price ({marketState.baseSymbolDisplay}/{marketState.quoteSymbolDisplay})*/}
+                        {/*</StyledTh>*/}
+                        <StyledTh>Unrealzied PNL ({marketState.quoteSymbol})</StyledTh>
+                        <StyledTh></StyledTh>
+                    </Tr>
+                </Thead>
+                <Tbody>
+                    <Tr>
+                        <Td>{marketState.name}</Td>
+                        <Td>
+                            <Text color={isLongDisplay ? "green.300" : "red.300"}>{positionQuantity}</Text>
+                        </Td>
+                        <Td>{positionValue}</Td>
+                        <Td>{entryPriceDisplay.toFixed(7)}</Td>
+                        <Td>{markPriceDisplay.toFixed(7)}</Td>
+                        {/*<Td>{liqPriceDisplay.toFixed(7)}</Td>*/}
+                        <Td>{unrealizedPnl}</Td>
+                        <Td>
+                            <Button customType="base-dark" text="Close Position" onClick={handleOnClick} />
+                        </Td>
+                    </Tr>
+                </Tbody>
+            </Table>
+        </Box>
     )
 }
 
