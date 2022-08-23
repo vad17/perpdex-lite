@@ -6,10 +6,10 @@ import { useMemo } from "react"
 interface ScoreData {
     rank: number
     trader: string
-    totalTrades: number
+    totalTrades: string
     liquidations: number
-    totalVolumes: number
-    pnl: number
+    totalVolumes: string
+    pnl: string
 }
 
 function LeaderboardTable() {
@@ -19,10 +19,10 @@ function LeaderboardTable() {
             Array.from(Array(1000).keys()).map((rank: number) => ({
                 rank: rank + 1,
                 trader: `trader${rank} address`,
-                totalTrades: rank * 2,
-                liquidations: 1000 - rank,
-                totalVolumes: 100000 * Math.floor(1000 / (rank + 1)),
-                pnl: 1000000 * Math.floor(1000 / (rank + 1)),
+                totalTrades: ((rank + 1) * 2).toLocaleString(),
+                liquidations: Math.floor(rank / 10),
+                totalVolumes: `${(100000 * Math.floor(1000 / (rank + 1))).toLocaleString()}ETH`,
+                pnl: `${(1000000 * Math.floor(1000 / (rank + 1))).toLocaleString()} ETH`,
             })),
         [],
     )
