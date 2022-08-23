@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from "react"
-import { Box, Flex, Text, VStack } from "@chakra-ui/react"
+import { Box, HStack, Text, VStack } from "@chakra-ui/react"
 import { PerpdexExchangeContainer } from "container/connection/perpdexExchangeContainer"
 import { Transaction } from "container/connection/transaction"
 import { Modal as ModalContainer } from "container/modal"
@@ -54,28 +54,38 @@ function CancelOrderModal() {
                 onClose={handleCloseModal}
                 size="md"
                 body={
-                    <Flex justifyContent="center">
-                        <VStack>
-                            <Box>
+                    <VStack w="100%" p={2}>
+                        <Box w="100%">
+                            <HStack justifyContent="space-between">
                                 <Text as="span" color="gray.500">
                                     Side:{" "}
                                 </Text>
                                 <Text as="span" color={isBid !== currentMarketState.inverse ? "green.300" : "red.300"}>
                                     {isBid !== currentMarketState.inverse ? "Buy" : "Sell"}
                                 </Text>
-                            </Box>
-                            <Box>
+                            </HStack>
+                        </Box>
+                        <Box w="100%">
+                            <HStack justifyContent="space-between">
                                 <Text as="span" color="gray.500">
-                                    Size: {orderInfo?.base?.toFixed(7)} {currentMarketState.baseSymbol}
+                                    Size:
                                 </Text>
-                            </Box>
-                            <Box>
                                 <Text as="span" color="gray.500">
-                                    Price: {priceDisplay?.toFixed(7)}
+                                    {orderInfo?.base?.toFixed(7)} {currentMarketState.baseSymbol}
                                 </Text>
-                            </Box>
-                        </VStack>
-                    </Flex>
+                            </HStack>
+                        </Box>
+                        <Box w="100%">
+                            <HStack justifyContent="space-between">
+                                <Text as="span" color="gray.500">
+                                    Price:
+                                </Text>
+                                <Text as="span" color="gray.500">
+                                    {priceDisplay?.toFixed(7)}
+                                </Text>
+                            </HStack>
+                        </Box>
+                    </VStack>
                 }
                 footer={
                     <Button
