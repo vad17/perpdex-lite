@@ -142,3 +142,14 @@ export interface MakerPositionInfo {
     baseDeleveraged: Big
     quoteDeleveraged: Big
 }
+
+export interface LeaderboardScoreData {
+    rank: number
+    trader: string
+    // totalTrades: string
+    // liquidations: number
+    // totalVolumes: string
+    pnlRatio: string
+}
+
+export type LeaderboardTimeRange = "Last1Day" | "Last7Day" | "Last30Day" | "All"

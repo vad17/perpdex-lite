@@ -2,32 +2,14 @@ import { Table, Thead, Tbody, Tr, Th, Td, chakra } from "@chakra-ui/react"
 import { TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons"
 import { useTable, useSortBy, Column } from "react-table"
 import { useMemo } from "react"
+import { LeaderboardScoreData } from "constant/types"
 
-interface ScoreData {
-    rank: number
-    trader: string
-    totalTrades: string
-    liquidations: number
-    totalVolumes: string
-    pnl: string
+interface Props {
+    data: LeaderboardScoreData[]
 }
 
-function LeaderboardTable() {
-    // simple simlation data
-    const data: ScoreData[] = useMemo(
-        () =>
-            Array.from(Array(1000).keys()).map((rank: number) => ({
-                rank: rank + 1,
-                trader: `trader${rank} address`,
-                totalTrades: ((rank + 1) * 2).toLocaleString(),
-                liquidations: Math.floor(rank / 10),
-                totalVolumes: `${(100000 * Math.floor(1000 / (rank + 1))).toLocaleString()}ETH`,
-                pnl: `${(1000000 * Math.floor(1000 / (rank + 1))).toLocaleString()} ETH`,
-            })),
-        [],
-    )
-
-    const columns: Column<ScoreData>[] = useMemo(
+function LeaderboardTable({ data }: Props) {
+    const columns: Column<LeaderboardScoreData>[] = useMemo(
         () => [
             {
                 Header: "Rank",
@@ -37,33 +19,41 @@ function LeaderboardTable() {
                 Header: "Trader",
                 accessor: "trader",
             },
+            // {
+            //     Header: "Total Trades",
+            //     accessor: "totalTrades",
+            // },
+            // {
+            //     Header: "Liquidations",
+            //     accessor: "liquidations",
+            // },
+            // {
+            //     Header: "Total Volumes",
+            //     accessor: "totalVolumes",
+            // },
             {
-                Header: "Total Trades",
-                accessor: "totalTrades",
-            },
-            {
-                Header: "Liquidations",
-                accessor: "liquidations",
-            },
-            {
-                Header: "Total Volumes",
-                accessor: "totalVolumes",
-            },
-            {
-                Header: "PnL",
-                accessor: "pnl",
+                Header: "PnL Ratio",
+                accessor: "pnlRatio",
             },
         ],
         [],
     )
 
-    const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable<ScoreData>(
+    const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable<LeaderboardScoreData>(
         { columns, data },
         useSortBy,
     )
 
     return (
-        <Table {...getTableProps()} height={1200} overflow="scroll" borderRadius={20}>
+        <Table
+            {...getTableProps()}
+            height={1200}
+            overflow="scroll"
+            borderColor="gray.700"
+            borderWidth={1}
+            sx={{ borderCollapse: "separate" }}
+            borderRadius={10}
+        >
             <Thead position="sticky" top="0">
                 {headerGroups.map(headerGroup => (
                     <Tr {...headerGroup.getHeaderGroupProps()} bg="blackAlpha.900">
