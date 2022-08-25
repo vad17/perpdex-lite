@@ -20,78 +20,68 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+import * as React from "react"
+import "./index.css"
 
-import * as React from 'react';
-import './index.css';
-import {
-    widget,
-    ChartingLibraryWidgetOptions,
-    LanguageCode,
-    IChartingLibraryWidget,
-    ResolutionString,
-} from '../../charting_library';
+const widget = (window as any)?.TradingView.widget
 
 export interface ChartContainerProps {
-    symbol: ChartingLibraryWidgetOptions['symbol'];
-    interval: ChartingLibraryWidgetOptions['interval'];
+    symbol: string
+    interval: string
 
-    // BEWARE: no trailing slash is expected in feed URL
-    datafeedUrl: string;
-    libraryPath: ChartingLibraryWidgetOptions['library_path'];
-    chartsStorageUrl: ChartingLibraryWidgetOptions['charts_storage_url'];
-    chartsStorageApiVersion: ChartingLibraryWidgetOptions['charts_storage_api_version'];
-    clientId: ChartingLibraryWidgetOptions['client_id'];
-    userId: ChartingLibraryWidgetOptions['user_id'];
-    fullscreen: ChartingLibraryWidgetOptions['fullscreen'];
-    autosize: ChartingLibraryWidgetOptions['autosize'];
-    studiesOverrides: ChartingLibraryWidgetOptions['studies_overrides'];
-    container: ChartingLibraryWidgetOptions['container'];
+    datafeed: any
+    libraryPath: string
+    chartsStorageUrl: string
+    chartsStorageApiVersion: string
+    clientId: string
+    userId: string
+    fullscreen: boolean
+    autosize: boolean
+    studiesOverrides: any
+    container: any
 }
 
-export interface ChartContainerState {
-}
+export interface ChartContainerState {}
 
-function getLanguageFromURL(): LanguageCode | null {
-    const regex = new RegExp('[\\?&]lang=([^&#]*)');
-    const results = regex.exec(location.search);
-    return results === null ? null : decodeURIComponent(results[1].replace(/\+/g, ' ')) as LanguageCode;
+function getLanguageFromURL(): string | null {
+    const regex = new RegExp("[\\?&]lang=([^&#]*)")
+    const results = regex.exec(window.location.search)
+    return results === null ? null : decodeURIComponent(results[1].replace(/\+/g, " "))
 }
 
 export class TVChartContainer extends React.PureComponent<Partial<ChartContainerProps>, ChartContainerState> {
-    public static defaultProps: Omit<ChartContainerProps, 'container'> = {
-        symbol: 'AAPL',
-        interval: 'D' as ResolutionString,
-        datafeedUrl: 'https://demo_feed.tradingview.com',
-        libraryPath: '/charting_library/',
-        chartsStorageUrl: 'https://saveload.tradingview.com',
-        chartsStorageApiVersion: '1.1',
-        clientId: 'tradingview.com',
-        userId: 'public_user_id',
+    public static defaultProps: Omit<ChartContainerProps, "container"> = {
+        symbol: "AAPL",
+        interval: "D",
+        datafeed: {},
+        libraryPath: "/charting_library/",
+        chartsStorageUrl: "https://saveload.tradingview.com",
+        chartsStorageApiVersion: "1.1",
+        clientId: "tradingview.com",
+        userId: "public_user_id",
         fullscreen: false,
         autosize: true,
         studiesOverrides: {},
-    };
+    }
 
-    private tvWidget: IChartingLibraryWidget | null = null;
-    private ref: React.RefObject<HTMLDivElement> = React.createRef();
+    private tvWidget: any | null = null
+    private ref: React.RefObject<HTMLDivElement> = React.createRef()
 
     public componentDidMount(): void {
         if (!this.ref.current) {
-            return;
+            return
         }
 
-        const widgetOptions: ChartingLibraryWidgetOptions = {
+        const widgetOptions = {
             symbol: this.props.symbol as string,
-            // BEWARE: no trailing slash is expected in feed URL
-            // tslint:disable-next-line:no-any
-            datafeed: new (window as any).Datafeeds.UDFCompatibleDatafeed(this.props.datafeedUrl),
-            interval: this.props.interval as ChartingLibraryWidgetOptions['interval'],
+            datafeed: this.props.datafeed,
+            interval: this.props.interval,
             container: this.ref.current,
             library_path: this.props.libraryPath as string,
 
-            locale: getLanguageFromURL() || 'en',
-            disabled_features: ['use_localstorage_for_settings'],
-            enabled_features: ['study_templates'],
+            locale: getLanguageFromURL() || "en",
+            disabled_features: ["use_localstorage_for_settings"],
+            enabled_features: ["study_templates"],
             charts_storage_url: this.props.chartsStorageUrl,
             charts_storage_api_version: this.props.chartsStorageApiVersion,
             client_id: this.props.clientId,
@@ -99,41 +89,40 @@ export class TVChartContainer extends React.PureComponent<Partial<ChartContainer
             fullscreen: this.props.fullscreen,
             autosize: this.props.autosize,
             studies_overrides: this.props.studiesOverrides,
-        };
 
-        const tvWidget = new widget(widgetOptions);
-        this.tvWidget = tvWidget;
+            theme: "dark",
+        }
+
+        const tvWidget = new widget(widgetOptions)
+        this.tvWidget = tvWidget
 
         tvWidget.onChartReady(() => {
             tvWidget.headerReady().then(() => {
-                const button = tvWidget.createButton();
-                button.setAttribute('title', 'Click to show a notification popup');
-                button.classList.add('apply-common-tooltip');
-                button.addEventListener('click', () => tvWidget.showNoticeDialog({
-                    title: 'Notification',
-                    body: 'TradingView Charting Library API works correctly',
-                    callback: () => {
-                        console.log('Noticed!');
-                    },
-                }));
-                button.innerHTML = 'Check API';
-            });
-        });
+                const button = tvWidget.createButton()
+                button.setAttribute("title", "Click to show a notification popup")
+                button.classList.add("apply-common-tooltip")
+                button.addEventListener("click", () =>
+                    tvWidget.showNoticeDialog({
+                        title: "Notification",
+                        body: "TradingView Charting Library API works correctly",
+                        callback: () => {
+                            console.log("Noticed!")
+                        },
+                    }),
+                )
+                button.innerHTML = "Check API"
+            })
+        })
     }
 
     public componentWillUnmount(): void {
         if (this.tvWidget !== null) {
-            this.tvWidget.remove();
-            this.tvWidget = null;
+            this.tvWidget.remove()
+            this.tvWidget = null
         }
     }
 
     public render(): JSX.Element {
-        return (
-            <div
-                ref={ this.ref }
-        className={ 'TVChartContainer' }
-        />
-    );
+        return <div ref={this.ref} className={"TVChartContainer"} />
     }
 }
