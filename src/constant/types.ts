@@ -1,5 +1,7 @@
 import Big from "big.js"
 
+export type LimitOrderType = "Normal" | "PostOnly" | "Ioc"
+
 export interface PoolInfo {
     base: Big
     quote: Big
