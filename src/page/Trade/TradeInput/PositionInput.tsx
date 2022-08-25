@@ -130,7 +130,7 @@ function PositionInput({
                 <Text fontSize="md" color="white" mt="4">
                     Leverage
                 </Text>
-                <Slider currentValue={leverage} handleUpdate={handleLeverageUpdate} />
+                <Slider currentValue={leverage} handleUpdate={handleLeverageUpdate} minValue={1} />
                 <DiscreteLeverageInputModifier handleUpdate={handleLeverageUpdate} />
             </FormControl>
         ),
