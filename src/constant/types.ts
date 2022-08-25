@@ -151,5 +151,3 @@ export interface LeaderboardScoreData {
     // totalVolumes: string
     pnlRatio: string
 }
-
-export type LeaderboardTimeRange = "Last1Day" | "Last7Day" | "Last30Day" | "All"

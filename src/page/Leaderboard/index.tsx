@@ -1,14 +1,41 @@
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { ButtonGroup, Center, HStack, VStack } from "@chakra-ui/react"
 import { Heading, Text } from "@chakra-ui/react"
 import { ExternalLink } from "component/ExternalLink"
 import FrameContainer from "component/frames/FrameContainer"
 import LeaderboardTable from "component/tables/LeaderboardTable"
-import { LeaderboardScoreData, LeaderboardTimeRange } from "constant/types"
+import { LeaderboardScoreData } from "constant/types"
 import Button from "component/base/Button"
+import { Connection } from "container/connection"
+import { getProfitRatiosQuery } from "queries/leaderboard"
+import { useThegraphQuery } from "hook/useThegraphQuery"
+import { getTimestampBySubtractDays } from "util/time"
 
 function Leaderboard() {
-    const [timeRange, setTimeRange] = useState<LeaderboardTimeRange>("Last1Day")
+    const { chainId } = Connection.useContainer()
+    const [daysBefore, setDaysBefore] = useState<number>(1)
+    const dasyBeforeOfStartTimeList = [1, 7, 30, -1]
+
+    const profitRatiosResults = useThegraphQuery(chainId, getProfitRatiosQuery, {
+        variables: {
+            startedAtGt: getTimestampBySubtractDays(daysBefore),
+        },
+    })
+
+    useEffect(() => {
+        console.log("@@@ refetching profitRatiosResults with daysBefore:", daysBefore)
+        profitRatiosResults.refetch({
+            startedAtGt: getTimestampBySubtractDays(daysBefore),
+        })
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [daysBefore])
+
+    const newData = useMemo(() => {
+        if (profitRatiosResults.loading || profitRatiosResults.error) return []
+        return profitRatiosResults.data
+    }, [profitRatiosResults.data, profitRatiosResults.error, profitRatiosResults.loading])
+
+    console.log("@@@@ profitRatiosResults data: ", newData)
 
     const data: LeaderboardScoreData[] = useMemo(
         () =>
@@ -20,33 +47,6 @@ function Leaderboard() {
                 // totalVolumes: `${(100000 * Math.floor(1000 / (rank + 1))).toLocaleString()}ETH`,
                 pnlRatio: `${(1000000 * Math.floor(1000 / (rank + 1))).toLocaleString()} ETH`,
             })),
-        [],
-    )
-
-    interface TimeRangeButtonProps {
-        text: string
-        type: LeaderboardTimeRange
-    }
-
-    const timeRangeButtons: TimeRangeButtonProps[] = useMemo(
-        () => [
-            {
-                text: "1 Day",
-                type: "Last1Day",
-            },
-            {
-                text: "7 Day",
-                type: "Last7Day",
-            },
-            {
-                text: "30 Day",
-                type: "Last30Day",
-            },
-            {
-                text: "All",
-                type: "All",
-            },
-        ],
         [],
     )
 
@@ -66,12 +66,12 @@ function Leaderboard() {
                 </Center>
                 <HStack justifyContent="flex-end">
                     <ButtonGroup>
-                        {timeRangeButtons.map(values => (
+                        {dasyBeforeOfStartTimeList.map(value => (
                             <Button
-                                key={values.type}
-                                text={values.text}
-                                customType={values.type === timeRange ? "base-blue" : "base-dark"}
-                                onClick={() => setTimeRange(values.type)}
+                                key={value}
+                                text={value === -1 ? "All" : `${value} Day`}
+                                customType={value === daysBefore ? "base-blue" : "base-dark"}
+                                onClick={() => setDaysBefore(value)}
                             />
                         ))}
                     </ButtonGroup>
