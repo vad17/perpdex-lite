@@ -22,26 +22,23 @@
 
 import * as React from "react"
 import "./index.css"
-
-const widget = (window as any)?.TradingView.widget
+import { useEffect } from "react"
 
 export interface ChartContainerProps {
-    symbol: string
-    interval: string
+    symbol?: string
+    interval?: string
 
-    datafeed: any
-    libraryPath: string
-    chartsStorageUrl: string
-    chartsStorageApiVersion: string
-    clientId: string
-    userId: string
-    fullscreen: boolean
-    autosize: boolean
-    studiesOverrides: any
-    container: any
+    datafeed?: any
+    libraryPath?: string
+    chartsStorageUrl?: string
+    chartsStorageApiVersion?: string
+    clientId?: string
+    userId?: string
+    fullscreen?: boolean
+    autosize?: boolean
+    studiesOverrides?: any
+    container?: any
 }
-
-export interface ChartContainerState {}
 
 function getLanguageFromURL(): string | null {
     const regex = new RegExp("[\\?&]lang=([^&#]*)")
@@ -49,8 +46,10 @@ function getLanguageFromURL(): string | null {
     return results === null ? null : decodeURIComponent(results[1].replace(/\+/g, " "))
 }
 
-export class TVChartContainer extends React.PureComponent<Partial<ChartContainerProps>, ChartContainerState> {
-    public static defaultProps: Omit<ChartContainerProps, "container"> = {
+export const TVChartContainer = (props: ChartContainerProps) => {
+    const widget = (window as any)?.TradingView.widget
+
+    const defaultProps: Omit<ChartContainerProps, "container"> = {
         symbol: "AAPL",
         interval: "D",
         datafeed: {},
@@ -63,66 +62,42 @@ export class TVChartContainer extends React.PureComponent<Partial<ChartContainer
         autosize: true,
         studiesOverrides: {},
     }
+    props = { ...defaultProps, ...props }
 
-    private tvWidget: any | null = null
-    private ref: React.RefObject<HTMLDivElement> = React.createRef()
+    const ref = React.useRef<HTMLDivElement>(null)
 
-    public componentDidMount(): void {
-        if (!this.ref.current) {
-            return
-        }
-
+    useEffect(() => {
         const widgetOptions = {
-            symbol: this.props.symbol as string,
-            datafeed: this.props.datafeed,
-            interval: this.props.interval,
-            container: this.ref.current,
-            library_path: this.props.libraryPath as string,
+            symbol: props.symbol,
+            datafeed: props.datafeed,
+            interval: props.interval,
+            container: ref.current,
+            library_path: props.libraryPath as string,
 
-            locale: getLanguageFromURL() || "en",
+            // locale: getLanguageFromURL() || "en",
+            locale: "en",
             disabled_features: ["use_localstorage_for_settings"],
             enabled_features: ["study_templates"],
-            charts_storage_url: this.props.chartsStorageUrl,
-            charts_storage_api_version: this.props.chartsStorageApiVersion,
-            client_id: this.props.clientId,
-            user_id: this.props.userId,
-            fullscreen: this.props.fullscreen,
-            autosize: this.props.autosize,
-            studies_overrides: this.props.studiesOverrides,
+            charts_storage_url: props.chartsStorageUrl,
+            charts_storage_api_version: props.chartsStorageApiVersion,
+            client_id: props.clientId,
+            user_id: props.userId,
+            fullscreen: props.fullscreen,
+            autosize: props.autosize,
+            studies_overrides: props.studiesOverrides,
 
             theme: "dark",
         }
 
-        const tvWidget = new widget(widgetOptions)
-        this.tvWidget = tvWidget
+        let tvWidget = new widget(widgetOptions)
 
-        tvWidget.onChartReady(() => {
-            tvWidget.headerReady().then(() => {
-                const button = tvWidget.createButton()
-                button.setAttribute("title", "Click to show a notification popup")
-                button.classList.add("apply-common-tooltip")
-                button.addEventListener("click", () =>
-                    tvWidget.showNoticeDialog({
-                        title: "Notification",
-                        body: "TradingView Charting Library API works correctly",
-                        callback: () => {
-                            console.log("Noticed!")
-                        },
-                    }),
-                )
-                button.innerHTML = "Check API"
-            })
-        })
-    }
-
-    public componentWillUnmount(): void {
-        if (this.tvWidget !== null) {
-            this.tvWidget.remove()
-            this.tvWidget = null
+        return () => {
+            if (tvWidget) {
+                tvWidget.remove()
+                tvWidget = null
+            }
         }
-    }
+    }, [props.symbol, props.datafeed])
 
-    public render(): JSX.Element {
-        return <div ref={this.ref} className={"TVChartContainer"} />
-    }
+    return <div ref={ref} className={"TVChartContainer"} />
 }

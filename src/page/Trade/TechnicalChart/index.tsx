@@ -1,22 +1,27 @@
-import React from "react"
+import React, { useMemo } from "react"
 import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
 import { Connection } from "container/connection"
 import { TVChartContainer } from "../../../tradingView/TVChartContainer"
+import { createDataFeed } from "../../../tradingView/datafeed"
 
 function TechnicalChart() {
-    const { currentMarketState, marketStates } = PerpdexMarketContainer.useContainer()
-    const { chainId } = Connection.useContainer()
+    const { currentMarketState } = PerpdexMarketContainer.useContainer()
+    const { signer } = Connection.useContainer()
 
-    // const datafeed = useMemo(
-    //     () => {
-    //
-    //     },
-    //     [currentMarketState.address, currentMarketState.inverse],
-    // )
+    const datafeed = useMemo(() => {
+        return createDataFeed({
+            signer: signer,
+            marketState: currentMarketState,
+        })
+    }, [signer, currentMarketState.address, currentMarketState.inverse])
 
-    const datafeed = new (window as any).Datafeeds.UDFCompatibleDatafeed("https://demo_feed.tradingview.com")
+    const isMarketReady = useMemo(() => currentMarketState.name, [currentMarketState.name])
 
-    return <TVChartContainer datafeed={datafeed}></TVChartContainer>
+    if (isMarketReady) {
+        return <TVChartContainer symbol={currentMarketState.name || "AAPL"} datafeed={datafeed} />
+    }
+
+    return <div className="tv_chart_loading">Loading...</div>
 }
 
 export default TechnicalChart
