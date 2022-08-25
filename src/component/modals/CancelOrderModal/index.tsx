@@ -1,4 +1,5 @@
 import { useCallback, useMemo } from "react"
+import { Box, HStack, Text, VStack } from "@chakra-ui/react"
 import { PerpdexExchangeContainer } from "container/connection/perpdexExchangeContainer"
 import { Transaction } from "container/connection/transaction"
 import { Modal as ModalContainer } from "container/modal"
@@ -39,7 +40,7 @@ function CancelOrderModal() {
         if (orderInfo) {
             cancelLimitOrder(isBid, orderId)
         }
-    }, [isBid, orderId])
+    }, [cancelLimitOrder, isBid, orderId, orderInfo])
 
     const handleCloseModal = useCallback(() => {
         toggleCancelOrderModal()
@@ -53,13 +54,38 @@ function CancelOrderModal() {
                 onClose={handleCloseModal}
                 size="md"
                 body={
-                    <div>
-                        side: {isBid !== currentMarketState.inverse ? "Long" : "Short"}
-                        <br />
-                        size: {orderInfo?.base?.toFixed(7)} {currentMarketState.baseSymbol}
-                        <br />
-                        price: {priceDisplay?.toFixed(7)}
-                    </div>
+                    <VStack w="100%" p={2}>
+                        <Box w="100%">
+                            <HStack justifyContent="space-between">
+                                <Text as="span" color="gray.500">
+                                    Side:{" "}
+                                </Text>
+                                <Text as="span" color={isBid !== currentMarketState.inverse ? "green.300" : "red.300"}>
+                                    {isBid !== currentMarketState.inverse ? "Buy" : "Sell"}
+                                </Text>
+                            </HStack>
+                        </Box>
+                        <Box w="100%">
+                            <HStack justifyContent="space-between">
+                                <Text as="span" color="gray.500">
+                                    Size:
+                                </Text>
+                                <Text as="span" color="gray.500">
+                                    {orderInfo?.base?.toFixed(7)} {currentMarketState.baseSymbol}
+                                </Text>
+                            </HStack>
+                        </Box>
+                        <Box w="100%">
+                            <HStack justifyContent="space-between">
+                                <Text as="span" color="gray.500">
+                                    Price:
+                                </Text>
+                                <Text as="span" color="gray.500">
+                                    {priceDisplay?.toFixed(7)}
+                                </Text>
+                            </HStack>
+                        </Box>
+                    </VStack>
                 }
                 footer={
                     <Button
