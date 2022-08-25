@@ -87,6 +87,7 @@ export class ContractExecutor implements PerpdexExchangeActions {
         isBid: boolean,
         base: BigNumber,
         priceX96: BigNumber,
+        limitOrderType: number,
     ): Promise<ContractTransaction> {
         return this.execute("createLimitOrder", [
             {
@@ -94,6 +95,7 @@ export class ContractExecutor implements PerpdexExchangeActions {
                 isBid: isBid,
                 base: base,
                 priceX96: priceX96,
+                limitOrderType: limitOrderType,
                 deadline: getDeadline(),
             },
         ])

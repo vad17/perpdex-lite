@@ -19,6 +19,7 @@ import {
     PositionState,
     MarketState,
     LimitOrderInfo,
+    LimitOrderType,
 } from "../../../constant/types"
 import { useInterval } from "../../../hook/useInterval"
 import { usePageVisibility } from "react-page-visibility"
@@ -79,6 +80,14 @@ function calcTrade(
         isExactInput: !isLong,
         oppositeAmountBound: big2BigNum(oppositeAmountBound),
     }
+}
+
+const limitOrderTypeToNumber = (limitOrderType: LimitOrderType): number => {
+    return {
+        Normal: 0,
+        PostOnly: 1,
+        Ioc: 2,
+    }[limitOrderType]
 }
 
 function usePerpdexExchangeContainer() {
@@ -401,7 +410,7 @@ function usePerpdexExchangeContainer() {
     )
 
     const previewCreateLimitOrder = useCallback(
-        async (isBid: boolean, baseAmount: Big, price: Big) => {
+        async (isBid: boolean, baseAmount: Big, price: Big, limitOrderType: LimitOrderType) => {
             if (!perpdexExchange || !account || !currentMarketState?.markPrice || currentMarketState?.markPrice.eq(0))
                 return "not prepared"
 
@@ -413,6 +422,7 @@ function usePerpdexExchangeContainer() {
                     isBid: isBid,
                     base: big2BigNum(baseShare),
                     priceX96: bigToX96(price),
+                    limitOrderType: limitOrderTypeToNumber(limitOrderType),
                     deadline: BigNumber.from(2).pow(96),
                 })
                 return results
@@ -480,11 +490,19 @@ function usePerpdexExchangeContainer() {
     )
 
     const createLimitOrder = useCallback(
-        (isBid: boolean, baseAmount: Big, price: Big) => {
+        (isBid: boolean, baseAmount: Big, price: Big, limitOrderType: LimitOrderType) => {
             if (contractExecuter && account && currentMarketState && !currentMarketState.baseBalancePerShare.eq(0)) {
                 const baseShare = baseAmount.div(currentMarketState.baseBalancePerShare)
 
-                execute(contractExecuter.createLimitOrder(currentMarket, isBid, big2BigNum(baseShare), bigToX96(price)))
+                execute(
+                    contractExecuter.createLimitOrder(
+                        currentMarket,
+                        isBid,
+                        big2BigNum(baseShare),
+                        bigToX96(price),
+                        limitOrderTypeToNumber(limitOrderType),
+                    ),
+                )
             }
         },
         [account, contractExecuter, execute, currentMarketState, currentMarketState.baseBalancePerShare],

@@ -216,13 +216,18 @@ function usePerpdexMarketContainer() {
                     const markPriceDisplay = marketStates[address].markPriceDisplay
                     const priceStep = getPriceStep(markPriceDisplay)
 
-                    const centerPrice = markPriceDisplay.prec(priceStepPrec + 1, Big.roundHalfUp)
-                    askPrices[address] = _.map(_.range(orderBookCount), i => {
-                        return centerPrice.add(priceStep.mul(1 + i))
-                    })
-                    bidPrices[address] = _.map(_.range(orderBookCount), i => {
-                        return centerPrice.sub(priceStep.mul(1 + i))
-                    })
+                    if (markPriceDisplay.eq(0)) {
+                        askPrices[address] = []
+                        bidPrices[address] = []
+                    } else {
+                        const centerPrice = markPriceDisplay.prec(priceStepPrec + 1, Big.roundHalfUp)
+                        askPrices[address] = _.map(_.range(orderBookCount), i => {
+                            return centerPrice.add(priceStep.mul(1 + i))
+                        })
+                        bidPrices[address] = _.map(_.range(orderBookCount), i => {
+                            return centerPrice.sub(priceStep.mul(1 + i))
+                        })
+                    }
 
                     return _.flatten([
                         contract.poolInfo(),

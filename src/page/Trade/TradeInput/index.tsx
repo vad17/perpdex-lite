@@ -14,6 +14,7 @@ import Slippage from "./Slippage"
 import { bigNum2Big } from "util/format"
 import _ from "lodash"
 import PriceInput from "./PriceInput"
+import { LimitOrderType } from "../../../constant/types"
 
 interface PreviewResult {
     error: string
@@ -26,6 +27,7 @@ function TradeInput() {
     const [isBuyDisplay, setIsBuyDisplay] = useState<boolean>(true)
     const [isMarket, setIsMarket] = useState<boolean>(true)
     const [limitPrice, setLimitPrice] = useState<Big>(BIG_ZERO)
+    const [limitOrderType, setLimitOrderType] = useState<LimitOrderType>("Normal")
     const { isLoading } = Transaction.useContainer()
     const [baseOrderValue, setBaseOrderValue] = useState<Big>(BIG_ZERO)
     const [slippage, setSlippage] = useState<number>(2)
@@ -94,7 +96,7 @@ function TradeInput() {
                 })
             }
         } else {
-            const results = await preview.createLimitOrder(isBuy, baseOrderValue, limitPrice)
+            const results = await preview.createLimitOrder(isBuy, baseOrderValue, limitPrice, limitOrderType)
             console.log(results)
             if (!results) return
             if (_.isString(results)) {
@@ -109,7 +111,7 @@ function TradeInput() {
                 })
             }
         }
-    }, [setPreviewResult, preview?.trade, isMarket, isBuy, baseOrderValue, slippage, limitPrice])
+    }, [setPreviewResult, preview?.trade, isMarket, isBuy, baseOrderValue, slippage, limitPrice, limitOrderType])
 
     useEffect(() => {
         updatePreview()
@@ -120,10 +122,10 @@ function TradeInput() {
             if (isMarket) {
                 await trade(isBuy, baseOrderValue, slippage)
             } else {
-                await createLimitOrder(isBuy, baseOrderValue, limitPrice)
+                await createLimitOrder(isBuy, baseOrderValue, limitPrice, limitOrderType)
             }
         }
-    }, [baseOrderValue, isMarket, isBuy, preview, slippage, trade])
+    }, [baseOrderValue, limitPrice, limitOrderType, isMarket, isBuy, preview, slippage, trade])
 
     return (
         <>
