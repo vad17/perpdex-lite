@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { ButtonGroup, Center, HStack, VStack } from "@chakra-ui/react"
 import { Heading, Text } from "@chakra-ui/react"
 import { ExternalLink } from "component/ExternalLink"
@@ -10,11 +10,14 @@ import { Connection } from "container/connection"
 import { getProfitRatiosQuery } from "queries/leaderboard"
 import { useThegraphQuery } from "hook/useThegraphQuery"
 import { getTimestampBySubtractDays } from "util/time"
+import { networkConfigs } from "constant/network"
 
 function Leaderboard() {
     const { chainId } = Connection.useContainer()
     const [daysBefore, setDaysBefore] = useState<number>(1)
     const dasyBeforeOfStartTimeList = [1, 7, 30, -1]
+
+    const networkConfig = networkConfigs[chainId || 280] // 280 for zkSync
 
     const profitRatiosResults = useThegraphQuery(chainId, getProfitRatiosQuery, {
         variables: {
@@ -37,17 +40,25 @@ function Leaderboard() {
 
     console.log("@@@@ profitRatiosResults data: ", newData)
 
+    const getTraderDom = useCallback(
+        (address: string) => {
+            return <ExternalLink href={`${networkConfig.etherscanUrl}address/${address}`}>{address}</ExternalLink>
+        },
+        [networkConfig.etherscanUrl],
+    )
+
     const data: LeaderboardScoreData[] = useMemo(
         () =>
             Array.from(Array(30).keys()).map((rank: number) => ({
-                rank: rank + 1,
-                trader: `trader${rank} address`,
-                // totalTrades: ((rank + 1) * 2).toLocaleString(),
-                // liquidations: Math.floor(rank / 10),
-                // totalVolumes: `${(100000 * Math.floor(1000 / (rank + 1))).toLocaleString()}ETH`,
-                pnlRatio: `${(1000000 * Math.floor(1000 / (rank + 1))).toLocaleString()} ETH`,
+                pnlRank: rank + 1,
+                trader: getTraderDom("ETH_ADDRESS"),
+                pnlRatio: `${
+                    rank < 10 ? Math.floor(1000 / (rank + 1)).toLocaleString() : (-rank * 5).toLocaleString()
+                } %`,
+                profit: `${(20000 * Math.floor(1000 / (rank + 1))).toLocaleString()} ETH`,
+                deposit: `${(1000000 * Math.floor(1000 / (rank + 1))).toLocaleString()} ETH`,
             })),
-        [],
+        [getTraderDom],
     )
 
     return (

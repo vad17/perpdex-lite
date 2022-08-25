@@ -12,25 +12,21 @@ function LeaderboardTable({ data }: Props) {
     const columns: Column<LeaderboardScoreData>[] = useMemo(
         () => [
             {
-                Header: "Rank",
-                accessor: "rank",
+                Header: "PnL Rank",
+                accessor: "pnlRank",
             },
             {
                 Header: "Trader",
                 accessor: "trader",
             },
-            // {
-            //     Header: "Total Trades",
-            //     accessor: "totalTrades",
-            // },
-            // {
-            //     Header: "Liquidations",
-            //     accessor: "liquidations",
-            // },
-            // {
-            //     Header: "Total Volumes",
-            //     accessor: "totalVolumes",
-            // },
+            {
+                Header: "Deposit",
+                accessor: "deposit",
+            },
+            {
+                Header: "Profit",
+                accessor: "profit",
+            },
             {
                 Header: "PnL Ratio",
                 accessor: "pnlRatio",

@@ -1,4 +1,5 @@
 import Big from "big.js"
+import { ReactNode } from "react"
 
 export interface PoolInfo {
     base: Big
@@ -144,10 +145,12 @@ export interface MakerPositionInfo {
 }
 
 export interface LeaderboardScoreData {
-    rank: number
-    trader: string
+    pnlRank: number
+    trader: ReactNode
+    pnlRatio: string
+    profit: string
+    deposit: string
     // totalTrades: string
     // liquidations: number
     // totalVolumes: string
-    pnlRatio: string
 }
