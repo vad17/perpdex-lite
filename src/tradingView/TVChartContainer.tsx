@@ -53,7 +53,7 @@ export const TVChartContainer = (props: ChartContainerProps) => {
         symbol: "AAPL",
         interval: "5",
         datafeed: {},
-        libraryPath: "/charting_library/",
+        libraryPath: "./charting_library/",
         chartsStorageUrl: "https://saveload.tradingview.com",
         chartsStorageApiVersion: "1.1",
         clientId: "tradingview.com",
