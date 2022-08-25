@@ -5,37 +5,6 @@ import { normalizeToUnixtime } from "./time"
 import _ from "lodash"
 import Big from "big.js"
 
-export function cleanUpChartInputData(candlesData: any, inverse: boolean) {
-    if (!candlesData) return
-
-    const x96ToNumber = (x96: string) => {
-        return x96ToBig(BigNumber.from(x96), inverse).toNumber()
-    }
-
-    const inputData = _.sortBy(
-        candlesData.candles.map((d: any) => ({
-            time: normalizeToUnixtime(Number(d.timestamp)),
-            open: x96ToNumber(d.openX96),
-            high: x96ToNumber(d.highX96),
-            low: x96ToNumber(d.lowX96),
-            close: x96ToNumber(d.closeX96),
-        })),
-        (data: any) => data.time,
-    )
-
-    // Make it easy to understand
-    for (let i = 1; i < inputData.length; i++) {
-        const prevClose = inputData[i - 1].close
-        inputData[i].open = prevClose
-        inputData[i].high = Math.max(inputData[i].high, prevClose)
-        inputData[i].low = Math.min(inputData[i].low, prevClose)
-    }
-
-    if (!inputData || inputData.length === 0) return
-
-    return _.sortBy(inputData, (data: any) => data.time)
-}
-
 export function cleanUpOrderHistories(queryResponse: any, inverse: boolean) {
     if (!queryResponse || !queryResponse.positionChangeds) return
 

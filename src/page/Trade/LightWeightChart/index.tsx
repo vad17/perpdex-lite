@@ -1,11 +1,13 @@
-import React, { useEffect, useMemo } from "react"
+import React, { useMemo, useState } from "react"
 import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
-import { getCandlesQuery } from "queries/trades"
-import { cleanUpChartInputData } from "util/chart"
 import Chart from "@qognicafinance/react-lightweight-charts"
 import moment from "moment"
 import { Connection } from "../../../container/connection"
-import { useThegraphQuery } from "../../../hook/useThegraphQuery"
+import { useInterval } from "../../../hook/useInterval"
+import { x96ToNumber } from "../../../util/format"
+import { usePageVisibility } from "react-page-visibility"
+import { createMarketContract } from "../../../container/connection/contractFactory"
+import _ from "lodash"
 
 const chartOptions = {
     layout: {
@@ -27,36 +29,73 @@ const chartOptions = {
     },
 }
 
-function LightWeightChart() {
-    const { chainId } = Connection.useContainer()
-    const { currentMarket, currentMarketState } = PerpdexMarketContainer.useContainer()
+interface Bar {
+    time: number
+    high: number
+    low: number
+    close: number
+    volume: number
+}
 
-    const candleResult = useThegraphQuery(chainId, getCandlesQuery, {
-        variables: {
-            markets: [currentMarket, currentMarket.toLowerCase()],
-            timeFormats: [60 * 60],
-        },
-    })
+function LightWeightChart() {
+    const { chainId, signer } = Connection.useContainer()
+    const { currentMarket, currentMarketState } = PerpdexMarketContainer.useContainer()
+    const [bars, setBars] = useState<Bar[]>([])
+    const isVisible = usePageVisibility()
 
     const candlestickSeries = useMemo(() => {
-        if (candleResult.loading || candleResult.error) return [{ data: [] }]
-        const candlesData = candleResult.data
-        const chartInputData = cleanUpChartInputData(candlesData, currentMarketState.inverse)
-
         return [
             {
-                data: chartInputData || [],
+                data: bars,
             },
         ]
-    }, [candleResult.data, candleResult.loading, candleResult.error])
+    }, [bars])
 
-    useEffect(() => {
-        const iid = setInterval(() => {
-            candleResult.refetch({ markets: [currentMarket, currentMarket.toLowerCase()], timeFormats: [60 * 60] })
-        }, 5000)
+    const fetchData = async () => {
+        if (!currentMarket) return
+        const inverse = currentMarketState.inverse
 
-        return () => clearInterval(iid)
-    }, [currentMarket])
+        const contract = createMarketContract(currentMarket, signer)
+        const interval = 5 * 60
+        const to = Math.ceil(new Date().getTime() / 1000 / interval) * interval
+        const from = to - 200 * interval
+
+        const candles = await contract.getCandles(interval, Math.floor(from), Math.floor((to - from) / interval))
+        let bars = _.map(candles, (candle, idx: number) => {
+            return {
+                time: from + idx * interval,
+                low: x96ToNumber(candle.lowX96, inverse),
+                high: x96ToNumber(candle.highX96, inverse),
+                close: x96ToNumber(candle.closeX96, inverse),
+                open: 0,
+                volume: candle.quote,
+            }
+        })
+        bars = _.filter(bars, candle => {
+            return candle.close !== 0
+        })
+        _.each(bars, (bar, idx: number) => {
+            bar.open = bars[idx === 0 ? 0 : idx - 1].close
+        })
+        return bars
+    }
+
+    useInterval(async () => {
+        if (!isVisible) return
+
+        console.log("LightWeightChart polling")
+
+        let newBars: any
+        try {
+            newBars = await fetchData()
+        } catch (err) {
+            console.log(err)
+        }
+        if (!newBars) return
+
+        console.log("polling newBars", newBars)
+        setBars(newBars)
+    }, 5000)
 
     return <Chart autoWidth={true} autoHeight={true} options={chartOptions} candlestickSeries={candlestickSeries} />
 }
