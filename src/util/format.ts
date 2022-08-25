@@ -3,6 +3,7 @@ import { ERC20_DECIMAL_DIGITS, DISPLAY_DIGITS } from "../constant/number"
 import Big from "big.js"
 import { BigNumber, ethers } from "ethers"
 import { formatUnits } from "ethers/lib/utils"
+import _ from "lodash"
 
 export interface Decimal {
     d: BigNumber
@@ -27,6 +28,13 @@ export function x96ToBig(val: BigNumber, isInverse: boolean = false) {
 export function bigToX96(val: Big, isInverse: boolean = false) {
     const X96 = new Big(2).pow(96)
     return BigNumber.from(isInverse ? X96.div(val) : val.mul(X96).toFixed(0))
+}
+
+export function x96ToNumber(x96: string | BigNumber, inverse: boolean = false) {
+    if (_.isString(x96)) {
+        x96 = BigNumber.from(x96)
+    }
+    return x96ToBig(x96, inverse).toNumber()
 }
 
 // Big Number to...
