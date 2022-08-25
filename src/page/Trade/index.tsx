@@ -9,6 +9,8 @@ import LightWeightChart from "./LightWeightChart"
 import OrderHistory from "./OrderHistory"
 import AccountSummary from "./AccountSummary"
 import OrderBook from "./OrderBook"
+import TechnicalChart from "./TechnicalChart"
+import { isTechnicalChart } from "../../constant"
 
 function Trade() {
     const [height, setHeight] = useState<number | undefined>(0)
@@ -28,7 +30,7 @@ function Trade() {
                         <VStack alignItems="stretch">
                             <ChartHead />
                             <Box width={600} height={400}>
-                                <LightWeightChart />
+                                {isTechnicalChart ? <TechnicalChart /> : <LightWeightChart />}
                             </Box>
                         </VStack>
                         <OrderHistory />
