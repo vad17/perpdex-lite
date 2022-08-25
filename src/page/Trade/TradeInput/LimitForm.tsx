@@ -11,6 +11,7 @@ import Button from "component/base/Button"
 import Summary from "./Summary"
 import _ from "lodash"
 import PriceInput from "./PriceInput"
+import { LimitOrderType } from "../../../constant/types"
 
 interface PreviewResult {
     error: string
@@ -31,6 +32,7 @@ function LimitForm({ isBuyDisplay }: LimitFormProps) {
         error: "",
         oppositeAmount: Big(0),
     })
+    const [limitOrderType, setLimitOrderType] = useState<LimitOrderType>("Normal")
 
     const isBuy = useMemo(() => {
         return currentMarketState?.inverse ? !isBuyDisplay : isBuyDisplay
@@ -76,7 +78,7 @@ function LimitForm({ isBuyDisplay }: LimitFormProps) {
 
     const updatePreview = useCallback(async () => {
         console.log("updatePreview")
-        const results = await preview.createLimitOrder(isBuy, baseOrderValue, limitPrice)
+        const results = await preview.createLimitOrder(isBuy, baseOrderValue, limitPrice, limitOrderType)
         console.log(results)
         if (!results) return
         if (_.isString(results)) {
@@ -90,7 +92,7 @@ function LimitForm({ isBuyDisplay }: LimitFormProps) {
                 oppositeAmount: Big(0),
             })
         }
-    }, [preview, isBuy, baseOrderValue, limitPrice])
+    }, [preview, isBuy, baseOrderValue, limitPrice, limitOrderType])
 
     useEffect(() => {
         updatePreview()
@@ -98,9 +100,9 @@ function LimitForm({ isBuyDisplay }: LimitFormProps) {
 
     const handleSubmit = useCallback(async () => {
         if (baseOrderValue) {
-            await createLimitOrder(isBuy, baseOrderValue, limitPrice)
+            await createLimitOrder(isBuy, baseOrderValue, limitPrice, limitOrderType)
         }
-    }, [baseOrderValue, isBuy, createLimitOrder, limitPrice])
+    }, [baseOrderValue, createLimitOrder, isBuy, limitPrice, limitOrderType])
 
     return (
         <VStack spacing={6}>
