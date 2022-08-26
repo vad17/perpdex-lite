@@ -21,3 +21,28 @@ jobs:
       - run: yarn build
         env:
           CI: false
+
+  build-with-charting-library:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+          submodules: recursive
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+          cache: yarn
+
+      - uses: webfactory/ssh-agent@v0.5.4
+        with:
+          ssh-private-key: ${{ secrets.CHARTING_LIBRARY_DEPLOY_KEY }}
+      - run: git clone git@github.com:perpdex/charting_library.git /tmp/charting_library
+
+      - run: yarn install
+      - run: yarn build-contract-all
+      - run: yarn build
+        env:
+          CI: false
+          CHARTING_LIBRARY_PATH: /tmp/charting_library

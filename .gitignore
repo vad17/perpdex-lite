@@ -32,3 +32,6 @@ yarn-error.log*
 /.vscode
 
 !.gitkeep
+
+/public/charting_library
+/public/datafeeds

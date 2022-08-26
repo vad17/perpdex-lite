@@ -6,19 +6,20 @@
     "private": true,
     "scripts": {
         "start": "react-scripts start",
-        "prebuild": "run-p export-deployment export-deployment-stablecoin generate-type",
+        "prebuild": "run-p export-deployment export-deployment-stablecoin generate-type copy-charting-library",
         "build": "react-scripts build",
         "test": "react-scripts test",
         "eject": "react-scripts eject",
         "build-contract-all": "run-s build-contract build-stablecoin",
-        "build-contract": "cd deps/perpdex-contract && yarn install && yarn build",
-        "build-stablecoin": "cd deps/perpdex-stablecoin && git submodule update --init --recursive && yarn install && yarn build",
+        "build-contract": "cd deps/perpdex-contract && git submodule update --init --recursive && yarn && yarn build",
+        "build-stablecoin": "cd deps/perpdex-stablecoin && git submodule update --init --recursive && yarn && yarn build",
         "export-deployment": "cd deps/perpdex-contract && yarn hardhat export --export-all ../../src/deployments/perpdexContract.json",
         "export-deployment-stablecoin": "cd deps/perpdex-stablecoin && yarn hardhat export --export-all ../../src/deployments/perpdexStablecoin.json",
         "generate-type": "ts-node script/generate-type.ts",
         "postinstall": "typesync",
         "prepare": "husky install",
         "deploy-ipfs": "npx ipfs-deploy@v11.2.2 build",
+        "copy-charting-library": "bash script/copy_charting_library.sh",
         "clean": "rm -rf src/types"
     },
     "dependencies": {
