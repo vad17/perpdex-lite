@@ -4,6 +4,7 @@ import { Flex, Spacer, Button, HStack, Center, Heading } from "@chakra-ui/react"
 import { Logo } from "../Icon"
 import ConnectBtn from "./ConnectBtn"
 import NetworkBtn from "./NetworkBtn"
+import { positionTokenDisabled } from "../../constant"
 
 function Header() {
     return (
@@ -30,9 +31,11 @@ function Header() {
                     <Link to="/pools">
                         <Button variant="link">Pool</Button>
                     </Link>
-                    <Link to="/tokens">
-                        <Button variant="link">Position Tokens</Button>
-                    </Link>
+                    {!positionTokenDisabled && (
+                        <Link to="/tokens">
+                            <Button variant="link">Position Tokens</Button>
+                        </Link>
+                    )}
                     {/*TODO: implement history*/}
                     {/*<Link to="/history">*/}
                     {/*    <Button variant="link">History</Button>*/}
