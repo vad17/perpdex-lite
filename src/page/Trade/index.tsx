@@ -1,5 +1,5 @@
 import React from "react"
-import { VStack, Flex, Box, HStack, Divider } from "@chakra-ui/react"
+import { VStack, Flex, Box, HStack, Divider, Tabs, TabList, chakra, Tab, TabPanels, TabPanel } from "@chakra-ui/react"
 
 import ChartHead from "./ChartHead"
 import FrameContainer from "component/frames/FrameContainer"
@@ -23,6 +23,13 @@ function Trade() {
     //     }
     // }, [])
 
+    const StyledTab = chakra(Tab, {
+        baseStyle: {
+            color: "gray.200",
+            _selected: { color: "white", borderBottom: "1px solid #627EEA" },
+        },
+    })
+
     return (
         <FrameContainer removeMarginTop>
             <Flex direction={{ base: "column", lg: "row" }}>
@@ -34,8 +41,24 @@ function Trade() {
                                 {isTechnicalChart ? <TechnicalChart /> : <LightWeightChart />}
                             </Box>
                         </VStack>
-                        <OrderHistory />
-                        <OrderBook />
+                        <Tabs variant="unstyled" size="md" isLazy>
+                            <TabList my={2}>
+                                <HStack w="100%" justifyContent="center">
+                                    <StyledTab pt={1}>Order Book</StyledTab>
+                                    <StyledTab pt={1}>Recent Trades</StyledTab>
+                                </HStack>
+                            </TabList>
+
+                            <TabPanels>
+                                {/* // size 渡す */}
+                                <TabPanel p={0}>
+                                    <OrderBook />
+                                </TabPanel>
+                                <TabPanel p={0}>
+                                    <OrderHistory />
+                                </TabPanel>
+                            </TabPanels>
+                        </Tabs>
                     </Flex>
                     <Divider
                         borderColor="#627EEA"
