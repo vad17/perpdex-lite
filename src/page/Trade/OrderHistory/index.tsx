@@ -8,7 +8,11 @@ import _ from "lodash"
 import { useThegraphQuery } from "../../../hook/useThegraphQuery"
 import { Connection } from "../../../container/connection"
 
-function OrderHistory() {
+interface Props {
+    height: number
+}
+
+function OrderHistory({ height }: Props) {
     const { chainId } = Connection.useContainer()
     const { currentMarket, currentMarketState } = PerpdexMarketContainer.useContainer()
 
@@ -56,6 +60,7 @@ function OrderHistory() {
                 data={orderHistories}
                 applyStripe={true}
                 applyPXZero={true}
+                height={height}
             />
         </Box>
     )

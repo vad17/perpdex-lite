@@ -1,5 +1,5 @@
 import React from "react"
-import { Thead, Table, Tr, Th, Tbody, Td, chakra, Text } from "@chakra-ui/react"
+import { Thead, Table, Tr, Th, Tbody, Td, chakra, Text, Box } from "@chakra-ui/react"
 import { OrderHistoryUnit } from "constant/types"
 import { formattedNumberWithCommas } from "util/format"
 import { formatTime, timezoneStr } from "util/time"
@@ -11,6 +11,7 @@ interface OrderHistoryTableState {
     data: OrderHistoryUnit[] | undefined
     applyStripe?: boolean
     applyPXZero?: boolean
+    height: number
 }
 
 function OrderHistoryTable({
@@ -20,6 +21,7 @@ function OrderHistoryTable({
     data,
     applyStripe = false,
     applyPXZero = false,
+    height,
 }: OrderHistoryTableState) {
     const StyledTh = chakra(Th, {
         baseStyle: {
@@ -36,7 +38,7 @@ function OrderHistoryTable({
     })
 
     return (
-        <>
+        <Box overflowY="auto" maxHeight={height}>
             {title && (
                 <Text align="center" color={"gray.200"}>
                     {title}
@@ -60,16 +62,17 @@ function OrderHistoryTable({
                                 <StyledTd
                                     color={value.isLongDisplay ? "green.300" : "red.300"}
                                     px={applyPXZero ? 0 : "24px"}
+                                    py={1}
                                 >
                                     {formattedNumberWithCommas(value.size)}
                                 </StyledTd>
-                                <StyledTd>{formattedNumberWithCommas(value.priceDisplay)}</StyledTd>
-                                <StyledTd>{formatTime(value.time, true)}</StyledTd>
+                                <StyledTd py={1}>{formattedNumberWithCommas(value.priceDisplay)}</StyledTd>
+                                <StyledTd py={1}>{formatTime(value.time, true)}</StyledTd>
                             </Tr>
                         ))}
                 </Tbody>
             </Table>
-        </>
+        </Box>
     )
 }
 

@@ -1,5 +1,5 @@
 import React from "react"
-import { Thead, Table, Tr, Th, Tbody, Td, chakra } from "@chakra-ui/react"
+import { Thead, Table, Tr, Th, Tbody, Td, chakra, Box } from "@chakra-ui/react"
 import { formattedNumberWithCommas } from "util/format"
 import Big from "big.js"
 import _ from "lodash"
@@ -15,12 +15,14 @@ interface Props {
     marketState: MarketState
     applyStripe?: boolean
     applyPXZero?: boolean
+    height: number
 }
 
 function OrderBookTable({
     marketState: { baseSymbol, quoteSymbol, markPriceDisplay, priceUnitDisplay, asks, bids },
     applyStripe = false,
     applyPXZero = false,
+    height,
 }: Props) {
     const StyledTh = chakra(Th, {
         baseStyle: {
@@ -49,7 +51,7 @@ function OrderBookTable({
     }
 
     return (
-        <>
+        <Box overflowY="auto" maxHeight={height}>
             <Table variant="simple" overflowY="scroll">
                 <Thead>
                     <Tr>
@@ -75,7 +77,7 @@ function OrderBookTable({
                     {bids.length > 0 && _.take(bids, 10).map(_.partial(toTr, true))}
                 </Tbody>
             </Table>
-        </>
+        </Box>
     )
 }
 

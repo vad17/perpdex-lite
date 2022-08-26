@@ -3,7 +3,11 @@ import { Box } from "@chakra-ui/react"
 import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
 import OrderBookTable from "../../../component/tables/OrderBookTable"
 
-function OrderBook() {
+interface Props {
+    height: number
+}
+
+function OrderBook({ height }: Props) {
     const { currentMarketState } = PerpdexMarketContainer.useContainer()
 
     return (
@@ -22,7 +26,7 @@ function OrderBook() {
                 },
             }}
         >
-            <OrderBookTable marketState={currentMarketState} applyStripe={true} applyPXZero={true} />
+            <OrderBookTable marketState={currentMarketState} applyStripe={true} applyPXZero={true} height={height} />
         </Box>
     )
 }

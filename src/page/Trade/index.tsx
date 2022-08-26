@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
 import { VStack, Flex, Box, HStack, Divider, Tabs, TabList, chakra, Tab, TabPanels, TabPanel } from "@chakra-ui/react"
 
 import ChartHead from "./ChartHead"
@@ -13,6 +13,19 @@ import TechnicalChart from "./TechnicalChart"
 import { isTechnicalChart } from "../../constant"
 
 function Trade() {
+    const chartWidth: number = 800
+    const chartHeight: number = 700
+
+    const tabListRef = React.useRef<HTMLDivElement>(null)
+
+    const [height, setHeight] = useState<number>(chartHeight)
+
+    useEffect(() => {
+        if (tabListRef.current) {
+            setHeight(chartHeight - tabListRef.current.offsetHeight)
+        }
+    }, [])
+
     const StyledTab = chakra(Tab, {
         baseStyle: {
             color: "gray.200",
@@ -27,12 +40,12 @@ function Trade() {
                     <ChartHead />
                     <Flex direction={{ base: "column", lg: "row" }} alignItems="flex-start">
                         <VStack alignItems="stretch">
-                            <Box width={800} height={700}>
+                            <Box width={chartWidth} height={chartHeight}>
                                 {isTechnicalChart ? <TechnicalChart /> : <LightWeightChart />}
                             </Box>
                         </VStack>
                         <Tabs variant="unstyled" size="md" isLazy>
-                            <TabList my={2}>
+                            <TabList my={2} ref={tabListRef}>
                                 <HStack w="100%" justifyContent="center">
                                     <StyledTab pt={1}>Order Book</StyledTab>
                                     <StyledTab pt={1}>Recent Trades</StyledTab>
@@ -40,12 +53,11 @@ function Trade() {
                             </TabList>
 
                             <TabPanels>
-                                {/* // size 渡す */}
                                 <TabPanel p={0}>
-                                    <OrderBook />
+                                    <OrderBook height={height} />
                                 </TabPanel>
                                 <TabPanel p={0}>
-                                    <OrderHistory />
+                                    <OrderHistory height={height} />
                                 </TabPanel>
                             </TabPanels>
                         </Tabs>
