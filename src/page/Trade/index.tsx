@@ -13,16 +13,6 @@ import TechnicalChart from "./TechnicalChart"
 import { isTechnicalChart } from "../../constant"
 
 function Trade() {
-    // todo dividers are not appropriate height
-    // const [height, setHeight] = useState<number | undefined>(0)
-    const divRef = React.useRef<HTMLDivElement>(null)
-
-    // useEffect(() => {
-    //     if (divRef.current) {
-    //         setHeight(divRef.current.offsetHeight)
-    //     }
-    // }, [])
-
     const StyledTab = chakra(Tab, {
         baseStyle: {
             color: "gray.200",
@@ -70,7 +60,7 @@ function Trade() {
                     />
                     <PositionTab />
                 </Box>
-                <Box ref={divRef} w="100%">
+                <Box w="100%">
                     <HStack spacing={8} justifyContent="flex-start">
                         <Divider
                             orientation="vertical"
