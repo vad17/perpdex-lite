@@ -9,8 +9,10 @@ function OrderBook() {
     return (
         <Box
             w="100%"
-            borderLeft="1px solid rgba(98, 126, 234, 0.6)"
-            p={6}
+            pt={0}
+            pb={1}
+            pl={8}
+            pr={6}
             mx="0"
             marginInlineStart={[0, "0 !important"]}
             sx={{
