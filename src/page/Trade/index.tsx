@@ -1,5 +1,5 @@
-import React from "react"
-import { VStack, Flex, Box, HStack, Divider } from "@chakra-ui/react"
+import React, { useEffect, useState } from "react"
+import { VStack, Flex, Box, HStack, Divider, Tabs, TabList, chakra, Tab, TabPanels, TabPanel } from "@chakra-ui/react"
 
 import ChartHead from "./ChartHead"
 import FrameContainer from "component/frames/FrameContainer"
@@ -13,29 +13,54 @@ import TechnicalChart from "./TechnicalChart"
 import { isTechnicalChart } from "../../constant"
 
 function Trade() {
-    // todo dividers are not appropriate height
-    // const [height, setHeight] = useState<number | undefined>(0)
-    const divRef = React.useRef<HTMLDivElement>(null)
+    const chartWidth: number = 800
+    const chartHeight: number = 700
 
-    // useEffect(() => {
-    //     if (divRef.current) {
-    //         setHeight(divRef.current.offsetHeight)
-    //     }
-    // }, [])
+    const tabListRef = React.useRef<HTMLDivElement>(null)
+
+    const [height, setHeight] = useState<number>(chartHeight)
+
+    useEffect(() => {
+        if (tabListRef.current) {
+            setHeight(chartHeight - tabListRef.current.offsetHeight)
+        }
+    }, [])
+
+    const StyledTab = chakra(Tab, {
+        baseStyle: {
+            color: "gray.200",
+            _selected: { color: "white", borderBottom: "1px solid #627EEA" },
+        },
+    })
 
     return (
         <FrameContainer removeMarginTop>
             <Flex direction={{ base: "column", lg: "row" }}>
                 <Box flex="1">
+                    <ChartHead />
                     <Flex direction={{ base: "column", lg: "row" }} alignItems="flex-start">
                         <VStack alignItems="stretch">
-                            <ChartHead />
-                            <Box width={600} height={400}>
+                            <Box width={chartWidth} height={chartHeight}>
                                 {isTechnicalChart ? <TechnicalChart /> : <LightWeightChart />}
                             </Box>
                         </VStack>
-                        <OrderHistory />
-                        <OrderBook />
+                        <Tabs variant="unstyled" size="md" isLazy>
+                            <TabList my={2} ref={tabListRef}>
+                                <HStack w="100%" justifyContent="center">
+                                    <StyledTab pt={1}>Order Book</StyledTab>
+                                    <StyledTab pt={1}>Recent Trades</StyledTab>
+                                </HStack>
+                            </TabList>
+
+                            <TabPanels>
+                                <TabPanel p={0}>
+                                    <OrderBook height={height} />
+                                </TabPanel>
+                                <TabPanel p={0}>
+                                    <OrderHistory height={height} />
+                                </TabPanel>
+                            </TabPanels>
+                        </Tabs>
                     </Flex>
                     <Divider
                         borderColor="#627EEA"
@@ -47,7 +72,7 @@ function Trade() {
                     />
                     <PositionTab />
                 </Box>
-                <Box ref={divRef} w="100%">
+                <Box w="100%">
                     <HStack spacing={8} justifyContent="flex-start">
                         <Divider
                             orientation="vertical"

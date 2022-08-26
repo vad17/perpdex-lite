@@ -50,7 +50,7 @@ function PriceInput({ priceUnit, handlePriceInput }: PriceInputState) {
                     </Text>
                 </FormLabel>
                 <HStack>
-                    <NumberInput value={priceString} onInput={e => handleOnInput(e)}>
+                    <NumberInput w="100%" value={priceString} onInput={e => handleOnInput(e)}>
                         <NumberInputField />
                         <InputRightElement w="54px" mr={3}>
                             <Text
