@@ -34,10 +34,10 @@ function Trade() {
         <FrameContainer removeMarginTop>
             <Flex direction={{ base: "column", lg: "row" }}>
                 <Box flex="1">
+                    <ChartHead />
                     <Flex direction={{ base: "column", lg: "row" }} alignItems="flex-start">
                         <VStack alignItems="stretch">
-                            <ChartHead />
-                            <Box width={600} height={400}>
+                            <Box width={800} height={700}>
                                 {isTechnicalChart ? <TechnicalChart /> : <LightWeightChart />}
                             </Box>
                         </VStack>
