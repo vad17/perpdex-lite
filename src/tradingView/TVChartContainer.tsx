@@ -87,6 +87,7 @@ export const TVChartContainer = (props: ChartContainerProps) => {
             studies_overrides: props.studiesOverrides,
 
             theme: "dark",
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
         }
 
         let tvWidget = new widget(widgetOptions)

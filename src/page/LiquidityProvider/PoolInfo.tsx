@@ -33,7 +33,7 @@ function PoolInfo({ marketState, tvl, volume24h, fee24h }: Props) {
             <SimpleGrid width="100%" columns={2}>
                 <DataRow text="TVL" value={tvl} />
                 <DataRow text="Volume (24h)" value={volume24h} />
-                <DataRow text="24h Fees" value={fee24h} />
+                <DataRow text="24h Fees (estimated)" value={fee24h} />
                 <DataRow
                     text="Mark Price"
                     value={`${numberWithCommas(marketState.markPriceDisplay)} ${marketState.priceUnitDisplay}`}
