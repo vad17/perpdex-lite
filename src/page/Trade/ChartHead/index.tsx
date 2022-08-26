@@ -63,7 +63,7 @@ function ChartHead() {
                     <Divider orientation="vertical" borderColor="rgba(98, 126, 234, 0.6)" />
                 </Center>
                 <Box w="100%" alignSelf="center">
-                    <HStack justifyContent="space-between" alignItems="center">
+                    <HStack justifyContent="flex-start" alignItems="center" spacing={14}>
                         <VStack align="start">
                             <Text color={"gray.200"}>Mark Price</Text>
                             <Text>
