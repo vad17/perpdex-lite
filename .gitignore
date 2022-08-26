@@ -34,4 +34,5 @@ yarn-error.log*
 !.gitkeep
 
 /public/charting_library
+/src/charting_library
 /public/datafeeds

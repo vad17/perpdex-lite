@@ -25,6 +25,7 @@ import "./index.css"
 import { useEffect } from "react"
 
 export interface ChartContainerProps {
+    widget?: any
     symbol?: string
     interval?: string
 
@@ -47,9 +48,8 @@ function getLanguageFromURL(): string | null {
 }
 
 export const TVChartContainer = (props: ChartContainerProps) => {
-    const widget = (window as any)?.TradingView.widget
-
     const defaultProps: Omit<ChartContainerProps, "container"> = {
+        widget: (window as any)?.TradingView?.widget,
         symbol: "AAPL",
         interval: "5",
         datafeed: {},
@@ -90,7 +90,7 @@ export const TVChartContainer = (props: ChartContainerProps) => {
             timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
         }
 
-        let tvWidget = new widget(widgetOptions)
+        let tvWidget = new props.widget(widgetOptions)
 
         return () => {
             if (tvWidget) {
@@ -98,7 +98,7 @@ export const TVChartContainer = (props: ChartContainerProps) => {
                 tvWidget = null
             }
         }
-    }, [props.symbol, props.datafeed])
+    }, [props.widget, props.symbol, props.datafeed])
 
     return <div ref={ref} className={"TVChartContainer"} />
 }

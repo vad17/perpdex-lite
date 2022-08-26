@@ -3,6 +3,7 @@ import { PerpdexMarketContainer } from "container/connection/perpdexMarketContai
 import { Connection } from "container/connection"
 import { TVChartContainer } from "../../../tradingView/TVChartContainer"
 import { createDataFeed } from "../../../tradingView/datafeed"
+import { widget } from "charting_library"
 
 function TechnicalChart() {
     const { currentMarketState } = PerpdexMarketContainer.useContainer()
@@ -18,7 +19,14 @@ function TechnicalChart() {
     const isMarketReady = useMemo(() => currentMarketState.name, [currentMarketState.name])
 
     if (isMarketReady) {
-        return <TVChartContainer symbol={currentMarketState.name || "AAPL"} datafeed={datafeed} />
+        const props: any = {
+            symbol: currentMarketState.name || "AAPL",
+            datafeed: datafeed,
+        }
+        if (widget) {
+            props.widget = widget
+        }
+        return <TVChartContainer {...props} />
     }
 
     return <div className="tv_chart_loading">Loading...</div>
