@@ -38,6 +38,7 @@ interface RawBar {
     high: number
     close: number
     volume: number
+    finalized: boolean
 }
 const barCache: { [address: string]: { [interval: string]: { [time: string]: RawBar } } } = {}
 
@@ -49,25 +50,39 @@ const getBarCache = (address: string, interval: number) => {
 
 const addCandlesToCache = (address: string, interval: number, from: number, inverse: boolean, candles: any[]) => {
     console.log("data feed addCandlesToCache", candles)
-    _.each(candles, (candle, idx: number) => {
-        if (candle.closeX96.eq(0)) return
-        getBarCache(address, interval)[from + idx * interval] = {
+    let finalized = false
+    for (let i = candles.length - 1; i >= 0; i--) {
+        const candle = candles[i]
+        const bar = {
             low: x96ToNumber(candle.lowX96, inverse),
             high: x96ToNumber(candle.highX96, inverse),
             close: x96ToNumber(candle.closeX96, inverse),
             volume: bigNum2Big(candle.quote).toNumber(),
+            finalized: finalized,
         }
-    })
+        if (bar.close) {
+            finalized = true
+        }
+        getBarCache(address, interval)[from + i * interval] = bar
+    }
 }
 
 const getCacheBars = (address: string, interval: number, from: number, to: number) => {
-    let bars = _.map(getBarCache(address, interval), (bar, time) => {
-        return {
-            time: +time * 1000,
-            open: 0,
-            ...bar,
-        }
-    })
+    let bars = _.map(
+        _.pickBy(getBarCache(address, interval), bar => {
+            return !!bar.close
+        }),
+        (bar, time) => {
+            return {
+                time: +time * 1000,
+                open: 0,
+                high: bar.high,
+                low: bar.low,
+                close: bar.close,
+                volume: bar.volume,
+            }
+        },
+    )
     bars = _.sortBy(bars, "time")
     _.each(bars, (bar, idx: number) => {
         bar.open = bars[idx === 0 ? 0 : idx - 1].close
@@ -78,7 +93,14 @@ const getCacheBars = (address: string, interval: number, from: number, to: numbe
 }
 
 const getCacheLastTime = (address: string, interval: number): number => {
-    return _.max(_.map(_.keys(getBarCache(address, interval)), _.toNumber)) || 0
+    const timeAndCloses = _.map(getBarCache(address, interval), (bar, time) => {
+        return [+time, bar.close]
+    })
+    return (
+        _.maxBy(timeAndCloses, ([time, close]) => {
+            return close ? time : 0
+        })?.[0] || 0
+    )
 }
 
 export const createDataFeed = (config: DataFeedConfig) => {
@@ -143,14 +165,23 @@ export const createDataFeed = (config: DataFeedConfig) => {
 
             try {
                 const lastTime = getCacheLastTime(config.marketState.address, interval)
-                let from2 = Math.max(lastTime, Math.floor(from / interval) * interval)
+                let from2 = Math.max(0, Math.floor(from / interval) * interval)
                 const to2 = Math.floor(to / interval) * interval
                 console.log("data feed", lastTime, from2, to2)
+
+                const cache = getBarCache(config.marketState.address, interval)
+                while (cache[from2]?.finalized) {
+                    from2 += interval
+                }
                 while (from2 < to2) {
                     const step = Math.min(200, (to2 - from2) / interval)
                     const candles = await contract.getCandles(interval, from2, step)
                     addCandlesToCache(config.marketState.address, interval, from2, inverse, candles)
                     from2 += step * interval
+
+                    while (cache[from2]?.finalized) {
+                        from2 += interval
+                    }
                 }
 
                 const bars = getCacheBars(config.marketState.address, interval, from, to)
