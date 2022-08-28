@@ -5,6 +5,7 @@ import { Logo } from "../Icon"
 import ConnectBtn from "./ConnectBtn"
 import NetworkBtn from "./NetworkBtn"
 import { positionTokenDisabled } from "../../constant"
+import { ExternalLink } from "component/ExternalLink"
 
 function Header() {
     return (
@@ -36,6 +37,9 @@ function Header() {
                             <Button variant="link">Position Tokens</Button>
                         </Link>
                     )}
+                    <ExternalLink href="https://perpdex.gitbook.io/docs" isExternal>
+                        <Button variant="link">Docs</Button>
+                    </ExternalLink>
                     {/*TODO: implement history*/}
                     {/*<Link to="/history">*/}
                     {/*    <Button variant="link">History</Button>*/}
