@@ -19,6 +19,7 @@ import ConnectBtn from "./ConnectBtn"
 import NetworkBtn from "./NetworkBtn"
 import { positionTokenDisabled } from "../../constant"
 import { HamburgerIcon } from "@chakra-ui/icons"
+import { ExternalLink } from "component/ExternalLink"
 
 function Header() {
     const isMobileAndTabletScreen = useMediaQuery("(max-width: 1024px)")
@@ -28,12 +29,7 @@ function Header() {
                 <Flex minWidth="max-content" h="90px" alignItems="center">
                     <Menu isLazy>
                         <MenuButton as={IconButton} icon={<HamburgerIcon boxSize={8} />} variant="unstyled" ml={4} />
-                        <MenuList>
-                            <MenuItem>
-                                <Link to="/">
-                                    <Logo></Logo>
-                                </Link>
-                            </MenuItem>
+                        <MenuList zIndex="999" bg="#181B41">
                             <MenuItem>
                                 <Link to="/">
                                     <Button variant="link">Home</Button>
@@ -54,8 +50,18 @@ function Header() {
                                     <Button variant="link">Position Tokens</Button>
                                 </Link>
                             </MenuItem>
+                            <MenuItem>
+                                <ExternalLink href="https://perpdex.gitbook.io/docs" isExternal>
+                                    <Button variant="link">Docs</Button>
+                                </ExternalLink>
+                            </MenuItem>
                         </MenuList>
                     </Menu>
+                    <Center marginLeft="24px">
+                        <Link to="/">
+                            <Logo boxSize={8}></Logo>
+                        </Link>
+                    </Center>
                     <Spacer />
                     <NetworkBtn />
                     <ConnectBtn />
