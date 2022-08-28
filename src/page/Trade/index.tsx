@@ -56,7 +56,7 @@ function Trade() {
                     <ChartHead />
                     <Flex direction={{ base: "column", lg: "row" }} alignItems="flex-start">
                         <Box
-                            width={isMobileAndTabletScreen[0] ? "90%" : chartWidth}
+                            width={isMobileAndTabletScreen[0] ? "100%" : chartWidth}
                             height={isMobileAndTabletScreen[0] ? 400 : chartHeight}
                         >
                             {isTechnicalChart ? <TechnicalChart /> : <LightWeightChart />}
