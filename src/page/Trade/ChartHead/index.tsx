@@ -14,14 +14,14 @@ function ChartHead() {
 
     return (
         <>
-            <HStack spacing="24px" borderBottom="solid rgba(98, 126, 234, 0.6) 1px" px="20px">
+            <HStack spacing="24px" borderBottom="solid rgba(98, 126, 234, 0.6) 1px" px={{ base: "0", lg: "20px" }}>
                 <Popover trigger="hover" arrowSize={0}>
                     {({ onClose }) => (
                         <>
                             <PopoverTrigger>
                                 <Center
                                     h="80px"
-                                    pl="4"
+                                    pl={{ base: "0", lg: "4" }}
                                     _hover={{ backgroundColor: "black.alpha800", opacity: "0.9", cursor: "pointer" }}
                                 >
                                     <HStack spacing={2}>
@@ -66,7 +66,7 @@ function ChartHead() {
                     <HStack justifyContent="flex-start" alignItems="center" spacing={14}>
                         <VStack align="start">
                             <Text color={"gray.200"}>Mark Price</Text>
-                            <Text>
+                            <Text wordBreak="break-all">
                                 {numberWithCommas(currentMarketState.markPriceDisplay)}{" "}
                                 {currentMarketState.priceUnitDisplay}
                             </Text>
@@ -78,7 +78,7 @@ function ChartHead() {
                         {/*</VStack>*/}
                         <VStack align="start">
                             <Text color={"gray.200"}>24h Volume</Text>
-                            <Text>
+                            <Text wordBreak="break-all">
                                 {numberWithCommas(currentMarketState.volume24h)} {currentMarketState.quoteSymbol}
                             </Text>
                         </VStack>

@@ -23,6 +23,7 @@ function OrderBook({ height }: Props) {
                 "@media screen and (max-width: 61em)": {
                     borderLeft: "0px none",
                     marginTop: "20px",
+                    px: "0",
                 },
             }}
         >
