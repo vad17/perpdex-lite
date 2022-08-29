@@ -4,11 +4,12 @@ import { Modal } from "container/modal"
 import { useMemo } from "react"
 import { PositionTableState } from "./../PositionTab/PositionTable"
 import { PerpdexMarketContainer } from "../../../container/connection/perpdexMarketContainer"
-// import OrderHistoryTable from "./OrderHistoryTable"
-// import OrderTable, { OrderTableItem } from "./OrderTable"
-// import _ from "lodash"
-// import { LimitOrderInfo } from "../../../constant/types"
+import _ from "lodash"
+import { LimitOrderInfo } from "../../../constant/types"
 import PositionTableMobile from "./PositionTableMobile"
+import OrderTableMobile from "./OrderTableMobile"
+import { OrderTableItem } from "../PositionTab/OrderTable"
+import OrderHistoryTableMobile from "./OrderHistoryTableMobile"
 
 function PositionTab() {
     const { currentMyTakerPositions, currentMyAskInfos, currentMyBidInfos } = PerpdexExchangeContainer.useContainer()
@@ -33,23 +34,23 @@ function PositionTab() {
         return undefined
     }, [currentMyTakerPositions, currentMarketState])
 
-    // const orderItems: OrderTableItem[] = useMemo(() => {
-    //     const infoToItem = (isBid: boolean, info: LimitOrderInfo, orderId: string): OrderTableItem => {
-    //         const quantity = info.base
-    //         return {
-    //             isBid: currentMarketState.inverse ? !isBid : isBid,
-    //             quantity: quantity,
-    //             price: info.price,
-    //             handleOnClick: () => {
-    //                 toggleCancelOrderModal(isBid, +orderId)
-    //             },
-    //         }
-    //     }
-    //     return _.flatten([
-    //         _.map(currentMyAskInfos, _.partial(infoToItem, false)),
-    //         _.map(currentMyBidInfos, _.partial(infoToItem, true)),
-    //     ])
-    // }, [currentMarketState.inverse, currentMyAskInfos, currentMyBidInfos])
+    const orderItems: OrderTableItem[] = useMemo(() => {
+        const infoToItem = (isBid: boolean, info: LimitOrderInfo, orderId: string): OrderTableItem => {
+            const quantity = info.base
+            return {
+                isBid: currentMarketState.inverse ? !isBid : isBid,
+                quantity: quantity,
+                price: info.price,
+                handleOnClick: () => {
+                    toggleCancelOrderModal(isBid, +orderId)
+                },
+            }
+        }
+        return _.flatten([
+            _.map(currentMyAskInfos, _.partial(infoToItem, false)),
+            _.map(currentMyBidInfos, _.partial(infoToItem, true)),
+        ])
+    }, [currentMarketState.inverse, currentMyAskInfos, currentMyBidInfos])
 
     const StyledTab = chakra(Tab, {
         baseStyle: {
@@ -62,8 +63,8 @@ function PositionTab() {
         <Tabs variant="unstyled" mb="30px">
             <TabList my={2}>
                 <StyledTab>Positions</StyledTab>
-                {/* <StyledTab>Orders</StyledTab>
-                <StyledTab>Trade History</StyledTab> */}
+                <StyledTab>Orders</StyledTab>
+                <StyledTab>Trade History</StyledTab>
             </TabList>
             <Divider borderColor="#627EEA" />
 
@@ -82,6 +83,12 @@ function PositionTab() {
                             handleOnClick={togglePositionCloseModal}
                         />
                     )}
+                </TabPanel>
+                <TabPanel>
+                    {orderItems.length > 0 && <OrderTableMobile marketState={currentMarketState} items={orderItems} />}
+                </TabPanel>
+                <TabPanel>
+                    <OrderHistoryTableMobile />
                 </TabPanel>
             </TabPanels>
         </Tabs>
