@@ -1,4 +1,4 @@
-import { Box, HStack, Text, VStack } from "@chakra-ui/react"
+import { Box, Flex, HStack, Text, useMediaQuery, VStack } from "@chakra-ui/react"
 import { CurrencyIcon, LogoWhite } from "../Icon"
 import Big from "big.js"
 import { AccountInfo, MarketState } from "../../constant/types"
@@ -10,6 +10,8 @@ interface Props {
 }
 
 function AccountPanel(props: Props) {
+    const isMobileAndTabletScreen = useMediaQuery("(max-width: 1024px)")
+
     const currentMyAccountInfo = props.myAccountInfo
     const currentMarketState = props.marketState
 
@@ -21,20 +23,26 @@ function AccountPanel(props: Props) {
 
     return (
         <Box
-            w="80%"
+            w={{ base: "90%", lg: "80%" }}
             bgGradient="linear(180deg, rgba(98, 126, 234, 0.5) 0%, rgba(249, 0, 119, 0.5) 100%);"
             borderRadius={20}
-            p={59}
-            m={10}
+            p={{ base: 30, lg: 59 }}
+            m={{ base: 5, lg: 10 }}
+            mt={{ base: 0, lg: 10 }}
         >
-            <VStack spacing={28} alignItems="stretch">
+            <VStack spacing={{ base: 10, lg: 28 }} alignItems="stretch">
                 <HStack w="100%" justifyContent="space-between" alignItems="center">
                     <LogoWhite></LogoWhite>
                     <Box></Box>
                 </HStack>
                 <VStack spacing={8}>
-                    <HStack w="100%" justifyContent="space-between" alignItems="center">
-                        <Box>
+                    <Flex
+                        direction={{ base: "column", lg: "row" }}
+                        w="100%"
+                        justifyContent="space-between"
+                        alignItems="center"
+                    >
+                        <Box mb={{ base: 6, lg: 0 }}>
                             <VStack spacing={0}>
                                 <Text fontSize="xs">Total Account Value</Text>
                                 <HStack w="100%" justifyContent="start">
@@ -61,9 +69,9 @@ function AccountPanel(props: Props) {
                                     </HStack>
                                 </VStack>
                             </Box>
-                            <Box></Box>
+                            {!isMobileAndTabletScreen[0] && <Box></Box>}
                         </HStack>
-                    </HStack>
+                    </Flex>
                     <HStack w="100%" justifyContent="space-between" alignItems="center">
                         <Box></Box>
                         <CurrencyIcon symbol={currentMarketState.quoteSymbol} boxSize={12}></CurrencyIcon>
