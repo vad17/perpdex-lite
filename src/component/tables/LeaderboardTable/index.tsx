@@ -73,10 +73,18 @@ function LeaderboardTable({ data, account }: Props) {
             <Tbody {...getTableBodyProps()}>
                 {rows.map(row => {
                     prepareRow(row)
+
+                    const isGoldRank = row.original.pnlRank && row.original.pnlRank <= 10
                     return (
                         <Tr
                             {...row.getRowProps()}
-                            bgColor={row.original.trader === account ? "#353E80" : "blackAlpha.900"}
+                            bgColor={
+                                row.original.trader.toLowerCase() === account.toLowerCase()
+                                    ? "#20296A"
+                                    : "blackAlpha.900"
+                            }
+                            color={isGoldRank ? "#FFD700" : "white"}
+                            _hover={{ opacity: 0.8 }}
                         >
                             {row.cells.map(cell => (
                                 <Td {...cell.getCellProps()}>{cell.render("Cell")}</Td>

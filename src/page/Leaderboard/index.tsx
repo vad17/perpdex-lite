@@ -34,13 +34,20 @@ function Leaderboard() {
                 </ExternalLink>
             ),
         }))
+
+        console.log(
+            "@@@@ allData",
+            allData,
+            account !== null,
+            allData?.filter(value => value.trader.toLowerCase() === account?.toLowerCase()),
+        )
         if (!allData || allData.length === 0) return []
         return (filterType === "Gold"
             ? _.take(allData, 10)
             : filterType === "Consolation"
             ? [allData[allData.length - 1]]
             : filterType === "You"
-            ? [allData.filter(value => value.trader === account)]
+            ? allData.filter(value => value.trader.toLowerCase() === account?.toLowerCase())
             : allData) as LeaderboardScoreUnit[]
     }, [
         account,
@@ -75,6 +82,7 @@ function Leaderboard() {
                             <Button
                                 key={value}
                                 text={value}
+                                color={value === "Gold" ? "#FFD700" : "white"}
                                 customType={value === filterType ? "base-blue" : "base-dark"}
                                 onClick={() => setFilterType(value)}
                             />
