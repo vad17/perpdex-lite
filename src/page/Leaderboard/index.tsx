@@ -13,7 +13,7 @@ import { networkConfigs } from "constant/network"
 import { cleanUpProfitRatios } from "util/leaderboard"
 
 function Leaderboard() {
-    const { chainId } = Connection.useContainer()
+    const { chainId, account } = Connection.useContainer()
     const [daysBefore, setDaysBefore] = useState<number>(1)
     const dasyBeforeOfStartTimeList = [1, 7, 30, -1]
 
@@ -35,34 +35,17 @@ function Leaderboard() {
             ...values,
             traderDom: (
                 <ExternalLink href={`${networkConfig.etherscanUrl}address/${values.trader}`}>
-                    {values.trader}
+                    {values.trader === account ? `${values.trader} (YOU)` : values.trader}
                 </ExternalLink>
             ),
         }))
-    }, [networkConfig.etherscanUrl, profitRatiosResults.data, profitRatiosResults.error, profitRatiosResults.loading])
-
-    console.log("@@@@ profitRatiosResults data: ", data)
-
-    // const getTraderDom = useCallback(
-    //     (address: string) => {
-    //         return <ExternalLink href={`${networkConfig.etherscanUrl}address/${address}`}>{address}</ExternalLink>
-    //     },
-    //     [networkConfig.etherscanUrl],
-    // )
-
-    // const data: LeaderboardScoreData[] = useMemo(
-    //     () =>
-    //         Array.from(Array(30).keys()).map((rank: number) => ({
-    //             pnlRank: rank + 1,
-    //             trader: getTraderDom("ETH_ADDRESS"),
-    //             pnlRatio: `${
-    //                 rank < 10 ? Math.floor(1000 / (rank + 1)).toLocaleString() : (-rank * 5).toLocaleString()
-    //             } %`,
-    //             profit: `${(20000 * Math.floor(1000 / (rank + 1))).toLocaleString()} ETH`,
-    //             deposit: `${(1000000 * Math.floor(1000 / (rank + 1))).toLocaleString()} ETH`,
-    //         })),
-    //     [getTraderDom],
-    // )
+    }, [
+        account,
+        networkConfig.etherscanUrl,
+        profitRatiosResults.data,
+        profitRatiosResults.error,
+        profitRatiosResults.loading,
+    ])
 
     return (
         <FrameContainer>
@@ -90,7 +73,7 @@ function Leaderboard() {
                         ))}
                     </ButtonGroup>
                 </HStack>
-                {data && data.length > 0 && <LeaderboardTable data={data} etherscanUrl={networkConfig.etherscanUrl} />}
+                {data && data.length > 0 && account && <LeaderboardTable data={data} account={account} />}
             </VStack>
         </FrameContainer>
     )

@@ -6,10 +6,10 @@ import { LeaderboardScoreUnit } from "constant/types"
 
 interface Props {
     data: LeaderboardScoreUnit[]
-    etherscanUrl: string
+    account: string
 }
 
-function LeaderboardTable({ data }: Props) {
+function LeaderboardTable({ data, account }: Props) {
     const columns: Column<LeaderboardScoreUnit>[] = useMemo(
         () => [
             {
@@ -74,7 +74,10 @@ function LeaderboardTable({ data }: Props) {
                 {rows.map(row => {
                     prepareRow(row)
                     return (
-                        <Tr {...row.getRowProps()}>
+                        <Tr
+                            {...row.getRowProps()}
+                            bgColor={row.original.trader === account ? "#353E80" : "blackAlpha.900"}
+                        >
                             {row.cells.map(cell => (
                                 <Td {...cell.getCellProps()}>{cell.render("Cell")}</Td>
                             ))}
