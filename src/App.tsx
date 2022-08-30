@@ -6,6 +6,7 @@ import PositionToken from "./page/PositionToken"
 import PositionTokenDetail from "./page/PositionTokenDetail"
 import LiquidityProvider from "page/LiquidityProvider"
 import Pools from "page/Pools"
+import Leaderboard from "page/Leaderboard"
 import { Container, Divider, Box } from "@chakra-ui/react"
 import Header from "./component/Header"
 import WalletListModal from "component/modals/WalletModal"
@@ -37,6 +38,7 @@ export const App = () => {
                     <Route exact path="/pools/:marketAddress" component={LiquidityProvider} />
                     <Route exact path="/tokens" component={PositionToken} />
                     <Route exact path="/tokens/:marketAddress" component={PositionTokenDetail} />
+                    <Route exact path="/leaderboard" component={Leaderboard} />
                 </Switch>
             </Box>
             <LiquidityProviderModal />

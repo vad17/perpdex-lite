@@ -44,6 +44,9 @@ function Header() {
                     {/*<Link to="/history">*/}
                     {/*    <Button variant="link">History</Button>*/}
                     {/*</Link>*/}
+                    <Link to="/leaderboard">
+                        <Button variant="link">Leaderboard</Button>
+                    </Link>
                 </HStack>
             </Center>
             <Spacer />
