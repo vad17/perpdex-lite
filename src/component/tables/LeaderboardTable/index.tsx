@@ -2,14 +2,15 @@ import { Table, Thead, Tbody, Tr, Th, Td, chakra } from "@chakra-ui/react"
 import { TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons"
 import { useTable, useSortBy, Column } from "react-table"
 import { useMemo } from "react"
-import { LeaderboardScoreData } from "constant/types"
+import { LeaderboardScoreUnit } from "constant/types"
 
 interface Props {
-    data: LeaderboardScoreData[]
+    data: LeaderboardScoreUnit[]
+    etherscanUrl: string
 }
 
 function LeaderboardTable({ data }: Props) {
-    const columns: Column<LeaderboardScoreData>[] = useMemo(
+    const columns: Column<LeaderboardScoreUnit>[] = useMemo(
         () => [
             {
                 Header: "PnL Rank",
@@ -17,7 +18,7 @@ function LeaderboardTable({ data }: Props) {
             },
             {
                 Header: "Trader",
-                accessor: "trader",
+                accessor: "traderDom",
             },
             {
                 Header: "Deposit",
@@ -35,7 +36,7 @@ function LeaderboardTable({ data }: Props) {
         [],
     )
 
-    const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable<LeaderboardScoreData>(
+    const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable<LeaderboardScoreUnit>(
         { columns, data },
         useSortBy,
     )
@@ -43,10 +44,9 @@ function LeaderboardTable({ data }: Props) {
     return (
         <Table
             {...getTableProps()}
-            height={1200}
             overflow="scroll"
             borderColor="gray.700"
-            borderWidth={1}
+            borderWidth="1px 1px 0 1px"
             sx={{ borderCollapse: "separate" }}
             borderRadius={10}
         >

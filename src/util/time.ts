@@ -49,5 +49,5 @@ export function getDuration(t: number) {
 }
 
 export function getTimestampBySubtractDays(days: number) {
-    return days === -1 ? 1600000000 : moment().subtract(days, "d")
+    return days === -1 ? 1600000000 : moment().subtract(days, "d").unix()
 }

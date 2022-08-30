@@ -146,13 +146,11 @@ export interface MakerPositionInfo {
     quoteDeleveraged: Big
 }
 
-export interface LeaderboardScoreData {
-    pnlRank: number
-    trader: ReactNode
+export interface LeaderboardScoreUnit {
+    pnlRank?: number
+    trader: string
+    traderDom: ReactNode
     pnlRatio: string
     profit: string
     deposit: string
-    // totalTrades: string
-    // liquidations: number
-    // totalVolumes: string
 }
