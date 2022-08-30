@@ -1,5 +1,18 @@
 import React, { useEffect, useState } from "react"
-import { VStack, Flex, Box, HStack, Divider, Tabs, TabList, chakra, Tab, TabPanels, TabPanel } from "@chakra-ui/react"
+import {
+    VStack,
+    Flex,
+    Box,
+    HStack,
+    Divider,
+    Tabs,
+    TabList,
+    chakra,
+    Tab,
+    TabPanels,
+    TabPanel,
+    useMediaQuery,
+} from "@chakra-ui/react"
 
 import ChartHead from "./ChartHead"
 import FrameContainer from "component/frames/FrameContainer"
@@ -11,8 +24,11 @@ import AccountSummary from "./AccountSummary"
 import OrderBook from "./OrderBook"
 import TechnicalChart from "./TechnicalChart"
 import { isTechnicalChart } from "../../constant"
+import PositionTabMobile from "./PositionTabMobile"
 
 function Trade() {
+    const isMobileAndTabletScreen = useMediaQuery("(max-width: 1024px)")
+
     const chartWidth: number = 800
     const chartHeight: number = 700
 
@@ -39,11 +55,12 @@ function Trade() {
                 <Box flex="1">
                     <ChartHead />
                     <Flex direction={{ base: "column", lg: "row" }} alignItems="flex-start">
-                        <VStack alignItems="stretch">
-                            <Box width={chartWidth} height={chartHeight}>
-                                {isTechnicalChart ? <TechnicalChart /> : <LightWeightChart />}
-                            </Box>
-                        </VStack>
+                        <Box
+                            width={isMobileAndTabletScreen[0] ? "100%" : chartWidth}
+                            height={isMobileAndTabletScreen[0] ? 400 : chartHeight}
+                        >
+                            {isTechnicalChart ? <TechnicalChart /> : <LightWeightChart />}
+                        </Box>
                         <Tabs variant="unstyled" size="md" isLazy>
                             <TabList my={2} ref={tabListRef}>
                                 <HStack w="100%" justifyContent="center">
@@ -70,10 +87,10 @@ function Trade() {
                             },
                         }}
                     />
-                    <PositionTab />
+                    {!isMobileAndTabletScreen[0] && <PositionTab />}
                 </Box>
                 <Box w="100%">
-                    <HStack spacing={8} justifyContent="flex-start">
+                    <HStack spacing={{ base: 0, lg: 8 }} justifyContent="flex-start">
                         <Divider
                             orientation="vertical"
                             border="1px"
@@ -88,6 +105,7 @@ function Trade() {
                         <VStack spacing={10} p={0} pt={5} alignItems="flex-start">
                             <TradeInput />
                             <AccountSummary />
+                            {isMobileAndTabletScreen[0] && <PositionTabMobile />}
                         </VStack>
                     </HStack>
                 </Box>

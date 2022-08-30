@@ -9,6 +9,7 @@ import {
     PopoverContent,
     PopoverHeader,
     PopoverTrigger,
+    useMediaQuery,
 } from "@chakra-ui/react"
 import { TriangleDownIcon } from "@chakra-ui/icons"
 import Button from "component/base/Button"
@@ -19,6 +20,8 @@ import { useWeb3React } from "@web3-react/core"
 import _ from "lodash"
 
 function NetworkBtn() {
+    const isMobileAndTabletScreen = useMediaQuery("(max-width: 1024px)")
+
     const { chainId, active } = Connection.useContainer()
 
     const { library } = useWeb3React()
@@ -54,7 +57,9 @@ function NetworkBtn() {
                 <Center pl="4" _hover={{ opacity: "0.9", cursor: "pointer" }}>
                     <Button
                         text={
-                            !active
+                            isMobileAndTabletScreen[0]
+                                ? ""
+                                : !active
                                 ? "Not connected"
                                 : chainId && _.keys(networkConfigs).includes(String(chainId))
                                 ? networkConfigs[chainId].name

@@ -12739,6 +12739,11 @@ react-remove-scroll@2.4.1:
     use-callback-ref "^1.2.3"
     use-sidecar "^1.0.1"
 
+react-response@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/react-response/-/react-response-0.1.0.tgz#0c208b0bde0e409fc25d7a11fdebf9a07f63de96"
+  integrity sha512-GL1+sZM6nkiyYnNgnudAoUBSxdHvAX6kdY4U+rwfZbm0HBbneZuHTOonEluI5LCU5lsCCh5jZVCXrKG98Zy+fg==
+
 react-router-dom@^5.2.0:
   version "5.2.0"
   resolved "https://registry.yarnpkg.com/react-router-dom/-/react-router-dom-5.2.0.tgz#9e65a4d0c45e13289e66c7b17c7e175d0ea15662"
