@@ -55,6 +55,11 @@ function Header() {
                                     <Button variant="link">Docs</Button>
                                 </ExternalLink>
                             </MenuItem>
+                            <MenuItem>
+                                <Link to="/leaderboard">
+                                    <Button variant="link">Leaderboard</Button>
+                                </Link>
+                            </MenuItem>
                         </MenuList>
                     </Menu>
                     <Center marginLeft="24px">
@@ -95,10 +100,16 @@ function Header() {
                                     <Button variant="link">Position Tokens</Button>
                                 </Link>
                             )}
+                            <ExternalLink href="https://perpdex.gitbook.io/docs" isExternal>
+                                <Button variant="link">Docs</Button>
+                            </ExternalLink>
                             {/*TODO: implement history*/}
                             {/*<Link to="/history">*/}
                             {/*    <Button variant="link">History</Button>*/}
                             {/*</Link>*/}
+                            <Link to="/leaderboard">
+                                <Button variant="link">Leaderboard</Button>
+                            </Link>
                         </HStack>
                     </Center>
                     <Spacer />
