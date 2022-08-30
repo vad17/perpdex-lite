@@ -30,7 +30,7 @@ function LeaderboardTable({ data, account }: Props) {
             },
             {
                 Header: "PnL Ratio",
-                accessor: "pnlRatio",
+                accessor: "pnlRatioString",
             },
         ],
         [],
