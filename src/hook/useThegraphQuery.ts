@@ -17,7 +17,7 @@ const removeNodes = (obj: any): any => {
     return obj
 }
 
-export function useThegraphQuery(chainId: number | undefined, queryFunc: any, options: any) {
+export function useThegraphQuery(chainId: number | undefined, queryFunc: any, options?: any) {
     const thegraphSchemaType = networkConfigs[chainId || ""]?.thegraphSchemaType || "thegraph"
     const result = useQuery(queryFunc(thegraphSchemaType), options)
 

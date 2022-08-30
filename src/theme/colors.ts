@@ -7,6 +7,9 @@ const colors = {
     white: {
         base: "rgba(255,255,255,1)",
     },
+    yellow: {
+        base: "rgba(255, 255, 0, 1)",
+    },
     red: {
         500: "rgba(229,62,62,1)",
         600: "rgba(215,42,42,1)",
