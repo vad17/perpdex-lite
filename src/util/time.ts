@@ -47,3 +47,7 @@ export function getDuration(t: number) {
     // add up to 4-digits array if needed
     return Array.from({ length: 4 - ret.length }, () => 0).concat(ret)
 }
+
+export function getTimestampBySubtractDays(days: number) {
+    return days === -1 ? 1600000000 : moment().subtract(days, "d").unix()
+}

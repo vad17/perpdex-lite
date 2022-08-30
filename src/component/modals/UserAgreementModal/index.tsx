@@ -35,7 +35,7 @@ function UserAgreementModal() {
                     <Text>
                         PerpDEX is a decentralized perpetual contract protocol with virtual AMMs to provide guaranteed
                         liquidity. Please visit our
-                        <ExternalLink color="blue.500" href="https://perpdex.com" isExternal>
+                        <ExternalLink color="blue.500" href="https://perpdex.exchange/" isExternal>
                             &nbsp;Docs&nbsp;
                         </ExternalLink>
                         to know more.

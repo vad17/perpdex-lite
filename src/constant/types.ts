@@ -1,4 +1,5 @@
 import Big from "big.js"
+import { ReactNode } from "react"
 
 export type LimitOrderType = "Normal" | "PostOnly" | "Ioc"
 
@@ -143,4 +144,13 @@ export interface MakerPositionInfo {
     quoteAmount: Big
     baseDeleveraged: Big
     quoteDeleveraged: Big
+}
+
+export interface LeaderboardScoreUnit {
+    pnlRank?: number
+    trader: string
+    traderDom: ReactNode
+    pnlRatio: string
+    profit: string
+    deposit: string
 }
