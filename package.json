@@ -5,6 +5,7 @@
     "license": "BSD-3-Clause",
     "private": true,
     "scripts": {
+        "dev": "react-scripts start",
         "start": "craco start",
         "prebuild": "run-p export-deployment export-deployment-stablecoin generate-type copy-charting-library",
         "build": "craco build",
@@ -57,6 +58,7 @@
         "moment": "^2.29.4",
         "react": "^17.0.1",
         "react-dom": "^17.0.1",
+        "react-icons": "^4.4.0",
         "react-page-visibility": "^7.0.0",
         "react-router-dom": "^5.2.0",
         "react-scripts": "4.0.3",

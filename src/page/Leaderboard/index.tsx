@@ -11,6 +11,7 @@ import { useThegraphQuery } from "hook/useThegraphQuery"
 // import { getTimestampBySubtractDays } from "util/time"
 import { networkConfigs } from "constant/network"
 import { cleanUpProfitRatios } from "util/leaderboard"
+import { AiOutlineReload } from "react-icons/ai"
 
 function Leaderboard() {
     const { chainId, account } = Connection.useContainer()
@@ -19,15 +20,7 @@ function Leaderboard() {
 
     const networkConfig = networkConfigs[chainId || 280] // 280 for zkSync
 
-    const profitRatiosResults = useThegraphQuery(chainId, getProfitRatiosQuery)
-
-    useEffect(() => {
-        console.log("@@@ refetching profitRatiosResults with daysBefore:", daysBefore)
-        profitRatiosResults.refetch({
-            // startedAt_gt: getTimestampBySubtractDays(daysBefore),
-        })
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [daysBefore])
+    const profitRatiosResults = useThegraphQuery(chainId, getProfitRatiosQuery, { fetchPolicy: "network-only" })
 
     const data = useMemo(() => {
         if (profitRatiosResults.loading || profitRatiosResults.error) return []
@@ -46,6 +39,18 @@ function Leaderboard() {
         profitRatiosResults.error,
         profitRatiosResults.loading,
     ])
+
+    useEffect(() => {
+        refetchQuery()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [daysBefore])
+
+    const refetchQuery = () => {
+        console.log("@@@ refetching")
+        profitRatiosResults.refetch({
+            // startedAt_gt: getTimestampBySubtractDays(daysBefore),
+        })
+    }
 
     return (
         <FrameContainer>
@@ -71,6 +76,7 @@ function Leaderboard() {
                                 onClick={() => setDaysBefore(value)}
                             />
                         ))}
+                        <Button text="refresh" leftIcon={<AiOutlineReload />} onClick={() => refetchQuery()} />
                     </ButtonGroup>
                 </HStack>
                 {data && data.length > 0 && account && <LeaderboardTable data={data} account={account} />}
