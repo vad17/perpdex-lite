@@ -11,7 +11,7 @@ import Header from "./component/Header"
 import WalletListModal from "component/modals/WalletModal"
 import ClosePositionModal from "component/modals/ClosePositionModal"
 import BlockedRegionModal from "component/modals/BlockedRegionModal"
-import UserAgreementModal from "component/modals/UserAgreementModal"
+// import UserAgreementModal from "component/modals/UserAgreementModal"
 import AccountPerpdexModal from "component/modals/AccountModal"
 import LiquidityProviderModal from "component/modals/LiquidityProviderModal"
 import RemoveLiquidityModal from "component/modals/LiquidityProviderModal/RemoveLiquidityModal"
@@ -44,7 +44,7 @@ export const App = () => {
             <WalletListModal />
             <ClosePositionModal />
             <CancelOrderModal />
-            <UserAgreementModal />
+            {/* <UserAgreementModal /> */}
             <AccountPerpdexModal />
             {/* NOTE: BlockedRegionModal should be in the last one */}
             <BlockedRegionModal />
