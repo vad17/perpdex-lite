@@ -60,9 +60,9 @@ function Leaderboard() {
                         <Heading as="h2" size="lg" color="#627EEA">
                             Trading Competiton on zkSync Testnet
                         </Heading>
-                        <Text>Aug 29 14:00 UTC — Sep 5 14:00 UTC</Text>
-                        <ExternalLink href="https://perpdex.exchange/">
-                            <Text color="yellow.base">Competition Rules</Text>
+                        <Text>Sep 1 14:00 UTC — Sep 8 14:00 UTC</Text>
+                        <ExternalLink href="https://medium.com/perpdex/perpdex-trading-competition-round-1-eccfa4ebcfd1">
+                            <Text color="yellow.base">Competition Details</Text>
                         </ExternalLink>
                     </VStack>
                 </Center>
