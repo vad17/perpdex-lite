@@ -42,7 +42,7 @@ function LimitForm({ isBuyDisplay }: LimitFormProps) {
     const maxCollateral = useMemo(
         () =>
             currentMyAccountInfo && currentMyAccountInfo.collateralBalance
-                ? currentMyAccountInfo.collateralBalance.mul(10)
+                ? currentMyAccountInfo.collateralBalance
                 : BIG_ZERO,
         [currentMyAccountInfo],
     )
@@ -73,8 +73,8 @@ function LimitForm({ isBuyDisplay }: LimitFormProps) {
     }, [currentMarketState.baseSymbol])
 
     const isSubmitDisabled = useMemo(() => {
-        return baseOrderValue.eq(0) || isLoading || !!previewResult.error
-    }, [baseOrderValue, isLoading, previewResult?.error])
+        return !maxCollateral || baseOrderValue.eq(0) || isLoading || !!previewResult.error
+    }, [baseOrderValue, isLoading, maxCollateral, previewResult.error])
 
     const updatePreview = useCallback(async () => {
         console.log("updatePreview")
