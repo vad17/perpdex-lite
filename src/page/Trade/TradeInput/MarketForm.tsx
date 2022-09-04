@@ -58,7 +58,7 @@ function MarketForm({ isBuyDisplay }: MarketFormProps) {
     }, [currentMarketState.baseSymbol])
 
     const isSubmitDisabled = useMemo(() => {
-        return !maxCollateral || baseOrderValue.eq(0) || isLoading || !!previewResult.error
+        return maxCollateral.eq(0)
     }, [baseOrderValue, isLoading, maxCollateral, previewResult.error])
 
     const updatePreview = useCallback(async () => {

@@ -73,7 +73,7 @@ function LimitForm({ isBuyDisplay }: LimitFormProps) {
     }, [currentMarketState.baseSymbol])
 
     const isSubmitDisabled = useMemo(() => {
-        return !maxCollateral || baseOrderValue.eq(0) || isLoading || !!previewResult.error
+        return maxCollateral.eq(0) || baseOrderValue.eq(0) || isLoading || !!previewResult.error
     }, [baseOrderValue, isLoading, maxCollateral, previewResult.error])
 
     const updatePreview = useCallback(async () => {
