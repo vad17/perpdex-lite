@@ -37,10 +37,11 @@ function MarketForm({ isBuyDisplay }: MarketFormProps) {
         return currentMarketState?.inverse ? !isBuyDisplay : isBuyDisplay
     }, [isBuyDisplay, currentMarketState?.inverse])
 
+    // TODO: apply correct values
     const maxCollateral = useMemo(
         () =>
             currentMyAccountInfo && currentMyAccountInfo.collateralBalance
-                ? currentMyAccountInfo.collateralBalance
+                ? currentMyAccountInfo.collateralBalance.mul(10)
                 : BIG_ZERO,
         [currentMyAccountInfo],
     )
@@ -58,7 +59,7 @@ function MarketForm({ isBuyDisplay }: MarketFormProps) {
     }, [currentMarketState.baseSymbol])
 
     const isSubmitDisabled = useMemo(() => {
-        return maxCollateral.eq(0)
+        return maxCollateral.eq(0) || baseOrderValue.eq(0) || isLoading || !!previewResult.error
     }, [baseOrderValue, isLoading, maxCollateral, previewResult.error])
 
     const updatePreview = useCallback(async () => {

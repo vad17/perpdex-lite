@@ -42,7 +42,7 @@ function LimitForm({ isBuyDisplay }: LimitFormProps) {
     const maxCollateral = useMemo(
         () =>
             currentMyAccountInfo && currentMyAccountInfo.collateralBalance
-                ? currentMyAccountInfo.collateralBalance
+                ? currentMyAccountInfo.collateralBalance.mul(10)
                 : BIG_ZERO,
         [currentMyAccountInfo],
     )
