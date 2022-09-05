@@ -8,7 +8,6 @@ import Button from "component/base/Button"
 import { Connection } from "container/connection"
 import { getProfitRatiosQuery } from "queries/leaderboard"
 import { useThegraphQuery } from "hook/useThegraphQuery"
-// import { getTimestampBySubtractDays } from "util/time"
 import { networkConfigs } from "constant/network"
 import { cleanUpProfitRatios } from "util/leaderboard"
 import { AiOutlineReload } from "react-icons/ai"
@@ -35,12 +34,6 @@ function Leaderboard() {
             ),
         }))
 
-        console.log(
-            "@@@@ allData",
-            allData,
-            account !== null,
-            allData?.filter(value => value.trader.toLowerCase() === account?.toLowerCase()),
-        )
         if (!allData || allData.length === 0) return []
         return (filterType === "Gold"
             ? _.take(allData, 10)
@@ -70,7 +63,8 @@ function Leaderboard() {
                         <Heading as="h2" size="lg" color="#627EEA">
                             Trading Competiton on zkSync Testnet
                         </Heading>
-                        <Text>Sep 1 14:00 UTC — Sep 8 14:00 UTC</Text>
+                        <Text>COMING SOON</Text>
+                        {/* <Text>Sep 1 14:00 UTC — Sep 8 14:00 UTC</Text> */}
                         <ExternalLink href="https://medium.com/perpdex/perpdex-trading-competition-round-1-eccfa4ebcfd1">
                             <Text color="yellow.base">Competition Details</Text>
                         </ExternalLink>
