@@ -37,7 +37,7 @@ function Slider({ currentValue, maxValue, minValue, handleUpdate }: SliderState)
                 defaultValue={sliderValue}
                 value={sliderValue}
                 min={minValue ?? 0}
-                max={10}
+                max={maxValue ?? 10}
                 step={0.01}
                 aria-label="slider-ex-6"
                 onChange={handleOnChange}

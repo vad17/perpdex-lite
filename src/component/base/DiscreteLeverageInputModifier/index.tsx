@@ -47,19 +47,23 @@ function DiscreteLeverageInputModifier({ maxValue, handleUpdate }: DiscreteInput
     return (
         <>
             <ButtonGroup w="100%" justifyContent={"space-between"}>
-                <Button
-                    size="xs"
-                    customType="base-blue"
-                    text="5.0x"
-                    borderRadius="5px"
-                    onClick={() => {
-                        handleUpdate(5)
-                    }}
-                />
+                {maxValue && maxValue > 5 && (
+                    <Button
+                        size="xs"
+                        customType="base-blue"
+                        text="5.0x"
+                        borderRadius="5px"
+                        onClick={() => {
+                            handleUpdate(5)
+                        }}
+                    />
+                )}
                 <ButtonGroup>
-                    {buttonStates.map((states: ButtonState, index: number) => (
-                        <SideButton key={index} text={states.text} value={states.value} />
-                    ))}
+                    {buttonStates
+                        .filter((state: ButtonState) => maxValue && maxValue >= state.value)
+                        .map((states: ButtonState, index: number) => (
+                            <SideButton key={index} text={states.text} value={states.value} />
+                        ))}
                 </ButtonGroup>
             </ButtonGroup>
         </>

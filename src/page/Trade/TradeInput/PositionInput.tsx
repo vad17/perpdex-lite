@@ -34,6 +34,7 @@ function PositionInput({
 }: PositionInputState) {
     const [baseString, setBaseString] = useState<string>("")
     const [quoteString, setQuoteString] = useState<string>("")
+    const [quoteNumber, setQuoteNumber] = useState<Big>(BIG_ZERO)
     const [leverage, setLeverage] = useState<number>(1)
 
     useEffect(() => {
@@ -56,6 +57,7 @@ function PositionInput({
                         const inputValue = new Big(formattedValue)
                         const oppositeValue = isInputBase ? inputValue.mul(markPrice) : inputValue.div(markPrice)
 
+                        isInputBase ? setQuoteNumber(oppositeValue) : setQuoteNumber(inputValue)
                         isInputBase
                             ? setQuoteString(formattedNumberWithCommas(oppositeValue, 5))
                             : setBaseString(formattedNumberWithCommas(oppositeValue, 5))
@@ -81,18 +83,27 @@ function PositionInput({
 
     const handleLeverageUpdate = useCallback(
         (value: number) => {
-            if (value !== leverage && !markPrice.eq(0) && maxCollateral) {
+            if (value !== leverage && !markPrice.eq(0) && !quoteNumber.eq(0)) {
                 setLeverage(value)
 
-                const quoteValue = maxCollateral.mul(value)
+                const quoteValue = quoteNumber.mul(value).gte(maxCollateral) ? maxCollateral : quoteNumber.mul(value)
                 const baseValue = quoteValue.div(markPrice)
+
                 handleBasePositionInput(baseValue)
                 setBaseString(formattedNumberWithCommas(baseValue, 5))
                 setQuoteString(formattedNumberWithCommas(quoteValue, 5))
             }
         },
-        [handleBasePositionInput, leverage, markPrice, maxCollateral],
+        [handleBasePositionInput, leverage, markPrice, maxCollateral, quoteNumber],
     )
+
+    const maxLeverage = useMemo(() => {
+        if (!quoteNumber.eq(0)) {
+            const num = maxCollateral.div(quoteNumber).toNumber()
+            return num >= 10 ? 10 : Math.round(num * Math.pow(10, 2)) / Math.pow(10, 2)
+        }
+        return undefined
+    }, [maxCollateral, quoteNumber])
 
     return useMemo(
         () => (
@@ -140,8 +151,13 @@ function PositionInput({
                 <Text fontSize="md" color="white" mt="4">
                     Leverage
                 </Text>
-                <Slider currentValue={leverage} handleUpdate={handleLeverageUpdate} minValue={1} />
-                <DiscreteLeverageInputModifier handleUpdate={handleLeverageUpdate} />
+                <Slider
+                    currentValue={leverage}
+                    handleUpdate={handleLeverageUpdate}
+                    minValue={1}
+                    maxValue={maxLeverage}
+                />
+                <DiscreteLeverageInputModifier handleUpdate={handleLeverageUpdate} maxValue={maxLeverage} />
             </FormControl>
         ),
         [
@@ -149,6 +165,7 @@ function PositionInput({
             baseSymbol,
             quoteString,
             quoteSymbol,
+            maxLeverage,
             leverage,
             handleLeverageUpdate,
             handleOnInput,
