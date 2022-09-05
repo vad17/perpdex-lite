@@ -69,6 +69,16 @@ function PositionInput({
         [handleBasePositionInput, markPrice],
     )
 
+    const handleOnChange = useCallback(
+        e => {
+            if (!(e.target as HTMLInputElement)?.value) {
+                setBaseString("")
+                setQuoteString("")
+            }
+        },
+        [setBaseString, setQuoteString],
+    )
+
     const handleLeverageUpdate = useCallback(
         (value: number) => {
             if (value !== leverage && !markPrice.eq(0) && maxCollateral) {
@@ -94,7 +104,7 @@ function PositionInput({
                 </FormLabel>
                 <HStack>
                     <NumberInput value={baseString} onInput={e => handleOnInput(e, true)}>
-                        <NumberInputField />
+                        <NumberInputField onChange={e => handleOnChange(e)} />
                         <InputRightElement w="54px">
                             <Text
                                 w="100%"
@@ -112,7 +122,7 @@ function PositionInput({
                         /
                     </Text>
                     <NumberInput value={quoteString} onInput={e => handleOnInput(e, false)}>
-                        <NumberInputField />
+                        <NumberInputField onChange={e => handleOnChange(e)} />
                         <InputRightElement w="54px">
                             <Text
                                 w="100%"
@@ -134,7 +144,16 @@ function PositionInput({
                 <DiscreteLeverageInputModifier handleUpdate={handleLeverageUpdate} />
             </FormControl>
         ),
-        [baseString, handleOnInput, baseSymbol, quoteString, quoteSymbol, leverage, handleLeverageUpdate],
+        [
+            baseString,
+            baseSymbol,
+            quoteString,
+            quoteSymbol,
+            leverage,
+            handleLeverageUpdate,
+            handleOnInput,
+            handleOnChange,
+        ],
     )
 }
 
