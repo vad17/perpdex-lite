@@ -100,6 +100,11 @@ function PositionInput({
     const maxLeverage = useMemo(() => {
         if (!quoteNumber.eq(0)) {
             const num = maxCollateral.div(quoteNumber).toNumber()
+            if (num <= 1) {
+                setLeverage(1)
+                return 1
+            }
+
             return num >= 10 ? 10 : Math.round(num * Math.pow(10, 2)) / Math.pow(10, 2)
         }
         return undefined
