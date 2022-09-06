@@ -150,7 +150,8 @@ export interface LeaderboardScoreUnit {
     pnlRank?: number
     trader: string
     traderDom: ReactNode
-    pnlRatio: string
+    pnlRatioValue: Big
+    pnlRatioString: string
     profit: string
     deposit: string
 }
