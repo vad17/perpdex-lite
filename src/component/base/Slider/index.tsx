@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from "react"
-import { Slider as ChakuraSlider, SliderMark, SliderTrack, SliderFilledTrack, SliderThumb, Box } from "@chakra-ui/react"
+import {
+    Slider as ChakuraSlider,
+    SliderMark,
+    SliderTrack,
+    SliderFilledTrack,
+    SliderThumb,
+    Box,
+    Tooltip,
+} from "@chakra-ui/react"
 
 interface SliderState {
     currentValue: number
@@ -10,6 +18,7 @@ interface SliderState {
 
 function Slider({ currentValue, maxValue, minValue, handleUpdate }: SliderState) {
     const [sliderValue, setSliderValue] = useState<number>(25)
+    const [showTooltip, setShowTooltip] = useState(false)
 
     useEffect(() => {
         if (currentValue) {
@@ -42,6 +51,8 @@ function Slider({ currentValue, maxValue, minValue, handleUpdate }: SliderState)
                 aria-label="slider-ex-6"
                 onChange={handleOnChange}
                 // colorScheme={side === 1 ? "green" : "red"}
+                onMouseEnter={() => setShowTooltip(true)}
+                onMouseLeave={() => setShowTooltip(false)}
             >
                 <SliderTrack>
                     <SliderFilledTrack bg="#F90077" />
@@ -51,19 +62,17 @@ function Slider({ currentValue, maxValue, minValue, handleUpdate }: SliderState)
                         {val}x
                     </SliderMark>
                 ))}
-                <SliderMark
-                    value={sliderValue}
-                    textAlign="center"
+                <Tooltip
+                    hasArrow
+                    fontSize="sm"
                     bg="#181B41"
                     color="white"
-                    fontSize="sm"
-                    mt="1"
-                    ml="-5"
-                    w="12"
+                    placement="top"
+                    isOpen={showTooltip}
+                    label={`${sliderValue}x`}
                 >
-                    {sliderValue}x
-                </SliderMark>
-                <SliderThumb />
+                    <SliderThumb />
+                </Tooltip>
             </ChakuraSlider>
         </Box>
     )
