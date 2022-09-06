@@ -6,6 +6,7 @@ import {
     NumberInput,
     NumberInputField,
     Text,
+    Tooltip,
 } from "@chakra-ui/react"
 import { useCallback, useEffect, useMemo, useState } from "react"
 
@@ -35,7 +36,9 @@ function PositionInput({
     const [baseString, setBaseString] = useState<string>("")
     const [quoteString, setQuoteString] = useState<string>("")
     const [quoteNumber, setQuoteNumber] = useState<Big>(BIG_ZERO)
+    const [maxBaseNumber, setMaxBaseNumber] = useState<Big>(BIG_ZERO)
     const [leverage, setLeverage] = useState<number>(1)
+    const [showTooltip, setShowTooltip] = useState(false)
 
     useEffect(() => {
         if (baseOrderValue && baseOrderValue === BIG_ZERO) {
@@ -44,6 +47,12 @@ function PositionInput({
             setLeverage(1)
         }
     }, [baseOrderValue])
+
+    useEffect(() => {
+        if (!markPrice.eq(0)) {
+            setMaxBaseNumber(maxCollateral.div(markPrice))
+        }
+    }, [markPrice, maxCollateral])
 
     const handleOnInput = useCallback(
         (e, isInputBase) => {
@@ -65,6 +74,15 @@ function PositionInput({
                     if (formattedValue && !markPrice.eq(0)) {
                         const inputValue = new Big(formattedValue)
                         const oppositeValue = isInputBase ? inputValue.mul(markPrice) : inputValue.div(markPrice)
+
+                        const isGreaterThanMax = isInputBase
+                            ? oppositeValue.gt(maxCollateral)
+                            : inputValue.gt(maxCollateral)
+                        if (isGreaterThanMax) {
+                            setShowTooltip(true)
+                        } else {
+                            setShowTooltip(false)
+                        }
 
                         isInputBase ? setQuoteNumber(oppositeValue) : setQuoteNumber(inputValue)
                         isInputBase
@@ -128,39 +146,69 @@ function PositionInput({
                     </Text>
                 </FormLabel>
                 <HStack>
-                    <NumberInput value={baseString} onInput={e => handleOnInput(e, true)}>
-                        <NumberInputField onChange={e => handleOnChange(e)} />
-                        <InputRightElement w="54px">
-                            <Text
-                                w="100%"
-                                textAlign="center"
-                                fontWeight="bold"
-                                fontSize="xs"
-                                color="blue.500"
-                                textTransform="uppercase"
-                            >
-                                {baseSymbol}
-                            </Text>
-                        </InputRightElement>
-                    </NumberInput>
+                    <Tooltip
+                        hasArrow
+                        fontSize="sm"
+                        bg="#050217"
+                        color="white"
+                        placement="top"
+                        isOpen={showTooltip}
+                        label={`Max ${maxBaseNumber.toFixed(4)} ${baseSymbol}`}
+                    >
+                        <NumberInput
+                            value={baseString}
+                            onInput={e => handleOnInput(e, true)}
+                            onBlur={() => setShowTooltip(false)}
+                            max={maxBaseNumber.toNumber()}
+                        >
+                            <NumberInputField onChange={e => handleOnChange(e)} />
+                            <InputRightElement w="54px">
+                                <Text
+                                    w="100%"
+                                    textAlign="center"
+                                    fontWeight="bold"
+                                    fontSize="xs"
+                                    color="blue.500"
+                                    textTransform="uppercase"
+                                >
+                                    {baseSymbol}
+                                </Text>
+                            </InputRightElement>
+                        </NumberInput>
+                    </Tooltip>
                     <Text fontSize="3xl" ml={2}>
                         /
                     </Text>
-                    <NumberInput value={quoteString} onInput={e => handleOnInput(e, false)}>
-                        <NumberInputField onChange={e => handleOnChange(e)} />
-                        <InputRightElement w="54px">
-                            <Text
-                                w="100%"
-                                textAlign="center"
-                                fontWeight="bold"
-                                fontSize="xs"
-                                color="blue.500"
-                                textTransform="uppercase"
-                            >
-                                {quoteSymbol}
-                            </Text>
-                        </InputRightElement>
-                    </NumberInput>
+                    <Tooltip
+                        hasArrow
+                        fontSize="sm"
+                        bg="#050217"
+                        color="white"
+                        placement="top"
+                        isOpen={showTooltip}
+                        label={`Max ${maxCollateral.toFixed(4)} ${quoteSymbol}`}
+                    >
+                        <NumberInput
+                            value={quoteString}
+                            onInput={e => handleOnInput(e, false)}
+                            onBlur={() => setShowTooltip(false)}
+                            max={maxCollateral.toNumber()}
+                        >
+                            <NumberInputField onChange={e => handleOnChange(e)} />
+                            <InputRightElement w="54px">
+                                <Text
+                                    w="100%"
+                                    textAlign="center"
+                                    fontWeight="bold"
+                                    fontSize="xs"
+                                    color="blue.500"
+                                    textTransform="uppercase"
+                                >
+                                    {quoteSymbol}
+                                </Text>
+                            </InputRightElement>
+                        </NumberInput>
+                    </Tooltip>
                 </HStack>
                 <Text fontSize="md" color="white" mt="4">
                     Leverage
@@ -175,13 +223,16 @@ function PositionInput({
             </FormControl>
         ),
         [
-            baseString,
+            showTooltip,
+            maxBaseNumber,
             baseSymbol,
-            quoteString,
+            baseString,
+            maxCollateral,
             quoteSymbol,
-            maxLeverage,
+            quoteString,
             leverage,
             handleLeverageUpdate,
+            maxLeverage,
             handleOnInput,
             handleOnChange,
         ],
