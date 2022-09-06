@@ -26,12 +26,15 @@ import theme from "./theme"
 import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client"
 import { networkConfigs } from "./constant/network"
 import _ from "lodash"
+import Big from "big.js"
 
 declare global {
     interface Window {
         ethereum: any
     }
 }
+
+Big.DP = 100
 
 // NOTE: third party services
 setupSegment()
