@@ -51,12 +51,8 @@ function PositionInput({
             const regex = /[0][0-9]/
             if (regex.test(value)) return
             if (value >= 0) {
-                if (value === "0") {
-                    isInputBase ? setBaseString("0") : setQuoteString("0")
-                    return
-                }
-                if (value === "0.") {
-                    isInputBase ? setBaseString("0.") : setQuoteString("0.")
+                if (value === "0" || value === "0.") {
+                    isInputBase ? setBaseString(value) : setQuoteString(value)
                     return
                 }
 
