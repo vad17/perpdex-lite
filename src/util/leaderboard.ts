@@ -1,6 +1,5 @@
 import { LeaderboardScoreUnit } from "constant/types"
-import { BigNumber } from "ethers"
-import { formattedNumberWithCommas, x96ToBig } from "./format"
+import { bigNum2Big, formattedNumberWithCommas } from "./format"
 import _ from "lodash"
 
 export function cleanUpProfitRatios(queryResponse: any) {
@@ -11,19 +10,20 @@ export function cleanUpProfitRatios(queryResponse: any) {
     const leaderboardScores: LeaderboardScoreUnit[] = profitRatios.map((values: any) => {
         console.log("each profitRatio", values)
 
-        const profit = formattedNumberWithCommas(x96ToBig(BigNumber.from(values.profit))) + "ETH"
-        const deposit = formattedNumberWithCommas(x96ToBig(BigNumber.from(values.deposit))) + "ETH"
-        const pnlRatio = formattedNumberWithCommas(x96ToBig(BigNumber.from(values.profitRatio))) + "%"
+        const profit = bigNum2Big(values.profit) + "ETH"
+        const deposit = bigNum2Big(values.deposit) + "ETH"
+        const pnlRatioValue = bigNum2Big(values.profit).div(bigNum2Big(values.deposit)).mul(100)
 
         return {
             trader: values.trader,
             profit,
             deposit,
-            pnlRatio,
+            pnlRatioValue,
+            pnlRatioString: formattedNumberWithCommas(pnlRatioValue, 10) + "%",
         } as LeaderboardScoreUnit
     })
 
-    return _.sortBy(leaderboardScores, (data: any) => -data.pnlRatio).map((item, index) => ({
+    return _.sortBy(leaderboardScores, (data: any) => -data.pnlRatioValue).map((item, index) => ({
         pnlRank: index + 1,
         ...item,
     }))
