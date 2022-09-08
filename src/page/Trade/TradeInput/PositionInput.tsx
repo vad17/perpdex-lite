@@ -95,7 +95,7 @@ function PositionInput({
                 }
             }
         },
-        [handleBasePositionInput, markPrice],
+        [handleBasePositionInput, markPrice, maxCollateral],
     )
 
     const handleOnChange = useCallback(
@@ -153,7 +153,7 @@ function PositionInput({
                         color="white"
                         placement="top"
                         isOpen={showTooltip}
-                        label={`Max ${maxBaseNumber.toFixed(4)} ${baseSymbol}`}
+                        label={`Max ${formattedNumberWithCommas(maxBaseNumber, 5)} ${baseSymbol}`}
                     >
                         <NumberInput
                             value={baseString}
@@ -186,7 +186,7 @@ function PositionInput({
                         color="white"
                         placement="top"
                         isOpen={showTooltip}
-                        label={`Max ${maxCollateral.toFixed(4)} ${quoteSymbol}`}
+                        label={`Max ${formattedNumberWithCommas(maxCollateral, 5)} ${quoteSymbol}`}
                     >
                         <NumberInput
                             value={quoteString}
