@@ -42,6 +42,7 @@ function PositionInput({
     const [maxBaseNumber, setMaxBaseNumber] = useState<Big>(BIG_ZERO)
     const [leverage, setLeverage] = useState<number>(1)
     const [showTooltip, setShowTooltip] = useState(false)
+    const [canLeverage, setCanLeverage] = useState(false)
 
     useEffect(() => {
         if (baseOrderValue && baseOrderValue === BIG_ZERO) {
@@ -52,7 +53,7 @@ function PositionInput({
     }, [baseOrderValue])
 
     useEffect(() => {
-        if (currentMarketState.markPrice) {
+        if (currentMarketState.markPrice && !currentMarketState.markPrice.eq(0)) {
             setMaxBaseNumber(maxCollateral.div(currentMarketState.markPrice))
         }
     }, [currentMarketState.markPrice, maxCollateral])
@@ -82,8 +83,10 @@ function PositionInput({
                             ? oppositeValue.gt(maxCollateral)
                             : inputValue.gt(maxCollateral)
                         if (isGreaterThanMax) {
+                            setCanLeverage(false)
                             setShowTooltip(true)
                         } else {
+                            setCanLeverage(true)
                             setShowTooltip(false)
                         }
 
@@ -102,6 +105,7 @@ function PositionInput({
     const handleOnChange = useCallback(
         e => {
             if (!(e.target as HTMLInputElement)?.value) {
+                setCanLeverage(false)
                 setBaseString("")
                 setQuoteString("")
             }
@@ -219,8 +223,13 @@ function PositionInput({
                     handleUpdate={handleLeverageUpdate}
                     minValue={1}
                     maxValue={maxLeverage}
+                    isDisable={!canLeverage}
                 />
-                <DiscreteLeverageInputModifier handleUpdate={handleLeverageUpdate} maxValue={maxLeverage} />
+                <DiscreteLeverageInputModifier
+                    handleUpdate={handleLeverageUpdate}
+                    maxValue={maxLeverage}
+                    isDisable={!canLeverage}
+                />
             </FormControl>
         ),
         [
@@ -234,6 +243,7 @@ function PositionInput({
             leverage,
             handleLeverageUpdate,
             maxLeverage,
+            canLeverage,
             handleOnInput,
             handleOnChange,
         ],

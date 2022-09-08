@@ -13,10 +13,11 @@ interface SliderState {
     currentValue: number
     maxValue?: number
     minValue?: number
+    isDisable: boolean
     handleUpdate: (value: number) => void
 }
 
-function Slider({ currentValue, maxValue, minValue, handleUpdate }: SliderState) {
+function Slider({ currentValue, maxValue, minValue, isDisable = true, handleUpdate }: SliderState) {
     const [sliderValue, setSliderValue] = useState<number>(25)
     const [showTooltip, setShowTooltip] = useState(false)
 
@@ -49,6 +50,7 @@ function Slider({ currentValue, maxValue, minValue, handleUpdate }: SliderState)
                 max={maxValue ?? 10}
                 step={0.01}
                 aria-label="slider-ex-6"
+                isDisabled={isDisable}
                 onChange={handleOnChange}
                 // colorScheme={side === 1 ? "green" : "red"}
                 onMouseEnter={() => setShowTooltip(true)}
