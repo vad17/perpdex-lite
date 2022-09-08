@@ -85,9 +85,7 @@ function PositionInput({
                         }
 
                         isInputBase ? setQuoteNumber(oppositeValue) : setQuoteNumber(inputValue)
-                        isInputBase
-                            ? setQuoteString(formattedNumberWithCommas(oppositeValue, 5))
-                            : setBaseString(formattedNumberWithCommas(oppositeValue, 5))
+                        isInputBase ? setQuoteString(oppositeValue.toFixed(2)) : setBaseString(oppositeValue.toFixed(2))
                         handleBasePositionInput(isInputBase ? inputValue : oppositeValue)
                     }
                 } catch (err) {
@@ -117,8 +115,8 @@ function PositionInput({
                 const baseValue = quoteValue.div(markPrice)
 
                 handleBasePositionInput(baseValue)
-                setBaseString(formattedNumberWithCommas(baseValue, 5))
-                setQuoteString(formattedNumberWithCommas(quoteValue, 5))
+                setBaseString(baseValue.toFixed(4))
+                setQuoteString(quoteValue.toFixed(4))
             }
         },
         [handleBasePositionInput, leverage, markPrice, maxCollateral, quoteNumber],
@@ -153,7 +151,7 @@ function PositionInput({
                         color="white"
                         placement="top"
                         isOpen={showTooltip}
-                        label={`Max ${formattedNumberWithCommas(maxBaseNumber, 5)} ${baseSymbol}`}
+                        label={`Max ${formattedNumberWithCommas(maxBaseNumber, 4)} ${baseSymbol}`}
                     >
                         <NumberInput
                             value={baseString}
@@ -186,7 +184,7 @@ function PositionInput({
                         color="white"
                         placement="top"
                         isOpen={showTooltip}
-                        label={`Max ${formattedNumberWithCommas(maxCollateral, 5)} ${quoteSymbol}`}
+                        label={`Max ${formattedNumberWithCommas(maxCollateral, 4)} ${quoteSymbol}`}
                     >
                         <NumberInput
                             value={quoteString}
