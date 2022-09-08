@@ -15,6 +15,7 @@ import { BIG_ZERO, USDC_PRECISION } from "constant"
 import { formatInput, formattedNumberWithCommas } from "util/format"
 import Slider from "component/base/Slider"
 import DiscreteLeverageInputModifier from "component/base/DiscreteLeverageInputModifier"
+import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
 
 interface PositionInputState {
     baseSymbol: string
@@ -33,6 +34,8 @@ function PositionInput({
     maxCollateral,
     handleBasePositionInput,
 }: PositionInputState) {
+    const { currentMarketState } = PerpdexMarketContainer.useContainer()
+
     const [baseString, setBaseString] = useState<string>("")
     const [quoteString, setQuoteString] = useState<string>("")
     const [quoteNumber, setQuoteNumber] = useState<Big>(BIG_ZERO)
@@ -49,10 +52,10 @@ function PositionInput({
     }, [baseOrderValue])
 
     useEffect(() => {
-        if (!markPrice.eq(0)) {
-            setMaxBaseNumber(maxCollateral.div(markPrice))
+        if (currentMarketState.markPrice) {
+            setMaxBaseNumber(maxCollateral.div(currentMarketState.markPrice))
         }
-    }, [markPrice, maxCollateral])
+    }, [currentMarketState.markPrice, maxCollateral])
 
     const handleOnInput = useCallback(
         (e, isInputBase) => {
