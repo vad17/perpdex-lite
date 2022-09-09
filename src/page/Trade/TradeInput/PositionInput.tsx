@@ -104,7 +104,6 @@ function PositionInput({
 
     const handleOnChange = useCallback(
         e => {
-            // TODO leverage1に戻したい
             setLeverage(1)
             if (!(e.target as HTMLInputElement)?.value) {
                 setCanLeverage(false)
