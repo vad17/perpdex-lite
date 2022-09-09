@@ -4,6 +4,7 @@ import Button from "../Button"
 
 interface DiscreteInputModifierState {
     maxValue?: number
+    isDisable?: boolean
     handleUpdate: (value: number) => void
 }
 
@@ -12,7 +13,7 @@ interface ButtonState {
     value: number
 }
 
-function DiscreteLeverageInputModifier({ maxValue, handleUpdate }: DiscreteInputModifierState) {
+function DiscreteLeverageInputModifier({ maxValue, isDisable = false, handleUpdate }: DiscreteInputModifierState) {
     const buttonStates: ButtonState[] = [
         {
             text: "1.0x",
@@ -46,7 +47,7 @@ function DiscreteLeverageInputModifier({ maxValue, handleUpdate }: DiscreteInput
 
     return (
         <>
-            <ButtonGroup w="100%" justifyContent={"space-between"}>
+            <ButtonGroup w="100%" justifyContent={"space-between"} isDisabled={isDisable}>
                 {maxValue && maxValue > 5 && (
                     <Button
                         size="xs"
@@ -58,7 +59,7 @@ function DiscreteLeverageInputModifier({ maxValue, handleUpdate }: DiscreteInput
                         }}
                     />
                 )}
-                <ButtonGroup>
+                <ButtonGroup isDisabled={isDisable}>
                     {buttonStates
                         .filter((state: ButtonState) => maxValue && maxValue >= state.value)
                         .map((states: ButtonState, index: number) => (

@@ -13,11 +13,11 @@ interface SliderState {
     currentValue: number
     maxValue?: number
     minValue?: number
-    isDisable: boolean
+    isDisable?: boolean
     handleUpdate: (value: number) => void
 }
 
-function Slider({ currentValue, maxValue, minValue, isDisable = true, handleUpdate }: SliderState) {
+function Slider({ currentValue, maxValue, minValue, isDisable = false, handleUpdate }: SliderState) {
     const [sliderValue, setSliderValue] = useState<number>(25)
     const [showTooltip, setShowTooltip] = useState(false)
 
