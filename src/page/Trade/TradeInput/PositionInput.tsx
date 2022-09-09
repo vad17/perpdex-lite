@@ -104,6 +104,8 @@ function PositionInput({
 
     const handleOnChange = useCallback(
         e => {
+            // TODO leverage1に戻したい
+            setLeverage(1)
             if (!(e.target as HTMLInputElement)?.value) {
                 setCanLeverage(false)
                 setBaseString("")
@@ -163,7 +165,6 @@ function PositionInput({
                         <NumberInput
                             value={baseString}
                             onInput={e => handleOnInput(e, true)}
-                            onBlur={() => setShowTooltip(false)}
                             max={maxBaseNumber.toNumber()}
                         >
                             <NumberInputField onChange={e => handleOnChange(e)} />
@@ -196,7 +197,6 @@ function PositionInput({
                         <NumberInput
                             value={quoteString}
                             onInput={e => handleOnInput(e, false)}
-                            onBlur={() => setShowTooltip(false)}
                             max={maxCollateral.toNumber()}
                         >
                             <NumberInputField onChange={e => handleOnChange(e)} />
