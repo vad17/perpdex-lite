@@ -61,8 +61,9 @@ function DiscreteInputModifier({
 
     const handleDiscreteUpdate = useCallback(
         (percent: number) => {
+            // Rounding when dividing
             const nextValue = maxValue.mul(percent).div(100)
-            setInputValue(nextValue.toFixed(6))
+            setInputValue(nextValue.toFixed(7))
             handleUpdate(nextValue)
         },
         [handleUpdate, maxValue],
