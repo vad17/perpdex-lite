@@ -58,6 +58,7 @@ function LimitForm({ isBuyDisplay }: LimitFormProps) {
             if (value !== null) {
                 try {
                     setLimitPrice(currentMarketState.inverse ? Big(1).div(value) : value)
+                    setBaseOrderValue(BIG_ZERO)
                 } catch (err) {
                     console.log(err)
                 }
