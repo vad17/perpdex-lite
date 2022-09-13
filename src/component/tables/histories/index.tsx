@@ -1,71 +1,70 @@
-import { Table, Thead, Tbody, Tr, Th, Td, chakra } from "@chakra-ui/react"
-import { TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons"
-import { useTable, useSortBy, Column } from "react-table"
-import { HistoryColumn } from "constant/types"
+import { useMemo } from "react"
+import { HistoryColumn, HistoryDataType } from "constant/types"
+import { getDepositedsQuery } from "queries/account"
+import { useThegraphQuery } from "hook/useThegraphQuery"
+import { cleanUpDepositeds } from "util/queries"
+import { Column } from "react-table"
+import { Connection } from "container/connection"
+import HistoriesTableWrapper from "./HistoriesTableWrapper"
 
-interface Props {
-    columns: Column<HistoryColumn>[]
-    data: HistoryColumn[]
-    account: string
+function getMethodsByHistoryDataType(type: HistoryDataType) {
+    const query = type === "deposited" ? getDepositedsQuery : undefined
+
+    const cleanUpMethod = type === "deposited" ? cleanUpDepositeds : undefined
+
+    const getColumn = type === "deposited" ? getDepositedColumn : getDepositedColumn
+
+    return {
+        query,
+        cleanUpMethod,
+        getColumn,
+    }
 }
 
-function HistoriesTable({ columns, data, account }: Props) {
-    const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable<HistoryColumn>(
-        { columns, data },
-        useSortBy,
-    )
+function getDepositedColumn() {
+    return [
+        {
+            Header: "Time",
+            accessor: "time",
+        },
+        {
+            Header: "Trader",
+            accessor: "trader",
+        },
+        {
+            Header: "Deposit Amount",
+            accessor: "amount",
+        },
+    ]
+}
+
+interface Props {
+    historyDataType: HistoryDataType
+}
+
+function HistoriesTable({ historyDataType }: Props) {
+    const { chainId, account } = Connection.useContainer()
+    // const networkConfig = networkConfigs[chainId || 280] // 280 for zkSync
+
+    const { query, cleanUpMethod, getColumn } = getMethodsByHistoryDataType(historyDataType)
+
+    const results = useThegraphQuery(chainId, query, { fetchPolicy: "network-only" })
+
+    const data = useMemo(() => {
+        if (results.loading || results.error || !cleanUpMethod) return []
+        const allData = cleanUpMethod(results.data)
+
+        return allData as any[]
+    }, [cleanUpMethod, results.data, results.error, results.loading])
+
+    const columns: Column<HistoryColumn>[] = useMemo(() => getColumn() as Column<HistoryColumn>[], [getColumn])
 
     return (
-        <Table
-            {...getTableProps()}
-            overflow="scroll"
-            borderColor="gray.700"
-            borderWidth="1px 1px 0 1px"
-            sx={{ borderCollapse: "separate" }}
-            borderRadius={10}
-        >
-            <Thead position="sticky" top="0">
-                {headerGroups.map(headerGroup => (
-                    <Tr {...headerGroup.getHeaderGroupProps()} bg="blackAlpha.900">
-                        {headerGroup.headers.map(column => (
-                            <Th {...column.getHeaderProps(column.getSortByToggleProps())} position="sticky" top={0}>
-                                {column.render("Header")}
-                                <chakra.span pl="4">
-                                    {column.isSorted ? (
-                                        column.isSortedDesc ? (
-                                            <TriangleDownIcon aria-label="sorted descending" />
-                                        ) : (
-                                            <TriangleUpIcon aria-label="sorted ascending" />
-                                        )
-                                    ) : null}
-                                </chakra.span>
-                            </Th>
-                        ))}
-                    </Tr>
-                ))}
-            </Thead>
-            <Tbody {...getTableBodyProps()}>
-                {rows.map(row => {
-                    prepareRow(row)
-
-                    return (
-                        <Tr
-                            {...row.getRowProps()}
-                            bgColor={
-                                row.original.trader.toLowerCase() === account.toLowerCase()
-                                    ? "#20296A"
-                                    : "blackAlpha.900"
-                            }
-                            _hover={{ opacity: 0.8 }}
-                        >
-                            {row.cells.map(cell => (
-                                <Td {...cell.getCellProps()}>{cell.render("Cell")}</Td>
-                            ))}
-                        </Tr>
-                    )
-                })}
-            </Tbody>
-        </Table>
+        <>
+            {account && columns && data && data.length > 0 && (
+                <HistoriesTableWrapper columns={columns} data={data} account={account} />
+            )}
+        </>
     )
 }
 

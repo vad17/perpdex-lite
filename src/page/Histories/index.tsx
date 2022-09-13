@@ -1,49 +1,23 @@
-import { useMemo } from "react"
-import { VStack, Text } from "@chakra-ui/react"
+import { VStack, Text, TabPanels, TabPanel, Tabs, TabList, Divider, chakra, Tab } from "@chakra-ui/react"
 import { Heading } from "@chakra-ui/react"
 import FrameContainer from "component/frames/FrameContainer"
-import { Connection } from "container/connection"
-import { networkConfigs } from "constant/network"
-import { getDepositedsQuery } from "queries/account"
-import { useThegraphQuery } from "hook/useThegraphQuery"
-import { cleanUpDepositeds } from "util/queries"
 import HistoriesTable from "component/tables/histories"
-import { HistoryColumn } from "constant/types"
-import { Column } from "react-table"
+import { HistoryData } from "constant/types"
 
 function Histories() {
-    const { chainId, account } = Connection.useContainer()
+    const StyledTab = chakra(Tab, {
+        baseStyle: {
+            color: "gray.200",
+            _selected: { color: "white", borderBottom: "1px solid #627EEA" },
+        },
+    })
 
-    const networkConfig = networkConfigs[chainId || 280] // 280 for zkSync
-
-    const depositedsResults = useThegraphQuery(chainId, getDepositedsQuery, { fetchPolicy: "network-only" })
-
-    const data = useMemo(() => {
-        if (depositedsResults.loading || depositedsResults.error) return []
-        const allData = cleanUpDepositeds(depositedsResults.data)
-
-        return allData
-    }, [depositedsResults.data, depositedsResults.error, depositedsResults.loading])
-
-    console.log("@@@@ data", depositedsResults)
-
-    const columns: Column<HistoryColumn>[] = useMemo(
-        () => [
-            {
-                Header: "Time",
-                accessor: "time",
-            },
-            {
-                Header: "Trader",
-                accessor: "trader",
-            },
-            {
-                Header: "Deposit Amount",
-                accessor: "amount",
-            },
-        ],
-        [],
-    )
+    const dataTypes: HistoryData[] = [
+        {
+            title: "Deposit",
+            type: "deposited",
+        },
+    ]
 
     return (
         <FrameContainer>
@@ -54,9 +28,22 @@ function Histories() {
                     </Heading>
                     <Text>Latest trading events are queired and displayed as table</Text>
                 </VStack>
-                {data && data.length > 0 && account && (
-                    <HistoriesTable columns={columns} data={data} account={account} />
-                )}
+
+                <Tabs>
+                    <TabList>
+                        {dataTypes.map(dataType => (
+                            <StyledTab>{dataType.title}</StyledTab>
+                        ))}
+                    </TabList>
+                    <Divider borderColor="#627EEA" />
+                    <TabPanels>
+                        <TabPanel paddingX={0}>
+                            {dataTypes.map(dataType => (
+                                <HistoriesTable historyDataType={dataType.type} />
+                            ))}
+                        </TabPanel>
+                    </TabPanels>
+                </Tabs>
             </VStack>
         </FrameContainer>
     )

@@ -163,3 +163,10 @@ export interface Depositeds {
 }
 
 export type HistoryColumn = Depositeds
+
+export type HistoryDataType = "deposited"
+
+export interface HistoryData {
+    title: string
+    type: HistoryDataType
+}
