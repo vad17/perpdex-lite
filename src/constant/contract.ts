@@ -49,7 +49,7 @@ export const contractConfigs: { [key: string]: ContractConfig } = {
     },
     280: {
         multicall: {
-            address: "0xf0D5F38f0112254e610bf473fa7D07D761a00e3d",
+            address: "0xCe849FB7dbb1dFEFD17FCc476Dda529Fd290aD5b",
         },
         exchanges: [],
     },
