@@ -47,6 +47,8 @@ function PositionInput({
     const handleOnInput = useCallback(
         (e, isInputBase) => {
             const value = e.target.value
+            const regex = /^[0][0-9]$/
+            if (regex.test(value)) return
             if (value >= 0) {
                 const formattedValue = formatInput(value, USDC_PRECISION)
 
