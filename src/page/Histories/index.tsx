@@ -15,7 +15,11 @@ function Histories() {
     const dataTypes: HistoryData[] = [
         {
             title: "Deposit",
-            type: "deposited",
+            type: "Deposited",
+        },
+        {
+            title: "Withdraw",
+            type: "Withdrawn",
         },
     ]
 

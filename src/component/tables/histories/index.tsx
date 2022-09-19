@@ -8,11 +8,11 @@ import { Connection } from "container/connection"
 import HistoriesTableWrapper from "./HistoriesTableWrapper"
 
 function getMethodsByHistoryDataType(type: HistoryDataType) {
-    const query = type === "deposited" ? getDepositedsQuery : undefined
+    const query = type === "Deposited" ? getDepositedsQuery : undefined
 
-    const cleanUpMethod = type === "deposited" ? cleanUpDepositeds : undefined
+    const cleanUpMethod = type === "Deposited" ? cleanUpDepositeds : undefined
 
-    const getColumn = type === "deposited" ? getDepositedColumn : getDepositedColumn
+    const getColumn = type === "Deposited" ? getDepositedColumn : getDepositedColumn
 
     return {
         query,

@@ -18,3 +18,20 @@ export function cleanUpDepositeds(queryResponse: any) {
 
     return _.sortBy(results, (data: any) => -data.timestamp)
 }
+
+export function cleanUpWithdrawn(queryResponse: any) {
+    if (!queryResponse || !queryResponse.depositeds) return
+
+    const depositeds = queryResponse.depositeds
+
+    const results = depositeds.map((values: any) => {
+        return {
+            trader: values.trader,
+            amount: formattedNumberWithCommas(bigNum2Big(values.amount)) + "ETH",
+            time: formatTime(normalizeToUnixtime(Number(values.timestamp)), true),
+            timestamp: values.timestamp,
+        }
+    })
+
+    return _.sortBy(results, (data: any) => -data.timestamp)
+}
