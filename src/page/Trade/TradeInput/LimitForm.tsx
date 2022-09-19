@@ -116,6 +116,7 @@ function LimitForm({ isBuyDisplay }: LimitFormProps) {
             />
             <PriceInput
                 priceUnit={currentMarketState.priceUnitDisplay}
+                markPriceDisplay={currentMarketState.markPriceDisplay}
                 handlePriceInput={handlePriceInput}
             ></PriceInput>
             <Summary
