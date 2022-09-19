@@ -11,7 +11,7 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 
 import Big from "big.js"
 import { BIG_ZERO, USDC_PRECISION } from "constant"
-import { formatInput, formattedNumberWithCommas } from "util/format"
+import { formatInput } from "util/format"
 import Slider from "component/base/Slider"
 import DiscreteLeverageInputModifier from "component/base/DiscreteLeverageInputModifier"
 
@@ -58,9 +58,7 @@ function PositionInput({
                         const inputValue = new Big(formattedValue)
                         const oppositeValue = isInputBase ? inputValue.mul(markPrice) : inputValue.div(markPrice)
 
-                        isInputBase
-                            ? setQuoteString(formattedNumberWithCommas(oppositeValue, 5))
-                            : setBaseString(formattedNumberWithCommas(oppositeValue, 5))
+                        isInputBase ? setQuoteString(oppositeValue.toFixed(4)) : setBaseString(oppositeValue.toFixed(4))
                         handleBasePositionInput(isInputBase ? inputValue : oppositeValue)
                     }
                 } catch (err) {
@@ -79,8 +77,8 @@ function PositionInput({
                 const quoteValue = maxCollateral.mul(value)
                 const baseValue = quoteValue.div(markPrice)
                 handleBasePositionInput(baseValue)
-                setBaseString(formattedNumberWithCommas(baseValue, 5))
-                setQuoteString(formattedNumberWithCommas(quoteValue, 5))
+                setBaseString(baseValue.toFixed(4))
+                setQuoteString(quoteValue.toFixed(4))
             }
         },
         [handleBasePositionInput, leverage, markPrice, maxCollateral],
