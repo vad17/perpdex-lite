@@ -86,6 +86,15 @@ function PositionInput({
         [handleBasePositionInput, leverage, markPrice, maxCollateral],
     )
 
+    const handleOnChange = useCallback(
+        e => {
+            if (!(e.target as HTMLInputElement)?.value) {
+                handleBasePositionInput(BIG_ZERO)
+            }
+        },
+        [handleBasePositionInput],
+    )
+
     return useMemo(
         () => (
             <FormControl id="margin">
@@ -96,7 +105,7 @@ function PositionInput({
                 </FormLabel>
                 <HStack>
                     <NumberInput value={baseString} onInput={e => handleOnInput(e, true)}>
-                        <NumberInputField />
+                        <NumberInputField onChange={e => handleOnChange(e)} />
                         <InputRightElement w="54px">
                             <Text
                                 w="100%"
@@ -114,7 +123,7 @@ function PositionInput({
                         /
                     </Text>
                     <NumberInput value={quoteString} onInput={e => handleOnInput(e, false)}>
-                        <NumberInputField />
+                        <NumberInputField onChange={e => handleOnChange(e)} />
                         <InputRightElement w="54px">
                             <Text
                                 w="100%"
@@ -136,7 +145,16 @@ function PositionInput({
                 <DiscreteLeverageInputModifier handleUpdate={handleLeverageUpdate} />
             </FormControl>
         ),
-        [baseString, handleOnInput, baseSymbol, quoteString, quoteSymbol, leverage, handleLeverageUpdate],
+        [
+            baseString,
+            baseSymbol,
+            quoteString,
+            quoteSymbol,
+            leverage,
+            handleLeverageUpdate,
+            handleOnInput,
+            handleOnChange,
+        ],
     )
 }
 
