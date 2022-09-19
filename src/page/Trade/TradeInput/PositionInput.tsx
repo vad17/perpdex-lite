@@ -11,7 +11,7 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 
 import Big from "big.js"
 import { BIG_ZERO, USDC_PRECISION } from "constant"
-import { formatInput, formattedNumberWithCommas } from "util/format"
+import { formatInput } from "util/format"
 import Slider from "component/base/Slider"
 import DiscreteLeverageInputModifier from "component/base/DiscreteLeverageInputModifier"
 
@@ -47,6 +47,8 @@ function PositionInput({
     const handleOnInput = useCallback(
         (e, isInputBase) => {
             const value = e.target.value
+            const regex = /^[0][0-9]$/
+            if (regex.test(value)) return
             if (value >= 0) {
                 const formattedValue = formatInput(value, USDC_PRECISION)
 
@@ -56,9 +58,7 @@ function PositionInput({
                         const inputValue = new Big(formattedValue)
                         const oppositeValue = isInputBase ? inputValue.mul(markPrice) : inputValue.div(markPrice)
 
-                        isInputBase
-                            ? setQuoteString(formattedNumberWithCommas(oppositeValue, 5))
-                            : setBaseString(formattedNumberWithCommas(oppositeValue, 5))
+                        isInputBase ? setQuoteString(oppositeValue.toFixed(4)) : setBaseString(oppositeValue.toFixed(4))
                         handleBasePositionInput(isInputBase ? inputValue : oppositeValue)
                     }
                 } catch (err) {
@@ -77,11 +77,20 @@ function PositionInput({
                 const quoteValue = maxCollateral.mul(value)
                 const baseValue = quoteValue.div(markPrice)
                 handleBasePositionInput(baseValue)
-                setBaseString(formattedNumberWithCommas(baseValue, 5))
-                setQuoteString(formattedNumberWithCommas(quoteValue, 5))
+                setBaseString(baseValue.toFixed(4))
+                setQuoteString(quoteValue.toFixed(4))
             }
         },
         [handleBasePositionInput, leverage, markPrice, maxCollateral],
+    )
+
+    const handleOnChange = useCallback(
+        e => {
+            if (!(e.target as HTMLInputElement)?.value) {
+                handleBasePositionInput(BIG_ZERO)
+            }
+        },
+        [handleBasePositionInput],
     )
 
     return useMemo(
@@ -94,7 +103,7 @@ function PositionInput({
                 </FormLabel>
                 <HStack>
                     <NumberInput value={baseString} onInput={e => handleOnInput(e, true)}>
-                        <NumberInputField />
+                        <NumberInputField onChange={e => handleOnChange(e)} />
                         <InputRightElement w="54px">
                             <Text
                                 w="100%"
@@ -112,7 +121,7 @@ function PositionInput({
                         /
                     </Text>
                     <NumberInput value={quoteString} onInput={e => handleOnInput(e, false)}>
-                        <NumberInputField />
+                        <NumberInputField onChange={e => handleOnChange(e)} />
                         <InputRightElement w="54px">
                             <Text
                                 w="100%"
@@ -134,7 +143,16 @@ function PositionInput({
                 <DiscreteLeverageInputModifier handleUpdate={handleLeverageUpdate} />
             </FormControl>
         ),
-        [baseString, handleOnInput, baseSymbol, quoteString, quoteSymbol, leverage, handleLeverageUpdate],
+        [
+            baseString,
+            baseSymbol,
+            quoteString,
+            quoteSymbol,
+            leverage,
+            handleLeverageUpdate,
+            handleOnInput,
+            handleOnChange,
+        ],
     )
 }
 
