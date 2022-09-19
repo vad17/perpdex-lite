@@ -60,6 +60,11 @@ function Header() {
                                     <Button variant="link">Leaderboard</Button>
                                 </Link>
                             </MenuItem>
+                            <MenuItem>
+                                <Link to="/histories">
+                                    <Button variant="link">Histories</Button>
+                                </Link>
+                            </MenuItem>
                         </MenuList>
                     </Menu>
                     <Center marginLeft="24px">
@@ -109,6 +114,9 @@ function Header() {
                             {/*</Link>*/}
                             <Link to="/leaderboard">
                                 <Button variant="link">Leaderboard</Button>
+                            </Link>
+                            <Link to="/histories">
+                                <Button variant="link">Histories</Button>
                             </Link>
                         </HStack>
                     </Center>

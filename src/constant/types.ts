@@ -155,3 +155,18 @@ export interface LeaderboardScoreUnit {
     profit: string
     deposit: string
 }
+
+export interface Depositeds {
+    time: string
+    trader: string
+    amount: string
+}
+
+export type HistoryColumn = Depositeds
+
+export type HistoryDataType = "deposited"
+
+export interface HistoryData {
+    title: string
+    type: HistoryDataType
+}
