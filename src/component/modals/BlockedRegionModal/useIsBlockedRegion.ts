@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react"
-import { logger } from "lib/bugsnag/logger"
 
 export function useIsBlockedRegion() {
     const [isBlockedRegion, setIsBlockedRegion] = useState(false)
@@ -26,8 +25,24 @@ export function useIsBlockedRegion() {
                     console.error(err)
                 })
         } catch (err) {
-            setIsBlockedRegion(true)
-            logger.error(err)
+            console.error(err)
+            try {
+                // 30,000req / Month
+                // Fetch fails when using VPN
+                fetch("https://ipapi.co/json/")
+                    .then(res => res.json())
+                    .then(res => {
+                        const isBlocked = blockedList.some(location => location === res.country)
+                        setIsBlockedRegion(isBlocked)
+                    })
+                    .catch(err => {
+                        setIsBlockedRegion(true)
+                        console.error(err)
+                    })
+            } catch (err) {
+                setIsBlockedRegion(true)
+                console.error(err)
+            }
         }
     }, [setIsBlockedRegion])
 
