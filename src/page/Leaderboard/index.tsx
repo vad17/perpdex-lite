@@ -61,11 +61,10 @@ function Leaderboard() {
                 <Center mb="10">
                     <VStack w="100%">
                         <Heading as="h2" size="lg" color="#627EEA">
-                            Trading Competiton on zkSync Testnet
+                            Trading Competiton on Arbitrum Testnet -- Round 1
                         </Heading>
-                        <Text>COMING SOON</Text>
-                        {/* <Text>Sep 1 14:00 UTC — Sep 8 14:00 UTC</Text> */}
-                        <ExternalLink href="https://medium.com/perpdex/perpdex-trading-competition-round-1-eccfa4ebcfd1">
+                        <Text>19th September 14:00 UTC - 26th September 14:00 UTC</Text>
+                        <ExternalLink href="https://medium.com/@bilalch93/perpdex-trading-competition-arbitrum-testnet-round-1-59195cd83009">
                             <Text color="yellow.base">Competition Details</Text>
                         </ExternalLink>
                     </VStack>
