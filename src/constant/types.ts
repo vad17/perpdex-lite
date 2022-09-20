@@ -178,6 +178,7 @@ export type HistoryDataType =
     | "PositionChangeds"
     | "Orders"
     | "LimitOrderCreatedExchanges"
+    | "LimitOrderSettleds"
 
 export interface HistoryData {
     title: string

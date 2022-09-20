@@ -176,3 +176,32 @@ export function getLimitOrderCreatedExchangeColumn() {
         // },
     ]
 }
+
+export function getLimitOrderSettledColumn() {
+    return [
+        {
+            Header: "Time",
+            accessor: "time",
+        },
+        {
+            Header: "Trader",
+            accessor: "trader",
+        },
+        // {
+        //     Header: "Market",
+        //     accessor: "market",
+        // },
+        // {
+        //     Header: "Base",
+        //     accessor: "base",
+        // },
+        // {
+        //     Header: "Quote",
+        //     accessor: "quote",
+        // },
+        {
+            Header: "Realized PNL",
+            accessor: "realizedPnl",
+        },
+    ]
+}

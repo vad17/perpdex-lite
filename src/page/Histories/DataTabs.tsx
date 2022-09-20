@@ -39,6 +39,10 @@ function DataTabs() {
             title: "Limit Order Created",
             type: "LimitOrderCreatedExchanges",
         },
+        {
+            title: "Limit Order Settleds",
+            type: "LimitOrderSettleds",
+        },
     ]
 
     return (

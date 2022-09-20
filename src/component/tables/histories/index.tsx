@@ -3,6 +3,7 @@ import { HistoryColumn, HistoryDataType } from "constant/types"
 import {
     getDepositedsQuery,
     getLimitOrderCreatedExchangesQuery,
+    getLimitOrderSettledsQuery,
     getLiquidityAddedExchangesQuery,
     getLiquidityRemovedExchangesQuery,
     getOrdersQuery,
@@ -12,6 +13,7 @@ import { useThegraphQuery } from "hook/useThegraphQuery"
 import {
     cleanUpDepositeds,
     cleanUpLimitOrderCreatedExchanges,
+    cleanUpLimitOrderSettleds,
     cleanUpLiquidityAddedExchanges,
     cleanUpLiquidityRemovedExchanges,
     cleanUpOrders,
@@ -24,6 +26,7 @@ import HistoriesTableWrapper from "./HistoriesTableWrapper"
 import {
     getDepositedColumn,
     getLimitOrderCreatedExchangeColumn,
+    getLimitOrderSettledColumn,
     getLiquidityAddedExchangeColumn,
     getLiquidityRemovedExchangeColumn,
     getOrderColumn,
@@ -75,6 +78,12 @@ const historyMethodsMap = {
         doMarketFilter: true,
         cleanUpMethod: cleanUpLimitOrderCreatedExchanges,
         getColumn: getLimitOrderCreatedExchangeColumn,
+    },
+    LimitOrderSettleds: {
+        query: getLimitOrderSettledsQuery,
+        doMarketFilter: true,
+        cleanUpMethod: cleanUpLimitOrderSettleds,
+        getColumn: getLimitOrderSettledColumn,
     },
 }
 

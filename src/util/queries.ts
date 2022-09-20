@@ -154,3 +154,23 @@ export function cleanUpLimitOrderCreatedExchanges(queryResponse: any) {
 
     return _.sortBy(results, (data: any) => -data.timestamp)
 }
+
+export function cleanUpLimitOrderSettleds(queryResponse: any) {
+    if (!queryResponse || !queryResponse.limitOrderSettleds) return
+
+    const limitOrderSettleds = queryResponse.limitOrderSettleds
+
+    const results = limitOrderSettleds.map((values: any) => {
+        return {
+            trader: values.trader,
+            // market: values.market,
+            base: formattedNumberWithCommas(bigNum2Big(values.base)),
+            quote: formattedNumberWithCommas(bigNum2Big(values.quote)),
+            realizedPnl: formattedNumberWithCommas(bigNum2Big(values.realizedPnl)) + "ETH",
+            time: formatTime(normalizeToUnixtime(Number(values.timestamp)), true),
+            timestamp: values.timestamp,
+        }
+    })
+
+    return _.sortBy(results, (data: any) => -data.timestamp)
+}

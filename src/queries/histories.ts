@@ -152,3 +152,31 @@ export const getLimitOrderCreatedExchangesQuery = (schemaType: "thegraph" | "sub
         subquery: undefined,
     }[schemaType]
 }
+
+export const getLimitOrderSettledsQuery = (schemaType: "thegraph" | "subquery") => {
+    return {
+        thegraph: gql`
+            query($markets: [String!]) {
+                limitOrderSettleds(
+                    first: 100
+                    where: { market_in: $markets }
+                    orderBy: timestamp
+                    orderDirection: desc
+                ) {
+                    id
+                    exchange
+                    trader
+                    market
+
+                    base
+                    quote
+                    realizedPnl
+
+                    blockNumberLogIndex
+                    timestamp
+                }
+            }
+        `,
+        subquery: undefined,
+    }[schemaType]
+}
