@@ -106,3 +106,36 @@ export function getPositionChangedColumn() {
         },
     ]
 }
+
+export function getOrderColumn() {
+    return [
+        {
+            Header: "Time",
+            accessor: "time",
+        },
+        {
+            Header: "Trader",
+            accessor: "trader",
+        },
+        // {
+        //     Header: "Market",
+        //     accessor: "market",
+        // },
+        {
+            Header: "Order id",
+            accessor: "orderId",
+        },
+        {
+            Header: "Price",
+            accessor: "price",
+        },
+        {
+            Header: "Volume",
+            accessor: "volume",
+        },
+        // {
+        //     Header: "Limit Order Type",
+        //     accessor: "limitOrderType",
+        // },
+    ]
+}

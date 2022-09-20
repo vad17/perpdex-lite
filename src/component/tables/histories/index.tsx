@@ -4,13 +4,15 @@ import {
     getDepositedsQuery,
     getLiquidityAddedExchangesQuery,
     getLiquidityRemovedExchangesQuery,
+    getOrdersQuery,
     getWithdrawnsQuery,
-} from "queries/account"
+} from "queries/histories"
 import { useThegraphQuery } from "hook/useThegraphQuery"
 import {
     cleanUpDepositeds,
     cleanUpLiquidityAddedExchanges,
     cleanUpLiquidityRemovedExchanges,
+    cleanUpOrders,
     cleanUpPositionChangeds,
     cleanUpWithdrawn,
 } from "util/queries"
@@ -21,6 +23,7 @@ import {
     getDepositedColumn,
     getLiquidityAddedExchangeColumn,
     getLiquidityRemovedExchangeColumn,
+    getOrderColumn,
     getPositionChangedColumn,
     getWithdrawnColumn,
 } from "./getColumns"
@@ -57,6 +60,12 @@ const historyMethodsMap = {
         doMarketFilter: true,
         cleanUpMethod: cleanUpPositionChangeds,
         getColumn: getPositionChangedColumn,
+    },
+    Orders: {
+        query: getOrdersQuery,
+        doMarketFilter: true,
+        cleanUpMethod: cleanUpOrders,
+        getColumn: getOrderColumn,
     },
 }
 

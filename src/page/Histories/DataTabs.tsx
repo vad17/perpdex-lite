@@ -31,6 +31,10 @@ function DataTabs() {
             title: "Position Changed",
             type: "PositionChangeds",
         },
+        {
+            title: "Orders",
+            type: "Orders",
+        },
     ]
 
     return (

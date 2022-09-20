@@ -1,6 +1,6 @@
 import _ from "lodash"
-import { constants } from "ethers"
-import { bigNum2Big, formattedNumberWithCommas } from "./format"
+import { BigNumber, constants } from "ethers"
+import { bigNum2Big, formattedNumberWithCommas, x96ToBig } from "./format"
 import { formatTime, normalizeToUnixtime } from "./time"
 
 export function cleanUpDepositeds(queryResponse: any) {
@@ -103,6 +103,28 @@ export function cleanUpPositionChangeds(queryResponse: any) {
             // liquidationPenalty
             // liquidationReward
             // insuranceFundReward
+            time: formatTime(normalizeToUnixtime(Number(values.timestamp)), true),
+            timestamp: values.timestamp,
+        }
+    })
+
+    return _.sortBy(results, (data: any) => -data.timestamp)
+}
+
+export function cleanUpOrders(queryResponse: any) {
+    if (!queryResponse || !queryResponse.orders) return
+
+    const orders = queryResponse.orders
+
+    const results = orders.map((values: any) => {
+        return {
+            trader: values.trader,
+            // market: values.market,
+            way: values.way,
+            orderId: values.orderId,
+            price: formattedNumberWithCommas(x96ToBig(BigNumber.from(values.priceX96), true)),
+            volume: formattedNumberWithCommas(bigNum2Big(values.volume)) + "ETH",
+            limitOrderType: values.limitOrderType,
             time: formatTime(normalizeToUnixtime(Number(values.timestamp)), true),
             timestamp: values.timestamp,
         }

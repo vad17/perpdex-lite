@@ -99,3 +99,25 @@ export const getLiquidityRemovedExchangesQuery = (schemaType: "thegraph" | "subq
 }
 
 // export const getPositionChangedsQuery = (schemaType: "thegraph" | "subquery") => {
+
+export const getOrdersQuery = (schemaType: "thegraph" | "subquery") => {
+    return {
+        thegraph: gql`
+            query($markets: [String!]) {
+                orders(first: 100, where: { market_in: $markets }, orderBy: timestamp, orderDirection: desc) {
+                    id
+                    trader
+                    market
+                    way
+                    orderId
+                    priceX96
+                    volume
+                    limitOrderType
+
+                    timestamp
+                }
+            }
+        `,
+        subquery: undefined,
+    }[schemaType]
+}
