@@ -248,11 +248,11 @@ function usePerpdexMarketContainer() {
                             : multicallNetworkProvider.getEthBalance(constants.AddressZero), // dummy
                         _.map(askPrices[address], priceDisplay => {
                             const price = inverse ? Big(1).div(priceDisplay) : priceDisplay
-                            return contract.maxSwapByPrice(inverse, inverse, bigToX96(price.mul(baseBalancePerShare)))
+                            return contract.maxSwapByPrice(inverse, inverse, bigToX96(price))
                         }),
                         _.map(bidPrices[address], priceDisplay => {
                             const price = inverse ? Big(1).div(priceDisplay) : priceDisplay
-                            return contract.maxSwapByPrice(!inverse, !inverse, bigToX96(price.mul(baseBalancePerShare)))
+                            return contract.maxSwapByPrice(!inverse, !inverse, bigToX96(price))
                         }),
                     ])
                 }),
