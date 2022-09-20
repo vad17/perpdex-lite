@@ -52,3 +52,32 @@ export function getLiquidityAddedExchangeColumn() {
         },
     ]
 }
+
+export function getLiquidityRemovedExchangeColumn() {
+    return [
+        {
+            Header: "Time",
+            accessor: "time",
+        },
+        {
+            Header: "Trader",
+            accessor: "trader",
+        },
+        // {
+        //     Header: "Market",
+        //     accessor: "market",
+        // },
+        {
+            Header: "Liquidator",
+            accessor: "liquidator",
+        },
+        {
+            Header: "Liquidity",
+            accessor: "liquidity",
+        },
+        {
+            Header: "Realized PNL",
+            accessor: "realizedPnl",
+        },
+    ]
+}

@@ -23,6 +23,10 @@ function DataTabs() {
             title: "Liquidity Added",
             type: "LiquidityAddedExchanges",
         },
+        {
+            title: "Liquidity Removed",
+            type: "LiquidityRemovedExchanges",
+        },
     ]
 
     return (

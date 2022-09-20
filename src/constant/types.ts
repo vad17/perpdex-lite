@@ -170,7 +170,7 @@ export interface Withdrawns {
 
 export type HistoryColumn = Deposited | Withdrawns
 
-export type HistoryDataType = "Deposited" | "Withdrawn" | "LiquidityAddedExchanges"
+export type HistoryDataType = "Deposited" | "Withdrawn" | "LiquidityAddedExchanges" | "LiquidityRemovedExchanges"
 
 export interface HistoryData {
     title: string

@@ -1,12 +1,27 @@
 import { useMemo } from "react"
 import { HistoryColumn, HistoryDataType } from "constant/types"
-import { getDepositedsQuery, getLiquidityAddedExchangesQuery, getWithdrawnsQuery } from "queries/account"
+import {
+    getDepositedsQuery,
+    getLiquidityAddedExchangesQuery,
+    getLiquidityRemovedExchangesQuery,
+    getWithdrawnsQuery,
+} from "queries/account"
 import { useThegraphQuery } from "hook/useThegraphQuery"
-import { cleanUpDepositeds, cleanUpLiquidityAddedExchanges, cleanUpWithdrawn } from "util/queries"
+import {
+    cleanUpDepositeds,
+    cleanUpLiquidityAddedExchanges,
+    cleanUpLiquidityRemovedExchanges,
+    cleanUpWithdrawn,
+} from "util/queries"
 import { Column } from "react-table"
 import { Connection } from "container/connection"
 import HistoriesTableWrapper from "./HistoriesTableWrapper"
-import { getDepositedColumn, getLiquidityAddedExchangeColumn, getWithdrawnColumn } from "./getColumns"
+import {
+    getDepositedColumn,
+    getLiquidityAddedExchangeColumn,
+    getLiquidityRemovedExchangeColumn,
+    getWithdrawnColumn,
+} from "./getColumns"
 
 const historyMethodsMap = {
     Deposited: {
@@ -23,6 +38,11 @@ const historyMethodsMap = {
         query: getLiquidityAddedExchangesQuery,
         cleanUpMethod: cleanUpLiquidityAddedExchanges,
         getColumn: getLiquidityAddedExchangeColumn,
+    },
+    LiquidityRemovedExchanges: {
+        query: getLiquidityRemovedExchangesQuery,
+        cleanUpMethod: cleanUpLiquidityRemovedExchanges,
+        getColumn: getLiquidityRemovedExchangeColumn,
     },
 }
 

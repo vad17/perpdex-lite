@@ -1,4 +1,5 @@
 import _ from "lodash"
+import { constants } from "ethers"
 import { bigNum2Big, formattedNumberWithCommas } from "./format"
 import { formatTime, normalizeToUnixtime } from "./time"
 
@@ -51,6 +52,30 @@ export function cleanUpLiquidityAddedExchanges(queryResponse: any) {
             // cumBasePerLiquidityX96: formattedNumberWithCommas(x96ToBig(values.cumBasePerLiquidityX96)),
             // cumQuotePerLiquidityX96: formattedNumberWithCommas(x96ToBig(values.cumQuotePerLiquidityX96)),
             liquidity: formattedNumberWithCommas(bigNum2Big(values.liquidity)) + "ETH",
+            time: formatTime(normalizeToUnixtime(Number(values.timestamp)), true),
+            timestamp: values.timestamp,
+        }
+    })
+
+    return _.sortBy(results, (data: any) => -data.timestamp)
+}
+
+export function cleanUpLiquidityRemovedExchanges(queryResponse: any) {
+    if (!queryResponse || !queryResponse.liquidityRemovedExchanges) return
+
+    const liquidityRemovedExchanges = queryResponse.liquidityRemovedExchanges
+
+    const results = liquidityRemovedExchanges.map((values: any) => {
+        return {
+            trader: values.trader,
+            // market: values.market,
+            liquidator: values.liquidator === constants.AddressZero ? "-" : values.liquidator,
+            // base: formattedNumberWithCommas(bigNum2Big(values.base)),
+            // quote: formattedNumberWithCommas(bigNum2Big(values.quote)),
+            liquidity: formattedNumberWithCommas(bigNum2Big(values.liquidity)) + "ETH",
+            // takerBase
+            // takerQuote,
+            realizedPnl: formattedNumberWithCommas(bigNum2Big(values.realizedPnl)) + "ETH",
             time: formatTime(normalizeToUnixtime(Number(values.timestamp)), true),
             timestamp: values.timestamp,
         }

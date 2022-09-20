@@ -61,3 +61,29 @@ export const getLiquidityAddedExchangesQuery = (schemaType: "thegraph" | "subque
         subquery: undefined,
     }[schemaType]
 }
+
+export const getLiquidityRemovedExchangesQuery = (schemaType: "thegraph" | "subquery") => {
+    return {
+        thegraph: gql`
+            query {
+                liquidityRemovedExchanges(first: 100) {
+                    id
+                    exchange
+                    trader
+                    market
+                    base
+                    quote
+                    liquidity
+                    liquidator
+                    takerBase
+                    takerQuote
+                    realizedPnl
+
+                    blockNumberLogIndex
+                    timestamp
+                }
+            }
+        `,
+        subquery: undefined,
+    }[schemaType]
+}
