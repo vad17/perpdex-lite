@@ -20,14 +20,37 @@ export function cleanUpDepositeds(queryResponse: any) {
 }
 
 export function cleanUpWithdrawn(queryResponse: any) {
-    if (!queryResponse || !queryResponse.depositeds) return
+    if (!queryResponse || !queryResponse.withdrawns) return
 
-    const depositeds = queryResponse.depositeds
+    const withdrawns = queryResponse.withdrawns
 
-    const results = depositeds.map((values: any) => {
+    const results = withdrawns.map((values: any) => {
         return {
             trader: values.trader,
             amount: formattedNumberWithCommas(bigNum2Big(values.amount)) + "ETH",
+            time: formatTime(normalizeToUnixtime(Number(values.timestamp)), true),
+            timestamp: values.timestamp,
+        }
+    })
+
+    return _.sortBy(results, (data: any) => -data.timestamp)
+}
+
+export function cleanUpLiquidityAddedExchanges(queryResponse: any) {
+    if (!queryResponse || !queryResponse.liquidityAddedExchanges) return
+
+    const liquidityAddedExchanges = queryResponse.liquidityAddedExchanges
+
+    const results = liquidityAddedExchanges.map((values: any) => {
+        return {
+            trader: values.trader,
+            market: values.market,
+
+            base: formattedNumberWithCommas(bigNum2Big(values.base)),
+            quote: formattedNumberWithCommas(bigNum2Big(values.quote)),
+            // cumBasePerLiquidityX96: formattedNumberWithCommas(x96ToBig(values.cumBasePerLiquidityX96)),
+            // cumQuotePerLiquidityX96: formattedNumberWithCommas(x96ToBig(values.cumQuotePerLiquidityX96)),
+            liquidity: formattedNumberWithCommas(bigNum2Big(values.liquidity)) + "ETH",
             time: formatTime(normalizeToUnixtime(Number(values.timestamp)), true),
             timestamp: values.timestamp,
         }

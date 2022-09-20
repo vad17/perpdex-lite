@@ -1,41 +1,29 @@
 import { useMemo } from "react"
 import { HistoryColumn, HistoryDataType } from "constant/types"
-import { getDepositedsQuery } from "queries/account"
+import { getDepositedsQuery, getLiquidityAddedExchangesQuery, getWithdrawnsQuery } from "queries/account"
 import { useThegraphQuery } from "hook/useThegraphQuery"
-import { cleanUpDepositeds } from "util/queries"
+import { cleanUpDepositeds, cleanUpLiquidityAddedExchanges, cleanUpWithdrawn } from "util/queries"
 import { Column } from "react-table"
 import { Connection } from "container/connection"
 import HistoriesTableWrapper from "./HistoriesTableWrapper"
+import { getDepositedColumn, getLiquidityAddedExchangeColumn, getWithdrawnColumn } from "./getColumns"
 
-function getMethodsByHistoryDataType(type: HistoryDataType) {
-    const query = type === "Deposited" ? getDepositedsQuery : undefined
-
-    const cleanUpMethod = type === "Deposited" ? cleanUpDepositeds : undefined
-
-    const getColumn = type === "Deposited" ? getDepositedColumn : getDepositedColumn
-
-    return {
-        query,
-        cleanUpMethod,
-        getColumn,
-    }
-}
-
-function getDepositedColumn() {
-    return [
-        {
-            Header: "Time",
-            accessor: "time",
-        },
-        {
-            Header: "Trader",
-            accessor: "trader",
-        },
-        {
-            Header: "Deposit Amount",
-            accessor: "amount",
-        },
-    ]
+const historyMethodsMap = {
+    Deposited: {
+        query: getDepositedsQuery,
+        cleanUpMethod: cleanUpDepositeds,
+        getColumn: getDepositedColumn,
+    },
+    Withdrawn: {
+        query: getWithdrawnsQuery,
+        cleanUpMethod: cleanUpWithdrawn,
+        getColumn: getWithdrawnColumn,
+    },
+    LiquidityAddedExchanges: {
+        query: getLiquidityAddedExchangesQuery,
+        cleanUpMethod: cleanUpLiquidityAddedExchanges,
+        getColumn: getLiquidityAddedExchangeColumn,
+    },
 }
 
 interface Props {
@@ -46,13 +34,17 @@ function HistoriesTable({ historyDataType }: Props) {
     const { chainId, account } = Connection.useContainer()
     // const networkConfig = networkConfigs[chainId || 280] // 280 for zkSync
 
-    const { query, cleanUpMethod, getColumn } = getMethodsByHistoryDataType(historyDataType)
+    const { query, cleanUpMethod, getColumn } = historyMethodsMap[historyDataType]
 
     const results = useThegraphQuery(chainId, query, { fetchPolicy: "network-only" })
 
     const data = useMemo(() => {
+        if (results.error) console.error("query error: ", results.error)
         if (results.loading || results.error || !cleanUpMethod) return []
+        console.log("@@@@ histories query data", results.data)
         const allData = cleanUpMethod(results.data)
+
+        console.log("@@@@ histories clean allData", allData)
 
         return allData as any[]
     }, [cleanUpMethod, results.data, results.error, results.loading])
