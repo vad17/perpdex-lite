@@ -7,7 +7,7 @@ import {
     NumberInputField,
     Text,
 } from "@chakra-ui/react"
-import { useCallback, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 
 import Big from "big.js"
 import { USDC_PRECISION } from "constant"
@@ -15,11 +15,17 @@ import { formatInput } from "util/format"
 
 interface PriceInputState {
     priceUnit: string
+    markPriceDisplay: Big
     handlePriceInput: (value: Big | null) => void
 }
 
-function PriceInput({ priceUnit, handlePriceInput }: PriceInputState) {
+function PriceInput({ priceUnit, markPriceDisplay, handlePriceInput }: PriceInputState) {
     const [priceString, setPriceString] = useState<string>("")
+
+    useEffect(() => {
+        setPriceString(markPriceDisplay.toFixed(2))
+        handlePriceInput(markPriceDisplay)
+    }, [])
 
     const handleOnInput = useCallback(
         e => {
