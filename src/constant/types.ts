@@ -177,6 +177,7 @@ export type HistoryDataType =
     | "LiquidityRemovedExchanges"
     | "PositionChangeds"
     | "Orders"
+    | "LimitOrderCreatedExchanges"
 
 export interface HistoryData {
     title: string

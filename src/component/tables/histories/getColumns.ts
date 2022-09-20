@@ -139,3 +139,40 @@ export function getOrderColumn() {
         // },
     ]
 }
+
+export function getLimitOrderCreatedExchangeColumn() {
+    return [
+        {
+            Header: "Time",
+            accessor: "time",
+        },
+        {
+            Header: "Trader",
+            accessor: "trader",
+        },
+        // {
+        //     Header: "Market",
+        //     accessor: "market",
+        // },
+        {
+            Header: "Bid/Ask",
+            accessor: "bidOrAsk",
+        },
+        {
+            Header: "Order id",
+            accessor: "orderId",
+        },
+        {
+            Header: "Price",
+            accessor: "price",
+        },
+        {
+            Header: "Base",
+            accessor: "base",
+        },
+        // {
+        //     Header: "Limit Order Type",
+        //     accessor: "limitOrderType",
+        // },
+    ]
+}

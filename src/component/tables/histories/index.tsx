@@ -2,6 +2,7 @@ import { useMemo } from "react"
 import { HistoryColumn, HistoryDataType } from "constant/types"
 import {
     getDepositedsQuery,
+    getLimitOrderCreatedExchangesQuery,
     getLiquidityAddedExchangesQuery,
     getLiquidityRemovedExchangesQuery,
     getOrdersQuery,
@@ -10,6 +11,7 @@ import {
 import { useThegraphQuery } from "hook/useThegraphQuery"
 import {
     cleanUpDepositeds,
+    cleanUpLimitOrderCreatedExchanges,
     cleanUpLiquidityAddedExchanges,
     cleanUpLiquidityRemovedExchanges,
     cleanUpOrders,
@@ -21,6 +23,7 @@ import { Connection } from "container/connection"
 import HistoriesTableWrapper from "./HistoriesTableWrapper"
 import {
     getDepositedColumn,
+    getLimitOrderCreatedExchangeColumn,
     getLiquidityAddedExchangeColumn,
     getLiquidityRemovedExchangeColumn,
     getOrderColumn,
@@ -66,6 +69,12 @@ const historyMethodsMap = {
         doMarketFilter: true,
         cleanUpMethod: cleanUpOrders,
         getColumn: getOrderColumn,
+    },
+    LimitOrderCreatedExchanges: {
+        query: getLimitOrderCreatedExchangesQuery,
+        doMarketFilter: true,
+        cleanUpMethod: cleanUpLimitOrderCreatedExchanges,
+        getColumn: getLimitOrderCreatedExchangeColumn,
     },
 }
 

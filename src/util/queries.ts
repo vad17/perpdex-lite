@@ -132,3 +132,25 @@ export function cleanUpOrders(queryResponse: any) {
 
     return _.sortBy(results, (data: any) => -data.timestamp)
 }
+
+export function cleanUpLimitOrderCreatedExchanges(queryResponse: any) {
+    if (!queryResponse || !queryResponse.limitOrderCreatedExchanges) return
+
+    const limitOrderCreatedExchanges = queryResponse.limitOrderCreatedExchanges
+
+    const results = limitOrderCreatedExchanges.map((values: any) => {
+        return {
+            trader: values.trader,
+            // market: values.market,
+            bidOrAsk: values.isBid ? "bid" : "ask",
+            base: formattedNumberWithCommas(bigNum2Big(values.base)),
+            orderId: values.orderId,
+            price: formattedNumberWithCommas(x96ToBig(BigNumber.from(values.priceX96), true)),
+            // limitOrderType: values.limitOrderType,
+            time: formatTime(normalizeToUnixtime(Number(values.timestamp)), true),
+            timestamp: values.timestamp,
+        }
+    })
+
+    return _.sortBy(results, (data: any) => -data.timestamp)
+}
