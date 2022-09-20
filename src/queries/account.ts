@@ -41,8 +41,13 @@ export const getWithdrawnsQuery = (schemaType: "thegraph" | "subquery") => {
 export const getLiquidityAddedExchangesQuery = (schemaType: "thegraph" | "subquery") => {
     return {
         thegraph: gql`
-            query {
-                liquidityAddedExchanges(first: 100) {
+            query($markets: [String!]) {
+                liquidityAddedExchanges(
+                    first: 100
+                    where: { market_in: $markets }
+                    orderBy: timestamp
+                    orderDirection: desc
+                ) {
                     id
                     exchange
                     trader
@@ -65,8 +70,13 @@ export const getLiquidityAddedExchangesQuery = (schemaType: "thegraph" | "subque
 export const getLiquidityRemovedExchangesQuery = (schemaType: "thegraph" | "subquery") => {
     return {
         thegraph: gql`
-            query {
-                liquidityRemovedExchanges(first: 100) {
+            query($markets: [String!]) {
+                liquidityRemovedExchanges(
+                    first: 100
+                    where: { market_in: $markets }
+                    orderBy: timestamp
+                    orderDirection: desc
+                ) {
                     id
                     exchange
                     trader
@@ -87,3 +97,5 @@ export const getLiquidityRemovedExchangesQuery = (schemaType: "thegraph" | "subq
         subquery: undefined,
     }[schemaType]
 }
+
+// export const getPositionChangedsQuery = (schemaType: "thegraph" | "subquery") => {

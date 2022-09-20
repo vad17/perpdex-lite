@@ -27,6 +27,10 @@ function DataTabs() {
             title: "Liquidity Removed",
             type: "LiquidityRemovedExchanges",
         },
+        {
+            title: "Position Changed",
+            type: "PositionChangeds",
+        },
     ]
 
     return (

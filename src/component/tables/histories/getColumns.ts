@@ -81,3 +81,28 @@ export function getLiquidityRemovedExchangeColumn() {
         },
     ]
 }
+
+export function getPositionChangedColumn() {
+    return [
+        {
+            Header: "Time",
+            accessor: "time",
+        },
+        {
+            Header: "Trader",
+            accessor: "trader",
+        },
+        // {
+        //     Header: "Market",
+        //     accessor: "market",
+        // },
+        {
+            Header: "Realized PNL",
+            accessor: "realizedPnl",
+        },
+        {
+            Header: "Protocol Fee",
+            accessor: "protocolFee",
+        },
+    ]
+}

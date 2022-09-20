@@ -83,3 +83,30 @@ export function cleanUpLiquidityRemovedExchanges(queryResponse: any) {
 
     return _.sortBy(results, (data: any) => -data.timestamp)
 }
+
+export function cleanUpPositionChangeds(queryResponse: any) {
+    if (!queryResponse || !queryResponse.positionChangeds) return
+
+    const positionChangeds = queryResponse.positionChangeds
+
+    const results = positionChangeds.map((values: any) => {
+        return {
+            trader: values.trader,
+            // market: values.market,
+            // base: formattedNumberWithCommas(bigNum2Big(values.base)),
+            // quote: formattedNumberWithCommas(bigNum2Big(values.quote)),
+            realizedPnl: formattedNumberWithCommas(bigNum2Big(values.realizedPnl)) + "ETH",
+            protocolFee: formattedNumberWithCommas(bigNum2Big(values.protocolFee)) + "ETH",
+            // baseBalancePerShareX96
+            // sharePriceAfterX96
+            // liquidator: values.liquidator === constants.AddressZero ? "-" : values.liquidator,
+            // liquidationPenalty
+            // liquidationReward
+            // insuranceFundReward
+            time: formatTime(normalizeToUnixtime(Number(values.timestamp)), true),
+            timestamp: values.timestamp,
+        }
+    })
+
+    return _.sortBy(results, (data: any) => -data.timestamp)
+}

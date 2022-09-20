@@ -11,6 +11,7 @@ import {
     cleanUpDepositeds,
     cleanUpLiquidityAddedExchanges,
     cleanUpLiquidityRemovedExchanges,
+    cleanUpPositionChangeds,
     cleanUpWithdrawn,
 } from "util/queries"
 import { Column } from "react-table"
@@ -20,29 +21,42 @@ import {
     getDepositedColumn,
     getLiquidityAddedExchangeColumn,
     getLiquidityRemovedExchangeColumn,
+    getPositionChangedColumn,
     getWithdrawnColumn,
 } from "./getColumns"
+import { getPositionChangedsQuery } from "queries/trades"
+import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
 
 const historyMethodsMap = {
     Deposited: {
         query: getDepositedsQuery,
+        doMarketFilter: false,
         cleanUpMethod: cleanUpDepositeds,
         getColumn: getDepositedColumn,
     },
     Withdrawn: {
         query: getWithdrawnsQuery,
+        doMarketFilter: false,
         cleanUpMethod: cleanUpWithdrawn,
         getColumn: getWithdrawnColumn,
     },
     LiquidityAddedExchanges: {
         query: getLiquidityAddedExchangesQuery,
+        doMarketFilter: true,
         cleanUpMethod: cleanUpLiquidityAddedExchanges,
         getColumn: getLiquidityAddedExchangeColumn,
     },
     LiquidityRemovedExchanges: {
         query: getLiquidityRemovedExchangesQuery,
+        doMarketFilter: true,
         cleanUpMethod: cleanUpLiquidityRemovedExchanges,
         getColumn: getLiquidityRemovedExchangeColumn,
+    },
+    PositionChangeds: {
+        query: getPositionChangedsQuery,
+        doMarketFilter: true,
+        cleanUpMethod: cleanUpPositionChangeds,
+        getColumn: getPositionChangedColumn,
     },
 }
 
@@ -52,11 +66,19 @@ interface Props {
 
 function HistoriesTable({ historyDataType }: Props) {
     const { chainId, account } = Connection.useContainer()
+    const { currentMarket } = PerpdexMarketContainer.useContainer()
     // const networkConfig = networkConfigs[chainId || 280] // 280 for zkSync
 
-    const { query, cleanUpMethod, getColumn } = historyMethodsMap[historyDataType]
+    const { query, doMarketFilter, cleanUpMethod, getColumn } = historyMethodsMap[historyDataType]
 
-    const results = useThegraphQuery(chainId, query, { fetchPolicy: "network-only" })
+    const results = useThegraphQuery(chainId, query, {
+        fetchPolicy: "network-only",
+        variables: doMarketFilter
+            ? {
+                  markets: [currentMarket, currentMarket.toLowerCase()],
+              }
+            : undefined,
+    })
 
     const data = useMemo(() => {
         if (results.error) console.error("query error: ", results.error)
