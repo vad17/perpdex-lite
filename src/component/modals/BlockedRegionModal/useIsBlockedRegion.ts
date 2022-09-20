@@ -8,24 +8,8 @@ export function useIsBlockedRegion() {
         if (blockedList.length === 0) {
             return
         }
-        try {
-            fetch("https://www.cloudflare.com/cdn-cgi/trace")
-                .then(res => res.text())
-                .then(text => {
-                    const ret: Record<string, string> = {}
-                    text.split("\n").forEach(line => {
-                        const [key, value] = line.split("=")
-                        ret[key] = value
-                    })
-                    const isBlocked = blockedList.some(location => location === ret.loc)
-                    setIsBlockedRegion(isBlocked)
-                })
-                .catch(err => {
-                    setIsBlockedRegion(true)
-                    console.error(err)
-                })
-        } catch (err) {
-            console.error(err)
+
+        const checkIpapi = () => {
             try {
                 // 30,000req / Month
                 // Fetch fails when using VPN
@@ -43,6 +27,27 @@ export function useIsBlockedRegion() {
                 setIsBlockedRegion(true)
                 console.error(err)
             }
+        }
+
+        try {
+            fetch("https://www.cloudflare.com/cdn-cgi/trace")
+                .then(res => res.text())
+                .then(text => {
+                    const ret: Record<string, string> = {}
+                    text.split("\n").forEach(line => {
+                        const [key, value] = line.split("=")
+                        ret[key] = value
+                    })
+                    const isBlocked = blockedList.some(location => location === ret.loc)
+                    setIsBlockedRegion(isBlocked)
+                })
+                .catch(err => {
+                    console.error(err)
+                    checkIpapi()
+                })
+        } catch (err) {
+            console.error(err)
+            checkIpapi()
         }
     }, [setIsBlockedRegion])
 
