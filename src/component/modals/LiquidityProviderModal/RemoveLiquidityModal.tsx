@@ -1,4 +1,4 @@
-import { Divider, VStack, Text, NumberInput, InputGroup, NumberInputField, FormControl } from "@chakra-ui/react"
+import { Divider, VStack, Text, NumberInput, InputGroup, NumberInputField, FormControl, HStack } from "@chakra-ui/react"
 import Slippage from "./Slippage"
 import React, { useCallback, useEffect, useState, useMemo } from "react"
 import { Modal as ModalContainer } from "container/modal"
@@ -64,6 +64,14 @@ function RemoveLiquidityModal() {
         }
     }, [currentMarketState.baseSymbol])
 
+    const handleMax = useCallback(() => {
+        const value = currentMyMakerInfo?.liquidity
+        if (value) {
+            const formattedValue = value.toFixed(INPUT_PRECISION, Big.roundDown)
+            setLiquidity(formattedValue)
+        }
+    }, [currentMyMakerInfo?.liquidity])
+
     return (
         <Modal
             headerText="Remove Liquidity"
@@ -84,7 +92,10 @@ function RemoveLiquidityModal() {
                             </InputGroup>
                         </NumberInput>
                     </FormControl>
-                    <Text>Liquidity {numberWithCommas(currentMyMakerInfo?.liquidity)}</Text>
+                    <HStack justifyContent="space-between" w="100%">
+                        <Text>Liquidity {numberWithCommas(currentMyMakerInfo?.liquidity)}</Text>
+                        <Button size="xs" customType="base-blue" text="MAX" borderRadius="5px" onClick={handleMax} />
+                    </HStack>
                     <Divider />
                     <Slippage />
                     <Divider />
