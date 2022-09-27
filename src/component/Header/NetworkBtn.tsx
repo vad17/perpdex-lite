@@ -26,9 +26,34 @@ function NetworkBtn() {
 
     const { library } = useWeb3React()
 
+    const injectedWalletHandler = async (chainId: string) => {
+        try {
+            await window.ethereum.request({
+                method: "wallet_switchEthereumChain",
+                params: [{ chainId: networks[chainId].chainId }],
+            })
+        } catch (err: any) {
+            if (err.code === 4902) {
+                try {
+                    await window.ethereum.request({
+                        method: "wallet_addEthereumChain",
+                        params: [{ ...networks[chainId] }],
+                    })
+                } catch (error) {
+                    console.error(error)
+                }
+            }
+        }
+    }
+
     const handleOnClick = useCallback(
         async (chainId: string) => {
             try {
+                if (window && (window as any).ethereum) {
+                    // browser injected wallet
+                    injectedWalletHandler(chainId)
+                    return
+                }
                 if (!library.provider) console.error("error")
                 await library.provider.request({
                     method: "wallet_switchEthereumChain",
