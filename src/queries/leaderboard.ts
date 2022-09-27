@@ -3,8 +3,8 @@ import { gql } from "@apollo/client"
 export const getProfitRatiosQuery = (schemaType: "thegraph" | "subquery") => {
     return {
         thegraph: gql`
-            query($startedAt_gt: [Int!]) {
-                profitRatios(first: 100) {
+            query {
+                profitRatios(first: 1000) {
                     id
                     trader
                     startedAt

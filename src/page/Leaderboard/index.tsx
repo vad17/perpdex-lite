@@ -13,6 +13,7 @@ import { cleanUpProfitRatios } from "util/leaderboard"
 import { AiOutlineReload } from "react-icons/ai"
 import _ from "lodash"
 import { LeaderboardScoreUnit } from "constant/types"
+import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
 
 function Leaderboard() {
     const { chainId, account } = Connection.useContainer()
@@ -21,7 +22,12 @@ function Leaderboard() {
 
     const networkConfig = networkConfigs[chainId || 280] // 280 for zkSync
 
-    const profitRatiosResults = useThegraphQuery(chainId, getProfitRatiosQuery, { fetchPolicy: "network-only" })
+    const { currentMarket } = PerpdexMarketContainer.useContainer()
+
+    const profitRatiosResults = useThegraphQuery(chainId, getProfitRatiosQuery, {
+        fetchPolicy: "network-only",
+        variables: { markets: [currentMarket, currentMarket.toLowerCase()] },
+    })
 
     const data = useMemo(() => {
         if (profitRatiosResults.loading || profitRatiosResults.error) return []

@@ -110,10 +110,7 @@ function HistoriesTable({ historyDataType }: Props) {
     const data = useMemo(() => {
         if (results.error) console.error("query error: ", results.error)
         if (results.loading || results.error || !cleanUpMethod) return []
-        console.log("@@@@ histories query data", results.data)
         const allData = cleanUpMethod(results.data)
-
-        console.log("@@@@ histories clean allData", allData)
 
         return allData as any[]
     }, [cleanUpMethod, results.data, results.error, results.loading])
