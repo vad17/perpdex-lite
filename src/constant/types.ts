@@ -156,15 +156,29 @@ export interface LeaderboardScoreUnit {
     deposit: string
 }
 
-export interface Depositeds {
+export interface Deposited {
     time: string
     trader: string
     amount: string
 }
 
-export type HistoryColumn = Depositeds
+export interface Withdrawns {
+    time: string
+    trader: string
+    amount: string
+}
 
-export type HistoryDataType = "deposited"
+export type HistoryColumn = Deposited | Withdrawns
+
+export type HistoryDataType =
+    | "Deposited"
+    | "Withdrawn"
+    | "LiquidityAddedExchanges"
+    | "LiquidityRemovedExchanges"
+    | "PositionChangeds"
+    | "Orders"
+    | "LimitOrderCreatedExchanges"
+    | "LimitOrderSettleds"
 
 export interface HistoryData {
     title: string
