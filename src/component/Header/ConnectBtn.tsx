@@ -20,7 +20,7 @@ function ConnectBtn() {
             customType="base-dark"
             size="sm"
             onClick={toggleWalletModal}
-            leftIcon={<WalletFill boxSize={4} />}
+            leftIcon={<WalletFill boxSize={4} mb="1px" />}
             mr="4"
         />
     )
