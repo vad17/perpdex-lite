@@ -104,7 +104,7 @@ const getNetworkConfigs = (): { [key: string]: NetworkConfig } => {
 
 export const networkConfigs: { [key: string]: NetworkConfig } = getNetworkConfigs()
 
-interface AddEthereumChainParameter {
+export interface AddEthereumChainParameter {
     chainId: string // A 0x-prefixed hexadecimal string
     chainName: string
     nativeCurrency: {
