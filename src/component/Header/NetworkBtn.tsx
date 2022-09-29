@@ -1,4 +1,4 @@
-import React, { useCallback } from "react"
+import React, { useCallback, useEffect, useState } from "react"
 import {
     Box,
     Center,
@@ -11,10 +11,10 @@ import {
     PopoverTrigger,
     useMediaQuery,
 } from "@chakra-ui/react"
-import { TriangleDownIcon } from "@chakra-ui/icons"
+import { NotAllowedIcon, TriangleDownIcon } from "@chakra-ui/icons"
 import Button from "component/base/Button"
 import { CurrencyIcon } from "component/Icon"
-import { networkConfigs, networks } from "constant/network"
+import { networkConfigs, networks, AddEthereumChainParameter } from "constant/network"
 import { Connection } from "container/connection"
 import { useWeb3React } from "@web3-react/core"
 import _ from "lodash"
@@ -22,16 +22,37 @@ import _ from "lodash"
 function NetworkBtn() {
     const isMobileAndTabletScreen = useMediaQuery("(max-width: 1024px)")
 
-    const { chainId, active } = Connection.useContainer()
+    const { chainId } = Connection.useContainer()
 
     const { library } = useWeb3React()
 
-    const injectedWalletHandler = async (chainId: string) => {
+    const [injectedSupportedNetwork, setInjectedSupportedNetwork] = useState<boolean>(false)
+
+    const getInjectedChainID = async () => {
+        if (window && (window as any).ethereum) {
+            const injectedChainID = await window.ethereum.request({ method: "eth_chainId" })
+            _.forIn(networks, (network: AddEthereumChainParameter) => {
+                if (network.chainId === injectedChainID) {
+                    setInjectedSupportedNetwork(true)
+                    return
+                }
+            })
+            return
+        }
+        setInjectedSupportedNetwork(false)
+    }
+
+    useEffect(() => {
+        getInjectedChainID()
+    }, [])
+
+    const injectedWalletHandler = useCallback(async (chainId: string) => {
         try {
             await window.ethereum.request({
                 method: "wallet_switchEthereumChain",
                 params: [{ chainId: networks[chainId].chainId }],
             })
+            getInjectedChainID()
         } catch (err: any) {
             if (err.code === 4902) {
                 try {
@@ -39,12 +60,13 @@ function NetworkBtn() {
                         method: "wallet_addEthereumChain",
                         params: [{ ...networks[chainId] }],
                     })
+                    getInjectedChainID()
                 } catch (error) {
                     console.error(error)
                 }
             }
         }
-    }
+    }, [])
 
     const handleOnClick = useCallback(
         async (chainId: string) => {
@@ -73,7 +95,7 @@ function NetworkBtn() {
                 }
             }
         },
-        [library],
+        [injectedWalletHandler, library],
     )
 
     return (
@@ -84,13 +106,13 @@ function NetworkBtn() {
                         text={
                             isMobileAndTabletScreen[0]
                                 ? ""
-                                : !active
-                                ? "Not connected"
                                 : chainId && _.keys(networkConfigs).includes(String(chainId))
                                 ? networkConfigs[chainId].name
-                                : "Unsupported Chain"
+                                : injectedSupportedNetwork
+                                ? "Not Connected"
+                                : "Switch Network"
                         }
-                        customType="base-dark"
+                        customType={injectedSupportedNetwork ? "base-dark" : "outline-red"}
                         size="sm"
                         leftIcon={
                             chainId && _.keys(networkConfigs).includes(String(chainId)) ? (
@@ -99,10 +121,13 @@ function NetworkBtn() {
                                 ) : (
                                     <CurrencyIcon symbol={networkConfigs[chainId].nativeTokenSymbol} boxSize={5} />
                                 )
-                            ) : undefined
+                            ) : injectedSupportedNetwork ? undefined : (
+                                <NotAllowedIcon boxSize={4} mb="1px" />
+                            )
                         }
-                        rightIcon={<TriangleDownIcon boxSize={4} />}
+                        rightIcon={<TriangleDownIcon boxSize={4} mb="1px" />}
                         mr="4"
+                        borderRadius="10px"
                     />
                 </Center>
             </PopoverTrigger>
