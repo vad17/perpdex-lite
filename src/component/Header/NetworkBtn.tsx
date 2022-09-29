@@ -108,9 +108,11 @@ function NetworkBtn() {
                                 ? ""
                                 : chainId && _.keys(networkConfigs).includes(String(chainId))
                                 ? networkConfigs[chainId].name
-                                : injectedSupportedNetwork
-                                ? "Not Connected"
-                                : "Switch Network"
+                                : window && (window as any).ethereum
+                                ? injectedSupportedNetwork
+                                    ? "Not Connected"
+                                    : "Switch Network"
+                                : "Not Connected"
                         }
                         customType={injectedSupportedNetwork ? "base-dark" : "outline-red"}
                         size="sm"
@@ -121,9 +123,11 @@ function NetworkBtn() {
                                 ) : (
                                     <CurrencyIcon symbol={networkConfigs[chainId].nativeTokenSymbol} boxSize={5} />
                                 )
-                            ) : injectedSupportedNetwork ? undefined : (
-                                <NotAllowedIcon boxSize={4} mb="1px" />
-                            )
+                            ) : window && (window as any).ethereum ? (
+                                injectedSupportedNetwork ? undefined : (
+                                    <NotAllowedIcon boxSize={4} mb="1px" />
+                                )
+                            ) : undefined
                         }
                         rightIcon={<TriangleDownIcon boxSize={4} mb="1px" />}
                         mr="4"
