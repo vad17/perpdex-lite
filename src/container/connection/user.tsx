@@ -91,8 +91,8 @@ function useUser() {
                     dispatch({ type: ACTIONS.LOGIN_FAIL })
                     logger.error(err)
                     notifyError({
-                        title: "Switch a supported network in Metamask to connect",
-                        position: "top-right",
+                        title: "Switch a supported network in your wallet",
+                        position: "bottom-right",
                     })
                 })
         },
