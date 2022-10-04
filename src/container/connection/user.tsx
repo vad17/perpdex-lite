@@ -11,6 +11,7 @@ import { useLocalStorage } from "../../hook/useLocalStorage"
 import { useNotification } from "../../hook/useNotification"
 import { usePrevious } from "../../hook/usePrevious"
 import { Connection } from "."
+import { UnsupportedChainIdError } from "@web3-react/core"
 
 enum ACTIONS {
     LOGIN_REQUEST = "LOGIN_REQUEST",
@@ -60,11 +61,25 @@ function useUser() {
         reset()
     })
 
+    const logout = useCallback(() => {
+        deactivate()
+    }, [deactivate])
+
     const login = useCallback(
         (instance: AbstractConnector, connectorId: string, onActivate?: Function) => {
             dispatch({ type: ACTIONS.LOGIN_REQUEST })
             setConnectorId(connectorId)
-            activate(instance, () => {}, true)
+            activate(
+                instance,
+                async e => {
+                    // log out when user changed unsupported network in other protocols
+                    if (e instanceof UnsupportedChainIdError) {
+                        logout()
+                    }
+                    return
+                },
+                true,
+            )
                 .then(() => {
                     if (onActivate) {
                         onActivate()
@@ -76,17 +91,13 @@ function useUser() {
                     dispatch({ type: ACTIONS.LOGIN_FAIL })
                     logger.error(err)
                     notifyError({
-                        title: "Switch a supported network in Metamask to connect",
-                        position: "top-right",
+                        title: "Switch a supported network in your wallet",
+                        position: "bottom-right",
                     })
                 })
         },
-        [dispatch, setConnectorId, activate, notifyError],
+        [setConnectorId, activate, logout, notifyError],
     )
-
-    const logout = useCallback(() => {
-        deactivate()
-    }, [deactivate])
 
     useEffect(() => {
         if (active && account && chainId) {
