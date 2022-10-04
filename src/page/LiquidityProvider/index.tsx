@@ -29,7 +29,7 @@ const initMakerPositionInfo: MakerPositionInfo = {
 function LiquidityProvider() {
     const { marketAddress } = useParams<{ marketAddress: string }>()
     const history = useHistory()
-    const { currentMyMakerInfo, removeLiquidity } = PerpdexExchangeContainer.useContainer()
+    const { currentMyMakerInfo } = PerpdexExchangeContainer.useContainer()
     const { currentMarketState, marketStates, setCurrentMarket } = PerpdexMarketContainer.useContainer()
 
     useEffect(() => {
